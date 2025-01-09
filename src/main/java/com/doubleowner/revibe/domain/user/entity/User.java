@@ -22,7 +22,7 @@ public class User extends BaseTimeEntity {
     @Column(nullable = false)
     private String password;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private String profileImage;
 
     @Column(nullable = false)
@@ -32,14 +32,28 @@ public class User extends BaseTimeEntity {
     private String phoneNumber;
 
     @Column(nullable = false)
-    @Enumerated(EnumType.STRING)
-    private Role Role;
+    @Enumerated(value = EnumType.STRING)
+    private Role role;
 
     @Column(nullable = false)
-    @Enumerated(EnumType.STRING)
-    private UserStatus Status;
+    @Enumerated(value = EnumType.STRING)
+    private UserStatus status = UserStatus.USER_ACTIVE;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "account_id")
     private Account account;
+
+    public User() {}
+
+    public User(String email, String nickname, String password, String profileImage, String address, String phoneNumber, Role role) {
+        this.email = email;
+        this.nickname = nickname;
+        this.password = password;
+        this.profileImage = profileImage;
+        this.address = address;
+        this.phoneNumber = phoneNumber;
+        this.role = role;
+    }
+
+
 }
