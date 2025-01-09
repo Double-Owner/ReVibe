@@ -15,9 +15,9 @@ public class Cart {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToMany
-    private List<Item> items;
+    @ManyToOne
+    private Item item;
 
-    @OneToMany
-    private List<User> users;
+    @ManyToOne
+    private User user;
 }

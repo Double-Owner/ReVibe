@@ -4,10 +4,9 @@ import com.doubleowner.revibe.domain.item.entity.Item;
 import jakarta.persistence.*;
 import lombok.Getter;
 
-import java.util.List;
-
 @Entity
 @Getter
+@Table(name = "OPTIONS")
 public class Option {
 
     @Id
@@ -21,6 +20,6 @@ public class Option {
     @Column(nullable = false)
     private Long stock;
 
-    @OneToMany
-    private List<Item> items;
+    @ManyToOne
+    private Item item;
 }
