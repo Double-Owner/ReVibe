@@ -11,5 +11,16 @@ public enum Category {
     DRESS_SHOES("dressShoes"),
     BOOTS("boots");
     
-    private final String value;
+    private final String categoryName;
+
+    public static Category of(String categoryName) throws IllegalArgumentException {
+
+        for (Category category : values()) {
+            if (category.name().equals(categoryName)) {
+                return category;
+            }
+        }
+
+        throw new IllegalArgumentException("잘못된 카테고리이름입니다. : " + categoryName);
+    }
 }

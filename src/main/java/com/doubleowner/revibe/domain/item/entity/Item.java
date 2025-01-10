@@ -5,9 +5,13 @@ import com.doubleowner.revibe.domain.brand.entity.Brand;
 import com.doubleowner.revibe.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import org.hibernate.annotations.DynamicUpdate;
 
 @Entity
 @Getter
+@NoArgsConstructor
+@DynamicUpdate
 public class Item extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,4 +36,13 @@ public class Item extends BaseTimeEntity {
     @ManyToOne
     @JoinColumn(name = "admin_id")
     private User user;
+
+    public Item(Brand brand, String name, String description, Category category, String image, User user) {
+        this.brand = brand;
+        this.name = name;
+        this.description = description;
+        this.category = category;
+        this.image = image;
+        this.user = user;
+    }
 }
