@@ -3,10 +3,12 @@ package com.doubleowner.revibe.domain.option.entity;
 import com.doubleowner.revibe.domain.item.entity.Item;
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
 @Table(name = "OPTIONS")
+@NoArgsConstructor
 public class Option {
 
     @Id
@@ -22,4 +24,10 @@ public class Option {
 
     @ManyToOne
     private Item item;
+
+    public Option(Size size, Item item) {
+        this.size = size;
+        this.stock = 0L;
+        this.item = item;
+    }
 }
