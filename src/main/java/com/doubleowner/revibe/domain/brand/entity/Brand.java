@@ -2,9 +2,11 @@ package com.doubleowner.revibe.domain.brand.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
+@NoArgsConstructor
 public class Brand {
 
     @Id
@@ -13,4 +15,8 @@ public class Brand {
 
     @Column(nullable = false)
     private String name;
+
+    public Brand(String name){
+        this.name = name;
+    }
 }
