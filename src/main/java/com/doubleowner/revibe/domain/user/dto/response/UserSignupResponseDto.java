@@ -1,6 +1,5 @@
 package com.doubleowner.revibe.domain.user.dto.response;
 
-import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 

@@ -1,4 +1,4 @@
-package com.doubleowner.revibe.domain.account;
+package com.doubleowner.revibe.domain.account.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;

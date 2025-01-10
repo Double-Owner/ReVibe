@@ -1,6 +1,6 @@
 package com.doubleowner.revibe.domain.user.entity;
 
-import com.doubleowner.revibe.domain.account.Account;
+import com.doubleowner.revibe.domain.account.entity.Account;
 import com.doubleowner.revibe.global.common.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
