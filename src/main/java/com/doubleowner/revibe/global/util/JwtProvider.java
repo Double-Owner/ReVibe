@@ -55,7 +55,7 @@ public class JwtProvider {
         Date accessTokenexpireDate = new Date(currentDate.getTime() + accessTokenExpiryMillis);
 
         String accessToken = Jwts.builder()
-                .subject(user.getId().toString())
+                .subject(user.getEmail())
                 .issuedAt(currentDate)
                 .expiration(accessTokenexpireDate)
                 .claim("role", user.getRole().name())
@@ -66,7 +66,7 @@ public class JwtProvider {
         Date refreshTokenexpireDate = new Date(currentDate.getTime() + refreshTokenExpiryMillis);
 
         String refreshToken = Jwts.builder()
-                .subject(user.getId().toString())
+                .subject(user.getEmail())
                 .issuedAt(currentDate)
                 .expiration(refreshTokenexpireDate)
                 .claim("role", user.getRole().name())
