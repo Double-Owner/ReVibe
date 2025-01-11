@@ -56,7 +56,13 @@ public class User extends BaseTimeEntity {
         this.role = role;
     }
 
-    public void deleteCount() {
-        this.account=null;
+    public void deletedUser() {
+        this.status = UserStatus.USER_DELETED;
     }
+
+    public void deletedAccount() {
+        this.status = UserStatus.USER_DELETED;
+    }
+
+
 }
