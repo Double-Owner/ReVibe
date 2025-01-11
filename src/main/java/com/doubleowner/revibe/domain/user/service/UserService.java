@@ -142,4 +142,25 @@ public class UserService {
 
     }
 
+    /**
+     * 프로필 조회
+     */
+    @Transactional(readOnly = true)
+    public UserProfileResponseDto getProfile(UserDetailsImpl userDetails) {
+
+        User findUser = userRepository.findByEmail(userDetails.getUsername())
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다"));
+
+        return new UserProfileResponseDto(
+                findUser.getId(),
+                findUser.getNickname(),
+                findUser.getEmail(),
+                findUser.getProfileImage(),
+                findUser.getAddress(),
+                findUser.getPhoneNumber(),
+                findUser.getStatus(),
+                findUser.getCreatedAt(),
+                findUser.getUpdatedAt()
+        );
+    }
 }
