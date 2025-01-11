@@ -73,7 +73,7 @@ public class UserService {
     public JwtAuthResponse login(UserLoginRequestDto requestDto) {
 
         User user = userRepository.findByEmail(requestDto.getEmail())
-                .orElseThrow(() -> new IllegalArgumentException("해당 사용자가 없습니다. email= " + requestDto.getEmail()));
+                .orElseThrow(() -> new IllegalArgumentException("해당 사용자가 없습니다." ));
 
         Authentication authentication = this.authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
