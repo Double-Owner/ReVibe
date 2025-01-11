@@ -60,6 +60,6 @@ public class AccountService {
         User finduser = userRepository.findByEmail(user.getEmail())
                 .orElseThrow(() -> new RuntimeException("계좌 삭제에 실패했습니다. ID를 다시 입력해주세요."));
 
-        finduser.deleteCount();
+        finduser.deletedAccount();
     }
 }

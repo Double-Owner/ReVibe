@@ -27,7 +27,8 @@ public class WebConfig {
     private final AuthenticationEntryPoint authenticationEntryPoint;
     private final AccessDeniedHandler accessDeniedHandler;
 
-    private static final String[] WHITE_LIST = {"/api/users/signup", "/api/users/login","/api/items"};
+    private static final String[] WHITE_LIST = {"/api/users/signup", "/api/users/login","/api/items", "/api/users/**",
+            "/api/accounts/**"};
 
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
