@@ -98,4 +98,18 @@ public class UserController {
         return new ResponseEntity<>(new CommonResponseBody<>("프로필이 수정되었습니다.", responseDto), HttpStatus.OK);
     }
 
+    /**
+     * 프로필 조회
+     * @param userDetails - 프로필 조회 요청 사용자의 정보 제공
+     * @return - 프로필 정보 응답
+     */
+    @GetMapping("/profile")
+    public ResponseEntity<CommonResponseBody<UserProfileResponseDto>> getProfile(
+            @AuthenticationPrincipal UserDetailsImpl userDetails) {
+
+        UserProfileResponseDto responseDto = userService.getProfile(userDetails);
+
+        return new ResponseEntity<>(new CommonResponseBody<>("프로필 조회를 성공하였습니다.", responseDto), HttpStatus.OK);
+
+    }
 }
