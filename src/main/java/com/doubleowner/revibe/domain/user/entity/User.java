@@ -1,6 +1,7 @@
 package com.doubleowner.revibe.domain.user.entity;
 
 import com.doubleowner.revibe.domain.account.entity.Account;
+import com.doubleowner.revibe.domain.user.dto.request.UserProfileUpdateRequestDto;
 import com.doubleowner.revibe.global.common.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -64,5 +65,11 @@ public class User extends BaseTimeEntity {
         this.status = UserStatus.USER_DELETED;
     }
 
-
+    public void updateProfile(UserProfileUpdateRequestDto requestDto, String password) {
+        this.nickname = requestDto.getNickname();
+        this.password = password;
+        this.profileImage = requestDto.getProfileImage();
+        this.address = requestDto.getAddress();
+        this.phoneNumber = requestDto.getPhoneNumber();
+    }
 }
