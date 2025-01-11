@@ -1,5 +1,6 @@
 package com.doubleowner.revibe.domain.user.service;
 
+import com.doubleowner.revibe.domain.user.dto.request.UserDeleteRequestDto;
 import com.doubleowner.revibe.domain.user.dto.request.UserLoginRequestDto;
 import com.doubleowner.revibe.domain.user.dto.request.UserSignupRequestDto;
 import com.doubleowner.revibe.domain.user.dto.response.UserSignupResponseDto;
@@ -29,6 +30,7 @@ public class UserService {
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final JwtProvider jwtProvider;
     private final AuthenticationManager authenticationManager;
+    private final BCryptPasswordEncoder passwordEncoder;
 
     @Transactional
     public UserSignupResponseDto signUpUser(UserSignupRequestDto requestDto) throws DuplicateKeyException {
@@ -87,5 +89,23 @@ public class UserService {
         String accessToken = generatedTokens.get("access_token");
 
         return new JwtAuthResponse(AuthenticationScheme.BEARER.getName(), accessToken);
+    }
+
+    /**
+     * 회원 탈퇴
+     * @param username 사용자의 이메일
+     * @param requestDto 사용자가 입력한 인코딩된 비밀번호
+     */
+    @Transactional
+    public void deleteUser(String username, UserDeleteRequestDto requestDto) {
+
+        User findUser = userRepository.findByEmail(username)
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다"));
+
+        if (!passwordEncoder.matches(requestDto.getPassword(), findUser.getPassword())) {
+            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+        }
+
+        findUser.deletedUser();
     }
 }
