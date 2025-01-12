@@ -4,9 +4,9 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 public enum PayMethod {
-    CASH("payment_cash"),
-    CREDIT_CARD("payment_creditCard"),
-    TOSS_PAY("payment_tossPay");
+    CASH("PAYMENT_CASH"),
+    CREDIT_CARD("PAYMENT_CREDIT_CARD"),
+    TOSS_PAY("PAYMENT_TOSS_PAY");
 
     private final String value;
 }
