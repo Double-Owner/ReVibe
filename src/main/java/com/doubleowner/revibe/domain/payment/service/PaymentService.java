@@ -35,7 +35,7 @@ public class PaymentService {
 
     // 카드 결제
     public PaymentResponseDto payCard(CardPaymentRequestDto cardPaymentRequestDto) throws IOException, ParseException {
-        BuyBid buyBid = buyBidRepository.findById(cardPaymentRequestDto.getBuybidId()).orElseThrow(() -> new RuntimeException("요청하신 주문건이 없습니다."));
+        BuyBid buyBid = buyBidRepository.findById(cardPaymentRequestDto.getBuyBidId()).orElseThrow(() -> new RuntimeException("요청하신 주문건이 없습니다."));
 
         JSONObject paymentData = getPaymentData(cardPaymentRequestDto);
 
