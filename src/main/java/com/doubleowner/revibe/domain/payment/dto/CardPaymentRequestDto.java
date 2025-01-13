@@ -11,5 +11,5 @@ public class CardPaymentRequestDto {
     private String cardExpirationMonth;
     private String cardPassword;
     private String customerIdentityNumber;
-    private Long buybidId;
+    private Long buyBidId;
 }

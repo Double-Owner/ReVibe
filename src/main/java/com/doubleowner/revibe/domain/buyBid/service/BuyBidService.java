@@ -24,23 +24,18 @@ public class BuyBidService {
     private final OptionRepository optionRepository;
     private final UserRepository userRepository;
 
-    //구매 입찰 생성
-    @Transactional
-    public BuyBidResponseDto createBuyBid(BuyBidRequestDto requestBody) {
-        //유저 아이디 토큰으로 받아야함
-        //User user = userRepository.findById(토큰값에 있는 Id).orElseThrow();
-        //테스트용
-        User user = userRepository.findById(1L).orElseThrow();
+    //1 구매 입찰 생성
+    @Transactional(readOnly = true)
+    public BuyBidResponseDto createBuyBid(User loginUser, BuyBidRequestDto requestBody) {
         Option option = optionRepository.findById(requestBody.getOptionId()).orElseThrow();
 
-        //toEntity에 user 들어가야함
-        BuyBid buyBid = bidRepository.save(requestBody.toEntity(option, user));
+        BuyBid buyBid = bidRepository.save(requestBody.toEntity(option, loginUser));
 
         return BuyBidResponseDto.toDto(buyBid);
     }
 
-    //구매 입찰 제거 -> status 값 end로 변경
-    @Transactional
+    //1 구매 입찰 제거 -> status 값 end로 변경
+    @Transactional(readOnly = true)
     public void deleteBuyBid(Long buyBidId) {
         BuyBid buyBid = bidRepository.findById(buyBidId).orElseThrow();
         buyBid.delete();
@@ -49,11 +44,11 @@ public class BuyBidService {
     }
 
     //1 구매 입찰 조회
-
-    public Page<BuyBidResponseDto> findAllBuyBid(int page, int size) {
+    @Transactional(readOnly = true)
+    public Page<BuyBidResponseDto> findAllBuyBid(User loginUser, int page, int size) {
 
         Pageable pageable = PageRequest.of(page, size);
-        Page<BuyBid> buyBids = bidRepository.findByUserId(1L, pageable);
+        Page<BuyBid> buyBids = bidRepository.findByUserId(loginUser.getId(), pageable);
 
         return buyBids.map(BuyBidResponseDto::toDto);
     }

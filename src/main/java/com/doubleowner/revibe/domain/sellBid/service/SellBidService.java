@@ -28,27 +28,30 @@ public class SellBidService {
 
     //1 판매 입찰 생성
     @Transactional
-    public SellBidResponseDto createSellBid(@Valid SellBidRequestDto requestDto) {
+    public SellBidResponseDto createSellBid(User loginUser ,SellBidRequestDto requestDto) {
         Option option = optionRepository.findById(requestDto.getOptionId()).orElseThrow(() -> new IllegalArgumentException(""));
-        User user = userRepository.findById(1L).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 유저입니다."));
-
-        SellBid sellBid = sellBidRepository.save(requestDto.toEntity(option, user));
+        SellBid sellBid = sellBidRepository.save(requestDto.toEntity(option, loginUser));
 
         return SellBidResponseDto.toDto(sellBid);
     }
 
     //1 판매 입찰 취소
     @Transactional
-    public void deleteSellBid(Long sellBidId) {
+    public void deleteSellBid(User loginUser, Long sellBidId) {
         SellBid sellBid = sellBidRepository.findById(sellBidId).orElseThrow();
+        if(sellBid.getUser().equals(loginUser)) {
+            throw new IllegalArgumentException("사용자가 올바르지 않습니다.");
+        };
+
         sellBid.delete();
         sellBidRepository.save(sellBid);
     }
 
     //1 판매 입찰 조회
-    public Page<SellBidResponseDto> findAllBuyBid(int page, int size) {
+    @Transactional(readOnly = true)
+    public Page<SellBidResponseDto> findAllBuyBid(User loginUser, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<SellBid> sellBids = sellBidRepository.findByUserId(1L, pageable);
+        Page<SellBid> sellBids = sellBidRepository.findByUserId(loginUser.getId(), pageable);
 
         return sellBids.map(SellBidResponseDto::toDto);
     }
