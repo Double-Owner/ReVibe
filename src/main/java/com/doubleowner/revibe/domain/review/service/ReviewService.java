@@ -48,6 +48,6 @@ public class ReviewService {
                 .build();
         Review save = reviewRepository.save(review);
 
-        return Review.todto(save);
+        return Review.toDto(save);
     }
 }
