@@ -3,6 +3,7 @@ package com.doubleowner.revibe.domain.review.entity;
 import com.doubleowner.revibe.domain.execution.entity.Execution;
 import com.doubleowner.revibe.domain.item.entity.Item;
 import com.doubleowner.revibe.domain.review.dto.ReviewResponseDto;
+import com.doubleowner.revibe.domain.user.entity.User;
 import com.doubleowner.revibe.global.common.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -40,6 +41,10 @@ public class Review extends BaseTimeEntity {
     @OneToOne
     @JoinColumn(name = "execution_id")
     private Execution execution;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 
     public static ReviewResponseDto toDto(Review review) {
         return ReviewResponseDto.builder()
