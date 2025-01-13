@@ -41,7 +41,7 @@ public class Review extends BaseTimeEntity {
     @JoinColumn(name = "execution_id")
     private Execution execution;
 
-    public static ReviewResponseDto todto(Review review) {
+    public static ReviewResponseDto toDto(Review review) {
         return ReviewResponseDto.builder()
                 .reviewId(review.getId())
                 .title(review.getTitle())
