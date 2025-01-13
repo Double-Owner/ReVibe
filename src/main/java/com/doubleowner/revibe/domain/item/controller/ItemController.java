@@ -9,6 +9,7 @@ import com.doubleowner.revibe.global.common.dto.CommonResponseBody;
 import com.doubleowner.revibe.global.config.auth.UserDetailsImpl;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -28,7 +29,7 @@ public class ItemController {
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
         User loginUser = userDetails.getUser();
         ItemResponseDto responseDto = itemService.createItem(loginUser, requestDto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(new CommonResponseBody<>("아이템을 등록했습니다", responseDto));
+        return ResponseEntity.status(HttpStatus.CREATED).body(new CommonResponseBody<>("상품을 등록했습니다", responseDto));
     }
 
     // 상품 수정
@@ -40,6 +41,24 @@ public class ItemController {
     {
         ItemResponseDto responseDto = itemService.modifyItem(itemId,requestDto);
 
-        return ResponseEntity.status(HttpStatus.OK).body((new CommonResponseBody<>("아이템이 수정 되었습니다.",responseDto)));
+        return ResponseEntity.status(HttpStatus.OK).body((new CommonResponseBody<>("상품이 수정 되었습니다.",responseDto)));
+    }
+
+    // 상품 전체 조회
+    @GetMapping
+    public ResponseEntity<CommonResponseBody<Page<ItemResponseDto>>> getItems(
+            @RequestParam(value = "page", required = false, defaultValue = "0") int page,
+            @RequestParam(value = "size", required = false, defaultValue = "3") int size
+    )
+    {
+        Page<ItemResponseDto> responseDtos = itemService.getAllItems(page, size);
+        return ResponseEntity.status(HttpStatus.OK).body((new CommonResponseBody<>("상품들을 조회했습니다.",responseDtos)));
+    }
+
+    // 상품 단건 조회
+    @GetMapping("/{itemId}")
+    public ResponseEntity<CommonResponseBody<ItemResponseDto>> getItemDetail(@PathVariable Long itemId){
+        ItemResponseDto responseDto = itemService.getItem(itemId);
+        return ResponseEntity.status(HttpStatus.OK).body((new CommonResponseBody<>("상품을 조회했습니다.",responseDto)));
     }
 }
