@@ -3,6 +3,7 @@ package com.doubleowner.revibe.domain.item.service;
 import com.doubleowner.revibe.domain.brand.entity.Brand;
 import com.doubleowner.revibe.domain.brand.repository.BrandRepository;
 import com.doubleowner.revibe.domain.item.dto.request.ItemRequestDto;
+import com.doubleowner.revibe.domain.item.dto.request.ItemUpdateRequestDto;
 import com.doubleowner.revibe.domain.item.dto.response.ItemResponseDto;
 import com.doubleowner.revibe.domain.item.entity.Category;
 import com.doubleowner.revibe.domain.item.entity.Item;
@@ -29,6 +30,18 @@ public class ItemService {
 
         Item item = new Item(brand, requestDto.getName(), requestDto.getDescription(),
                 Category.of(requestDto.getCategory()), requestDto.getImage(), loginUser);
+
+        itemRepository.save(item);
+
+        return ItemResponseDto.toDto(item);
+    }
+
+    // 상품 수정
+    public ItemResponseDto modifyItem(Long itemId, ItemUpdateRequestDto requestDto) {
+        // 수정할 상품 찾기
+        Item item = itemRepository.findByIdOrElseThrow(itemId);
+
+        item.updateItem(requestDto);
 
         itemRepository.save(item);
 
