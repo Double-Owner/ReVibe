@@ -10,6 +10,9 @@ import com.doubleowner.revibe.domain.item.entity.Item;
 import com.doubleowner.revibe.domain.item.repository.ItemRepository;
 import com.doubleowner.revibe.domain.user.entity.User;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -46,6 +49,21 @@ public class ItemService {
         item.updateItem(requestDto);
 
         itemRepository.save(item);
+
+        return ItemResponseDto.toDto(item);
+    }
+
+    // 상품 전체 조회
+    public Page<ItemResponseDto> getAllItems(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Item> items = itemRepository.findAll(pageable);
+
+        return items.map(ItemResponseDto::toDto);
+    }
+
+    // 상품 상세 조회
+    public ItemResponseDto getItem(Long itemId) {
+        Item item = itemRepository.findByIdOrElseThrow(itemId);
 
         return ItemResponseDto.toDto(item);
     }
