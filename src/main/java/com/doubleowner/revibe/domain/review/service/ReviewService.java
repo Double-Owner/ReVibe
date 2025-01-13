@@ -65,7 +65,7 @@ public class ReviewService {
 
     @Transactional
     public void updateReview(Long id, UserDetailsImpl userDetails, UpdateReviewRequestDto updateReviewRequestDto, MultipartFile file) {
-        Review review = reviewRepository.findReviewByIdAndUser_Id(id, userDetails.getUser().getId()).orElseThrow(() -> new RuntimeException(""));
+        Review review = reviewRepository.findReviewByIdAndUser_Id(id, userDetails.getUser().getId()).orElseThrow(() -> new RuntimeException("작성하신 리뷰를 찾을수 없습니다."));
 
         if (file != null) {
             try {
@@ -78,5 +78,11 @@ public class ReviewService {
 
         review.update(updateReviewRequestDto);
 
+    }
+
+    @Transactional
+    public void deleteReview(Long id, User user) {
+        Review review = reviewRepository.findReviewByIdAndUser_Id(id, user.getId()).orElseThrow(() -> new RuntimeException("작성하신 리뷰를 찾을수 없습니다."));
+        reviewRepository.delete(review);
     }
 }
