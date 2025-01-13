@@ -1,5 +1,6 @@
 package com.doubleowner.revibe.domain.item.entity;
 
+import com.doubleowner.revibe.domain.item.dto.request.ItemUpdateRequestDto;
 import com.doubleowner.revibe.global.common.BaseTimeEntity;
 import com.doubleowner.revibe.domain.brand.entity.Brand;
 import com.doubleowner.revibe.domain.user.entity.User;
@@ -44,5 +45,21 @@ public class Item extends BaseTimeEntity {
         this.category = category;
         this.image = image;
         this.user = user;
+    }
+
+    public void updateItem(ItemUpdateRequestDto requestDto) {
+        if(requestDto.getName() != null && !requestDto.getName().isEmpty()) {
+            this.name = requestDto.getName();
+        }
+        if(requestDto.getCategory() != null && !requestDto.getCategory().isEmpty()) {
+            this.category = Category.of(requestDto.getCategory());
+        }
+
+        if(requestDto.getDescription() != null && !requestDto.getDescription().isEmpty()) {
+            this.description = requestDto.getDescription();
+        }
+        if(requestDto.getImage() != null && !requestDto.getImage().isEmpty()) {
+            this.image = requestDto.getImage();
+        }
     }
 }
