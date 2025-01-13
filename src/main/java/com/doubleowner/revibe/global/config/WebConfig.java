@@ -28,7 +28,7 @@ public class WebConfig {
     private final AccessDeniedHandler accessDeniedHandler;
 
     private static final String[] WHITE_LIST = {"/api/users/signup", "/api/users/login","/api/items/**", "/api/users/**", "/api/brands",
-            "/api/accounts/**", "/api/sell-bids/**", "/api/buy-bids/**"};
+            "/api/accounts/**", "/api/sell-bids/**", "/api/buy-bids/**","/api/carts/**"};
 
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
