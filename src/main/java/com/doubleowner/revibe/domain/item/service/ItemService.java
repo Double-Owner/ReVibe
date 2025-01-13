@@ -11,6 +11,7 @@ import com.doubleowner.revibe.domain.item.repository.ItemRepository;
 import com.doubleowner.revibe.domain.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -37,6 +38,7 @@ public class ItemService {
     }
 
     // 상품 수정
+    @Transactional
     public ItemResponseDto modifyItem(Long itemId, ItemUpdateRequestDto requestDto) {
         // 수정할 상품 찾기
         Item item = itemRepository.findByIdOrElseThrow(itemId);
