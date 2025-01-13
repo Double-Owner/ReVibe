@@ -6,9 +6,11 @@ import com.doubleowner.revibe.domain.payment.entity.Payment;
 import com.doubleowner.revibe.domain.payment.repository.PaymentRepository;
 import com.doubleowner.revibe.domain.review.dto.ReviewRequestDto;
 import com.doubleowner.revibe.domain.review.dto.ReviewResponseDto;
+import com.doubleowner.revibe.domain.review.dto.UpdateReviewRequestDto;
 import com.doubleowner.revibe.domain.review.entity.Review;
 import com.doubleowner.revibe.domain.review.repository.ReviewRepository;
 import com.doubleowner.revibe.domain.user.entity.User;
+import com.doubleowner.revibe.global.config.auth.UserDetailsImpl;
 import com.doubleowner.revibe.global.util.S3Uploader;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -59,5 +61,22 @@ public class ReviewService {
     public List<ReviewResponseDto> findReview(User user) {
         List<Review> reviews = reviewRepository.findByUserId(user.getId());
         return reviews.stream().map(Review::toDto).toList();
+    }
+
+    @Transactional
+    public void updateReview(Long id, UserDetailsImpl userDetails, UpdateReviewRequestDto updateReviewRequestDto, MultipartFile file) {
+        Review review = reviewRepository.findReviewByIdAndUser_Id(id, userDetails.getUser().getId()).orElseThrow(() -> new RuntimeException(""));
+
+        if (file != null) {
+            try {
+                String imageUrl = s3Uploader.upload(file);
+                review.update(imageUrl);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        review.update(updateReviewRequestDto);
+
     }
 }
