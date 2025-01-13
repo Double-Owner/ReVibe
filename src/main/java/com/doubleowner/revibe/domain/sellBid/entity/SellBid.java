@@ -40,7 +40,7 @@ public class SellBid {
     @Column(nullable = false)
     private LocalDateTime endedAt;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "seller_id")
     private User user;
 
