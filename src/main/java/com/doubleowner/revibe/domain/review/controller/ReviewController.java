@@ -10,11 +10,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestPart;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 @RestController
 @RequestMapping
@@ -26,5 +25,11 @@ public class ReviewController {
     public ResponseEntity<CommonResponseBody<ReviewResponseDto>> writeReview(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestPart ReviewRequestDto reviewRequestDto, @RequestPart(name = "image") MultipartFile file) {
         ReviewResponseDto review = reviewService.write(reviewRequestDto, file, userDetails.getUser());
         return new ResponseEntity<>(new CommonResponseBody<>("리뷰가 등록되었습니다.", review), HttpStatus.CREATED);
+    }
+
+    @GetMapping("/reviews")
+    public ResponseEntity<CommonResponseBody<List<ReviewResponseDto>>> findReviews(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        List<ReviewResponseDto> read = reviewService.findReview(userDetails.getUser());
+        return new ResponseEntity<>(new CommonResponseBody<>("리뷰가 조회 되었습니다", read), HttpStatus.OK);
     }
 }
