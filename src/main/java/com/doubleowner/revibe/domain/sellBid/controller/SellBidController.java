@@ -4,14 +4,17 @@ import com.doubleowner.revibe.domain.buyBid.dto.BuyBidResponseDto;
 import com.doubleowner.revibe.domain.sellBid.dto.SellBidRequestDto;
 import com.doubleowner.revibe.domain.sellBid.dto.SellBidResponseDto;
 import com.doubleowner.revibe.domain.sellBid.service.SellBidService;
+import com.doubleowner.revibe.domain.user.entity.User;
 import com.doubleowner.revibe.global.common.dto.CommonResponseBody;
+import com.doubleowner.revibe.global.config.auth.UserDetailsImpl;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/sell-bids")
+@RequestMapping("/api/sell-bids")
 @RequiredArgsConstructor
 public class SellBidController {
 
@@ -22,9 +25,11 @@ public class SellBidController {
      * @return responseDto - 판매입찰 완료 응답 dto
      */
     @PostMapping
-    public CommonResponseBody<?> createSellBid(@RequestBody @Valid SellBidRequestDto requestDto) {
-
-        SellBidResponseDto responseDto = sellBidService.createSellBid(requestDto);
+    public CommonResponseBody<?> createSellBid(
+            @RequestBody @Valid SellBidRequestDto requestDto,
+            @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        User loginUser = userDetails.getUser();
+        SellBidResponseDto responseDto = sellBidService.createSellBid(loginUser, requestDto);
 
         return new CommonResponseBody<>("판매 입찰이 완료되었습니다", responseDto);
     }
@@ -37,10 +42,12 @@ public class SellBidController {
      */
     @GetMapping
     public CommonResponseBody<Page<SellBidResponseDto>> findBuyBid(
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
             @RequestParam(value = "page", required = false, defaultValue = "0") int page,
             @RequestParam(value = "size", required = false, defaultValue = "3") int size
     ) {
-        Page<SellBidResponseDto> sellBidResponseDtos = sellBidService.findAllBuyBid(page, size);
+        User loginUser = userDetails.getUser();
+        Page<SellBidResponseDto> sellBidResponseDtos = sellBidService.findAllBuyBid(loginUser, page, size);
         return new CommonResponseBody<>("사용자 구매 입찰 내역입니다.",sellBidResponseDtos );
     }
 
@@ -50,9 +57,12 @@ public class SellBidController {
      * @return  판매입찰 취소 응답 message
      */
     @DeleteMapping("/{sellBidId}")
-    public CommonResponseBody<?> deleteSellBid(@PathVariable Long sellBidId) {
+    public CommonResponseBody<?> deleteSellBid(
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @PathVariable Long sellBidId) {
 
-        sellBidService.deleteSellBid(sellBidId);
+        User loginUser = userDetails.getUser();
+        sellBidService.deleteSellBid(loginUser, sellBidId);
 
         return new CommonResponseBody<>("판매 입찰이 취소되었습니다.", null);
     }
