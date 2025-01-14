@@ -25,8 +25,10 @@ public class ItemController {
     // 상품 등록
     @PostMapping
     public ResponseEntity<CommonResponseBody<ItemResponseDto>> createItem(
-            @Valid @RequestBody ItemRequestDto requestDto,
-            @AuthenticationPrincipal UserDetailsImpl userDetails) {
+            @Valid @ModelAttribute ItemRequestDto requestDto,
+            @AuthenticationPrincipal UserDetailsImpl userDetails
+            )
+    {
         User loginUser = userDetails.getUser();
         ItemResponseDto responseDto = itemService.createItem(loginUser, requestDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(new CommonResponseBody<>("상품을 등록했습니다", responseDto));
