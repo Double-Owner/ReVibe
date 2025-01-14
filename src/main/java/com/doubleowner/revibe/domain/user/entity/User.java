@@ -27,10 +27,10 @@ public class User extends BaseTimeEntity {
     @Column(nullable = true)
     private String profileImage;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private String address;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private String phoneNumber;
 
     @Column(nullable = false)
@@ -40,6 +40,10 @@ public class User extends BaseTimeEntity {
     @Column(nullable = false)
     @Enumerated(value = EnumType.STRING)
     private UserStatus status = UserStatus.USER_ACTIVE;
+
+    @Column(nullable = false)
+    @Enumerated(value = EnumType.STRING)
+    private LoginMethod loginMethod = LoginMethod.LOCAL;
 
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "account_id")
@@ -71,5 +75,14 @@ public class User extends BaseTimeEntity {
         this.profileImage = requestDto.getProfileImage();
         this.address = requestDto.getAddress();
         this.phoneNumber = requestDto.getPhoneNumber();
+    }
+
+    public User(String nickname, String email) {
+        this.nickname = nickname;
+        this.email = email;
+        this.password = "qwer";
+        this.role = Role.ROLE_USER;
+        this.status = UserStatus.USER_ACTIVE;
+        this.loginMethod = LoginMethod.KAKAO;
     }
 }
