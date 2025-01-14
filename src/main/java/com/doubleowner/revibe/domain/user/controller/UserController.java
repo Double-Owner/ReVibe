@@ -35,7 +35,7 @@ public class UserController {
      */
     @PostMapping("/signup")
     public ResponseEntity<CommonResponseBody<UserSignupResponseDto>> signUp(
-            @Valid @RequestBody UserSignupRequestDto requestDto) {
+            @Valid @ModelAttribute UserSignupRequestDto requestDto) {
         UserSignupResponseDto response = userService.signUpUser(requestDto);
         return new ResponseEntity<>(new CommonResponseBody<>("회원가입이 완료되었습니다.", response), HttpStatus.CREATED);
 
@@ -90,7 +90,7 @@ public class UserController {
      */
     @PutMapping("/profile")
     public ResponseEntity<CommonResponseBody<UserProfileResponseDto>> updateProfile(
-            @RequestBody UserProfileUpdateRequestDto requestDto,
+            @ModelAttribute UserProfileUpdateRequestDto requestDto,
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
         UserProfileResponseDto responseDto = userService.updateProfile(requestDto, userDetails);
