@@ -1,6 +1,5 @@
 package com.doubleowner.revibe.global.util;
 
-import com.doubleowner.revibe.domain.user.entity.Role;
 import com.doubleowner.revibe.domain.user.entity.User;
 import com.doubleowner.revibe.domain.user.repository.UserRepository;
 import io.jsonwebtoken.*;
@@ -10,7 +9,6 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import java.nio.charset.StandardCharsets;
