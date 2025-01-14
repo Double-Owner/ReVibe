@@ -13,6 +13,7 @@ import com.doubleowner.revibe.global.config.auth.UserDetailsImpl;
 import com.doubleowner.revibe.global.config.dto.JwtAuthResponse;
 import com.doubleowner.revibe.global.util.AuthenticationScheme;
 import com.doubleowner.revibe.global.util.JwtProvider;
+import com.doubleowner.revibe.global.util.S3Uploader;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -22,6 +23,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.io.IOException;
 import java.util.Map;
 
 @Service
@@ -33,6 +36,7 @@ public class UserService {
     private final JwtProvider jwtProvider;
     private final AuthenticationManager authenticationManager;
     private final BCryptPasswordEncoder passwordEncoder;
+    private final S3Uploader s3Uploader;
 
     /**
      * 회원가입
@@ -41,9 +45,17 @@ public class UserService {
     public UserSignupResponseDto signUpUser(UserSignupRequestDto requestDto) throws DuplicateKeyException {
 
         boolean duplicated = this.userRepository.findByEmail(requestDto.getEmail()).isPresent();
-
         if (duplicated) {
             throw new DuplicateKeyException("중복된 이메일입니다.");
+        }
+
+        String profileImage = null;
+        if(requestDto.getProfileImage() != null) {
+            try{
+                profileImage = s3Uploader.upload(requestDto.getProfileImage());
+            } catch (IOException e){
+                throw new RuntimeException(e);
+            }
         }
 
         String encodedPassword = bCryptPasswordEncoder.encode(requestDto.getPassword());
@@ -52,7 +64,7 @@ public class UserService {
                 requestDto.getEmail(),
                 requestDto.getNickname(),
                 encodedPassword,
-                requestDto.getProfileImage(),
+                profileImage,
                 requestDto.getAddress(),
                 requestDto.getPhoneNumber(),
                 Role.of(requestDto.getRole())
@@ -107,6 +119,14 @@ public class UserService {
             throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
         }
 
+        String profileImage = findUser.getProfileImage();
+        if(profileImage != null) {
+            try {
+                s3Uploader.deleteImage(findUser.getProfileImage());
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
         findUser.deletedUser();
     }
 
@@ -124,22 +144,35 @@ public class UserService {
             throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
         }
 
+        String profileImage = findUser.getProfileImage();
+        if(requestDto.getProfileImage() != null) {
+            try {
+                // 기존 이미지 삭제
+                s3Uploader.deleteImage(findUser.getProfileImage());
+                // 새 이미지 업로드
+                profileImage = s3Uploader.upload(requestDto.getProfileImage());
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
         String encodedPassword = bCryptPasswordEncoder.encode(requestDto.getPassword());
 
         findUser.updateProfile(requestDto, encodedPassword);
+
+        userRepository.save(findUser);
 
         return new UserProfileResponseDto(
                 findUser.getId(),
                 findUser.getNickname(),
                 findUser.getEmail(),
-                findUser.getProfileImage(),
+                profileImage,
                 findUser.getAddress(),
                 findUser.getPhoneNumber(),
                 findUser.getStatus(),
                 findUser.getCreatedAt(),
                 findUser.getUpdatedAt()
         );
-
     }
 
     /**

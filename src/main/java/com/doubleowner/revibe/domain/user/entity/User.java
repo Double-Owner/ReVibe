@@ -72,7 +72,7 @@ public class User extends BaseTimeEntity {
     public void updateProfile(UserProfileUpdateRequestDto requestDto, String password) {
         this.nickname = requestDto.getNickname();
         this.password = password;
-        this.profileImage = requestDto.getProfileImage();
+        this.profileImage = requestDto.getProfileImage().toString();
         this.address = requestDto.getAddress();
         this.phoneNumber = requestDto.getPhoneNumber();
     }
