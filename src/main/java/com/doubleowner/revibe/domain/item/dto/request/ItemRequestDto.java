@@ -2,11 +2,12 @@ package com.doubleowner.revibe.domain.item.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
+import org.springframework.web.multipart.MultipartFile;
 
 @Getter
-@NoArgsConstructor
+@AllArgsConstructor
 public class ItemRequestDto {
     @NotNull(message = "브랜드 입력은 필수입니다")
     private Long brandId;
@@ -20,6 +21,7 @@ public class ItemRequestDto {
     @NotBlank(message = "설명 입력은 필수입니다")
     private String description;
 
-    private String image;
+    @NotNull(message = "상품 사진은 필수입니다")
+    private MultipartFile image;
 
 }

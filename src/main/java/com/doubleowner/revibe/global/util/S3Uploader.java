@@ -28,4 +28,8 @@ public class S3Uploader {
         return amazonS3Client.getUrl(bucket, originalFilename).toString();
 
     }
+    // S3 에서 이미지 삭제
+    public void deleteImage(String image) throws IOException {
+        amazonS3Client.deleteObject(bucket, image.substring(image.lastIndexOf("/") + 1));
+    }
 }
