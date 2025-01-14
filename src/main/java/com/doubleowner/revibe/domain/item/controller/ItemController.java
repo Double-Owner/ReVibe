@@ -37,7 +37,7 @@ public class ItemController {
     // 상품 수정
     @PatchMapping("/{itemId}")
     public ResponseEntity<CommonResponseBody<ItemResponseDto>> updateItem(
-            @Valid @RequestBody ItemUpdateRequestDto requestDto,
+            @Valid @ModelAttribute ItemUpdateRequestDto requestDto,
             @PathVariable Long itemId
     )
     {
