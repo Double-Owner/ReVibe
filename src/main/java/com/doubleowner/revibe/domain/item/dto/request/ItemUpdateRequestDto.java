@@ -1,10 +1,11 @@
 package com.doubleowner.revibe.domain.item.dto.request;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
+import org.springframework.web.multipart.MultipartFile;
 
 @Getter
-@NoArgsConstructor
+@AllArgsConstructor
 public class ItemUpdateRequestDto {
     private String name;
 
@@ -12,5 +13,5 @@ public class ItemUpdateRequestDto {
 
     private String description;
 
-    private String image;
+    private MultipartFile image;
 }

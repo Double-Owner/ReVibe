@@ -9,12 +9,16 @@ import com.doubleowner.revibe.domain.item.entity.Category;
 import com.doubleowner.revibe.domain.item.entity.Item;
 import com.doubleowner.revibe.domain.item.repository.ItemRepository;
 import com.doubleowner.revibe.domain.user.entity.User;
+import com.doubleowner.revibe.global.util.S3Uploader;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 @Service
 @RequiredArgsConstructor
@@ -23,17 +27,27 @@ public class ItemService {
     private final ItemRepository itemRepository;
 
     private final BrandRepository brandRepository;
+    private final S3Uploader s3Uploader;
 
 
     // 상품 등록
     public ItemResponseDto createItem(User loginUser, ItemRequestDto requestDto) {
         // 브랜드 찾기
         Brand brand = brandRepository.findByIdOrElseThrow(requestDto.getBrandId());
+        String image = null;
 
-        // TODO S3 상품이미지 추가
+        // 상품이미지 추가
+        if(requestDto.getImage() != null) {
+
+            try{
+                image = s3Uploader.upload(requestDto.getImage());
+            } catch (IOException e){
+                throw new RuntimeException(e);
+            }
+        }
 
         Item item = new Item(brand, requestDto.getName(), requestDto.getDescription(),
-                Category.of(requestDto.getCategory()), requestDto.getImage(), loginUser);
+                Category.of(requestDto.getCategory()), image, loginUser);
 
         itemRepository.save(item);
 
@@ -46,7 +60,20 @@ public class ItemService {
         // 수정할 상품 찾기
         Item item = itemRepository.findByIdOrElseThrow(itemId);
 
-        item.updateItem(requestDto);
+        String image = item.getImage();
+
+        if(requestDto.getImage() != null) {
+            try {
+                // 기존 이미지 삭제
+                s3Uploader.deleteImage(item.getImage());
+                // 새 이미지 업로드
+                image = s3Uploader.upload(requestDto.getImage());
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        item.updateItem(requestDto,image);
 
         itemRepository.save(item);
 

@@ -47,7 +47,7 @@ public class Item extends BaseTimeEntity {
         this.user = user;
     }
 
-    public void updateItem(ItemUpdateRequestDto requestDto) {
+    public void updateItem(ItemUpdateRequestDto requestDto,String image) {
         if(requestDto.getName() != null && !requestDto.getName().isEmpty()) {
             this.name = requestDto.getName();
         }
@@ -58,8 +58,6 @@ public class Item extends BaseTimeEntity {
         if(requestDto.getDescription() != null && !requestDto.getDescription().isEmpty()) {
             this.description = requestDto.getDescription();
         }
-        if(requestDto.getImage() != null && !requestDto.getImage().isEmpty()) {
-            this.image = requestDto.getImage();
-        }
+        this.image = image;
     }
 }
