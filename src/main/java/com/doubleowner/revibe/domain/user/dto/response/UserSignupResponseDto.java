@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 public class UserSignupResponseDto {
 
     private final Long userId;
-    private final String nickName;
+    private final String nickname;
     private final String email;
     private final String profileImage;
     private final String address;
