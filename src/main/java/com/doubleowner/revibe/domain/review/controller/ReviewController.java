@@ -40,4 +40,10 @@ public class ReviewController {
         return new ResponseEntity<>(new CommonResponseBody<>("리뷰가 수정되었습니다."), HttpStatus.OK);
 
     }
+
+    @DeleteMapping("/reviews/{id}")
+    public ResponseEntity<CommonResponseBody<Void>> deleteReview(@PathVariable Long id, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        reviewService.deleteReview(id, userDetails.getUser());
+        return new ResponseEntity<>(new CommonResponseBody<>("리뷰가 삭제되었습니다."), HttpStatus.OK);
+    }
 }
