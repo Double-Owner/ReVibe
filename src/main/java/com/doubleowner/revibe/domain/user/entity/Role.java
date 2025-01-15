@@ -10,8 +10,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public enum Role {
 
-    ROLE_ADMIN("ADMIN"),
-    ROLE_USER("USER");
+    ROLE_ADMIN("ROLE_ADMIN"),
+    ROLE_USER("ROLE_USER");
 
     private final String name;
 
@@ -25,6 +25,6 @@ public enum Role {
     }
 
     public List<SimpleGrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority("ROLE_" + this.name()));
+        return List.of(new SimpleGrantedAuthority(this.name()));
     }
 }
