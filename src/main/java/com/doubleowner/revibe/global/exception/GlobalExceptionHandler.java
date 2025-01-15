@@ -11,4 +11,10 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponseDto> handleCommonException(CommonException exception) {
         return ErrorResponseDto.toResponseEntity(exception);
     }
+
+    @ExceptionHandler(value = {ReviewException.class})
+    public ResponseEntity<ErrorResponseDto> handleReviewException(ReviewException exception) {
+        return ErrorResponseDto.toResponseEntity(exception);
+    }
+
 }
