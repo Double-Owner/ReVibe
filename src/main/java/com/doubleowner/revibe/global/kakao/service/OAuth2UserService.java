@@ -2,7 +2,7 @@ package com.doubleowner.revibe.global.kakao.service;
 
 import com.doubleowner.revibe.domain.user.entity.User;
 import com.doubleowner.revibe.domain.user.repository.UserRepository;
-import com.doubleowner.revibe.global.kakao.dto.KOAuthResponseDto;
+import com.doubleowner.revibe.global.kakao.dto.OAuth2ResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -54,7 +54,7 @@ public class OAuth2UserService {
      * 3. 사용자 정보 가져오기
      * @param accessToken
      */
-    public KOAuthResponseDto getUserInfo(String accessToken) {
+    public OAuth2ResponseDto getUserInfo(String accessToken) {
 
         URI builder = UriComponentsBuilder.fromUriString("https://kapi.kakao.com/v2/user/me")
                 .build().toUri();
@@ -70,14 +70,23 @@ public class OAuth2UserService {
 
         Map<String, String> stringObjectMap = parsingUserInfo(response);
 
+        String email = stringObjectMap.get("email");
+
+        User existUser = userRepository.findByEmail(email).orElse(null);
+
+//        if(existUser != null) {
+//            if (!existUser.getLoginMethod().equals("KAKAO")){
+//                throw new IllegalArgumentException("일반 계정으로 등록된 이메일입니다.");
+//            }
+//            return //
+//        }
         User user = new User(
                 stringObjectMap.get("nickname"),
                 stringObjectMap.get("email")
         );
-
         userRepository.save(user);
 
-        return new KOAuthResponseDto(
+        return new OAuth2ResponseDto(
                 user.getNickname(),
                 user.getEmail()
         );

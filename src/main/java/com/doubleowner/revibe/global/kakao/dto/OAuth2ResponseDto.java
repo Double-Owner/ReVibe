@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public class KOAuthResponseDto {
+public class OAuth2ResponseDto {
 
     private final String nickname;
     private final String email;

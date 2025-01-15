@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/login/kakao")
-public class KOAuthController {
+public class OAuth2Controller {
 
     private final OAuth2UserService oAuth2UserService;
 
