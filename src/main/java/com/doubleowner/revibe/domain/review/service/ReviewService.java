@@ -11,6 +11,10 @@ import com.doubleowner.revibe.domain.review.entity.Review;
 import com.doubleowner.revibe.domain.review.repository.ReviewRepository;
 import com.doubleowner.revibe.domain.user.entity.User;
 import com.doubleowner.revibe.global.config.auth.UserDetailsImpl;
+import com.doubleowner.revibe.global.exception.ImageException;
+import com.doubleowner.revibe.global.exception.ReviewException;
+import com.doubleowner.revibe.global.exception.errorCode.ImageErrorCode;
+import com.doubleowner.revibe.global.exception.errorCode.ReviewErrorCode;
 import com.doubleowner.revibe.global.util.S3Uploader;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -19,6 +23,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
+
 
 @Service
 @RequiredArgsConstructor
@@ -40,7 +45,7 @@ public class ReviewService {
         try {
             image = s3Uploader.upload(file);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new ImageException(ImageErrorCode.FAILED_UPLOAD_IMAGE);
         }
 
         Review review = Review.builder()
@@ -66,7 +71,7 @@ public class ReviewService {
 
     @Transactional
     public void updateReview(Long id, UserDetailsImpl userDetails, UpdateReviewRequestDto updateReviewRequestDto, MultipartFile file) {
-        Review review = reviewRepository.findReviewByIdAndUser_Id(id, userDetails.getUser().getId()).orElseThrow(() -> new RuntimeException("작성하신 리뷰를 찾을수 없습니다."));
+        Review review = reviewRepository.findReviewByIdAndUser_Id(id, userDetails.getUser().getId()).orElseThrow(() -> new ReviewException(ReviewErrorCode.REVIEW_NOT_FOUND));
 
         if (file != null) {
             try {
@@ -74,7 +79,7 @@ public class ReviewService {
                 String imageUrl = s3Uploader.upload(file);
                 review.update(imageUrl);
             } catch (IOException e) {
-                throw new RuntimeException(e);
+                throw new ImageException(ImageErrorCode.FAILED_UPLOAD_IMAGE);
             }
         }
 
@@ -84,7 +89,7 @@ public class ReviewService {
 
     @Transactional
     public void deleteReview(Long id, User user) {
-        Review review = reviewRepository.findReviewByIdAndUser_Id(id, user.getId()).orElseThrow(() -> new RuntimeException("작성하신 리뷰를 찾을수 없습니다."));
+        Review review = reviewRepository.findReviewByIdAndUser_Id(id, user.getId()).orElseThrow(() -> new ReviewException(ReviewErrorCode.REVIEW_NOT_FOUND));
 
         reviewRepository.delete(review);
     }
