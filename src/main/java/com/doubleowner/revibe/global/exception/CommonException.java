@@ -30,7 +30,7 @@ public class CommonException extends ParentException{
                 .status(errorCode.getHttpStatus().value())
                 .error(errorCode.getHttpStatus().getReasonPhrase())
                 .code(errorCode.toString())
-                .massage(msg)
+                .message(msg)
                 .build();
     }
 }

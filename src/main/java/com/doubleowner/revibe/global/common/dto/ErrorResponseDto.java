@@ -14,7 +14,7 @@ public class ErrorResponseDto {
     private final int status;
     private final String error;
     private final String code;
-    private final String massage;
+    private final String message;
 
     public static ResponseEntity<ErrorResponseDto> toResponseEntity(ParentException exception) {
         return ResponseEntity
