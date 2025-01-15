@@ -30,12 +30,12 @@ public class ReviewService {
 
     @Transactional
     public ReviewResponseDto write(ReviewRequestDto reviewRequestDto, MultipartFile file, User user) {
-        Payment payment = paymentRepository.findById(reviewRequestDto.getPaymentId()).orElseThrow(() -> new RuntimeException());
+        Payment payment = paymentRepository.findByPaymentId(reviewRequestDto.getPaymentId()).orElseThrow(() -> new RuntimeException());
         if (!user.getEmail().equals(payment.getBuy().getUser().getEmail())) {
             throw new RuntimeException("내가 구매한 상품이 아닙니다.");
         }
 
-        Execution execution = executionRepository.findById(reviewRequestDto.getExecutionId()).orElseThrow(() -> new RuntimeException("내역을 찾을 수 없습니다"));
+        Execution execution = executionRepository.findExecutionById(reviewRequestDto.getExecutionId()).orElseThrow(() -> new RuntimeException("내역을 찾을 수 없습니다"));
         String image;
         try {
             image = s3Uploader.upload(file);
@@ -59,8 +59,9 @@ public class ReviewService {
 
     @Transactional(readOnly = true)
     public List<ReviewResponseDto> findReview(User user) {
-        List<Review> reviews = reviewRepository.findByUserId(user.getId());
-        return reviews.stream().map(Review::toDto).toList();
+
+        List<Review> reviewsByUserId = reviewRepository.findReviewsByUserId(user.getId());
+        return reviewsByUserId.stream().map(Review::toDto).toList();
     }
 
     @Transactional
@@ -69,6 +70,7 @@ public class ReviewService {
 
         if (file != null) {
             try {
+                s3Uploader.deleteImage(review.getReviewImage());
                 String imageUrl = s3Uploader.upload(file);
                 review.update(imageUrl);
             } catch (IOException e) {
@@ -83,6 +85,7 @@ public class ReviewService {
     @Transactional
     public void deleteReview(Long id, User user) {
         Review review = reviewRepository.findReviewByIdAndUser_Id(id, user.getId()).orElseThrow(() -> new RuntimeException("작성하신 리뷰를 찾을수 없습니다."));
+
         reviewRepository.delete(review);
     }
 }
