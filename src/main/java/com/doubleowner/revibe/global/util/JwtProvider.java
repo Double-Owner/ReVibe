@@ -1,7 +1,6 @@
 package com.doubleowner.revibe.global.util;
 
-import com.doubleowner.revibe.domain.user.entity.User;
-import com.doubleowner.revibe.domain.user.repository.UserRepository;
+import com.doubleowner.revibe.domain.user.entity.Role;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import jakarta.persistence.EntityNotFoundException;
@@ -39,11 +38,7 @@ public class JwtProvider {
     @Value("${jwt.refresh.expiry-millis}")
     private Long refreshTokenExpiryMillis;
 
-    private final UserRepository userRepository;
-
-    public Map<String, String> generateTokens(Long userId) throws EntityNotFoundException {
-        User user = this.userRepository.findById(userId)
-                .orElseThrow(() -> new EntityNotFoundException("해당 회원이 존재하지 않습니다."));
+    public Map<String, String> generateTokens(String email, Role role) throws EntityNotFoundException {
 
         Map<String, String> tokens = new HashMap<>();
 
@@ -53,10 +48,10 @@ public class JwtProvider {
         Date accessTokenexpireDate = new Date(currentDate.getTime() + accessTokenExpiryMillis);
 
         String accessToken = Jwts.builder()
-                .subject(user.getEmail())
+                .subject(email)
                 .issuedAt(currentDate)
                 .expiration(accessTokenexpireDate)
-                .claim("role", user.getRole().name())
+                .claim("role", role.getName())
                 .signWith(Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8)), Jwts.SIG.HS256)
                 .compact();
 
@@ -64,10 +59,10 @@ public class JwtProvider {
         Date refreshTokenexpireDate = new Date(currentDate.getTime() + refreshTokenExpiryMillis);
 
         String refreshToken = Jwts.builder()
-                .subject(user.getEmail())
+                .subject(email)
                 .issuedAt(currentDate)
                 .expiration(refreshTokenexpireDate)
-                .claim("role", user.getRole().name())
+                .claim("role", role.getName())
                 .signWith(Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8)), Jwts.SIG.HS256)
                 .compact();
 

@@ -14,6 +14,7 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.*;
 import java.net.HttpURLConnection;
@@ -34,6 +35,7 @@ public class PaymentService {
     private final BuyBidRepository buyBidRepository;
 
     // 카드 결제
+    @Transactional
     public PaymentResponseDto payCard(CardPaymentRequestDto cardPaymentRequestDto) throws IOException, ParseException {
         BuyBid buyBid = buyBidRepository.findById(cardPaymentRequestDto.getBuyBidId()).orElseThrow(() -> new RuntimeException("요청하신 주문건이 없습니다."));
 
