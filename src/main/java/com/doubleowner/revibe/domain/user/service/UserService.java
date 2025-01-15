@@ -100,7 +100,7 @@ public class UserService {
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        Map<String, String> generatedTokens = jwtProvider.generateTokens(user.getId());
+        Map<String, String> generatedTokens = jwtProvider.generateTokens(user.getEmail(), user.getRole());
         String accessToken = generatedTokens.get("access_token");
 
         return new JwtAuthResponse(AuthenticationScheme.BEARER.getName(), accessToken);
