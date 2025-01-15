@@ -2,7 +2,9 @@ package com.doubleowner.revibe.global.kakao.service;
 
 import com.doubleowner.revibe.domain.user.entity.User;
 import com.doubleowner.revibe.domain.user.repository.UserRepository;
-import com.doubleowner.revibe.global.kakao.dto.OAuth2ResponseDto;
+import com.doubleowner.revibe.global.config.dto.JwtAuthResponse;
+import com.doubleowner.revibe.global.util.AuthenticationScheme;
+import com.doubleowner.revibe.global.util.JwtProvider;
 import lombok.RequiredArgsConstructor;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -28,6 +30,7 @@ public class OAuth2UserService {
     private String redirect_uri;
 
     private final UserRepository userRepository;
+    private final JwtProvider jwtProvider;
 
     /**
      * 카카오 서버에서 생성된 accessToken 가져오는 과정
@@ -54,7 +57,7 @@ public class OAuth2UserService {
      * 3. 사용자 정보 가져오기
      * @param accessToken
      */
-    public OAuth2ResponseDto getUserInfo(String accessToken) {
+    public JwtAuthResponse getUserInfo(String accessToken) {
 
         URI builder = UriComponentsBuilder.fromUriString("https://kapi.kakao.com/v2/user/me")
                 .build().toUri();
@@ -69,27 +72,45 @@ public class OAuth2UserService {
                 .exchange(builder, HttpMethod.GET, new HttpEntity<>(null, headers), String.class);
 
         Map<String, String> stringObjectMap = parsingUserInfo(response);
-
-        String email = stringObjectMap.get("email");
-
-        User existUser = userRepository.findByEmail(email).orElse(null);
-
-//        if(existUser != null) {
-//            if (!existUser.getLoginMethod().equals("KAKAO")){
-//                throw new IllegalArgumentException("일반 계정으로 등록된 이메일입니다.");
-//            }
-//            return //
-//        }
         User user = new User(
                 stringObjectMap.get("nickname"),
                 stringObjectMap.get("email")
         );
+
         userRepository.save(user);
 
-        return new OAuth2ResponseDto(
-                user.getNickname(),
-                user.getEmail()
-        );
+        String email = stringObjectMap.get("email");
+
+        User existUser = userRepository.findByEmail(email).orElse(null);
+        if (!existUser.getLoginMethod().equals("KAKAO")) {
+            throw new IllegalArgumentException("일반 계정으로 등록된 이메일입니다.");
+        }
+        return login(existUser);
+    }
+
+    /**
+     * 로그인
+     */
+    public JwtAuthResponse login(User existUser) {
+
+        Map<String, String> generatedTokens = jwtProvider.generateTokens(existUser.getId());
+        String generatedAccessToken = generatedTokens.get("access_token");
+
+        return new JwtAuthResponse(AuthenticationScheme.BEARER.getName(), generatedAccessToken);
+    }
+
+    // 2. 토큰 데이터 파싱
+    private String parsingTokenData(ResponseEntity<String> response) {
+        JSONParser parser = new JSONParser();
+        String accessToken = "";
+        try {
+            JSONObject jsonObject = (JSONObject) parser.parse(response.getBody());
+
+            accessToken = (String) jsonObject.get("access_token");
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
+        return accessToken;
     }
 
     /**
@@ -101,6 +122,8 @@ public class OAuth2UserService {
 
         try {
             JSONObject jsonObject = (JSONObject) parser.parse(response.getBody());
+
+            System.out.println(jsonObject);
 
             JSONObject properties = (JSONObject) jsonObject.get("properties");
             String nickname = (String) properties.get("nickname");
@@ -116,20 +139,6 @@ public class OAuth2UserService {
         }
 
         return userInfo;
-    }
-
-    // 2. 토큰 데이터 파싱
-    private String parsingTokenData(ResponseEntity<String> response) {
-        JSONParser parser = new JSONParser();
-        String accessToken = "";
-        try {
-            JSONObject jsonObject = (JSONObject) parser.parse(response.getBody());
-
-            accessToken = (String) jsonObject.get("access_token");
-        } catch (ParseException e) {
-            throw new RuntimeException(e);
-        }
-        return accessToken;
     }
 }
 
