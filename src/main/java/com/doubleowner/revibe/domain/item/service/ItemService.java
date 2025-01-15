@@ -9,6 +9,8 @@ import com.doubleowner.revibe.domain.item.entity.Category;
 import com.doubleowner.revibe.domain.item.entity.Item;
 import com.doubleowner.revibe.domain.item.repository.ItemRepository;
 import com.doubleowner.revibe.domain.user.entity.User;
+import com.doubleowner.revibe.global.exception.CommonException;
+import com.doubleowner.revibe.global.exception.errorCode.ErrorCode;
 import com.doubleowner.revibe.global.util.S3Uploader;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -31,11 +33,11 @@ public class ItemService {
 
 
     // 상품 등록
+    @Transactional
     public ItemResponseDto createItem(User loginUser, ItemRequestDto requestDto) {
         // 브랜드 찾기
         Brand brand = brandRepository.findByIdOrElseThrow(requestDto.getBrandId());
         String image = null;
-
         // 상품이미지 추가
         if(requestDto.getImage() != null) {
 
@@ -44,6 +46,10 @@ public class ItemService {
             } catch (IOException e){
                 throw new RuntimeException(e);
             }
+        }
+        // 동일한 상품명이 이미 존재할 경우 예외처리
+        if(itemRepository.existsByName(requestDto.getName())){
+            throw new CommonException(ErrorCode.ALREADY_EXIST,"이미 존재하는 상품명 입니다.");
         }
 
         Item item = new Item(brand, requestDto.getName(), requestDto.getDescription(),
