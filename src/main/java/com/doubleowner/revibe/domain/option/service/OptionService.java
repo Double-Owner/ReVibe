@@ -7,6 +7,8 @@ import com.doubleowner.revibe.domain.option.dto.response.OptionResponseDto;
 import com.doubleowner.revibe.domain.option.entity.Option;
 import com.doubleowner.revibe.domain.option.entity.Size;
 import com.doubleowner.revibe.domain.option.repository.OptionRepository;
+import com.doubleowner.revibe.global.exception.CommonException;
+import com.doubleowner.revibe.global.exception.errorCode.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -22,7 +24,10 @@ public class OptionService {
     public OptionResponseDto createOption(Long itemId, OptionRequestDto requestDto) {
         Item item = itemRepository.findByIdOrElseThrow(itemId);
 
-        // TODO 이미 같은 사이즈 있을 때 예외처리
+        //이미 같은 사이즈 있을 때 예외처리
+        if(optionRepository.existsByItemIdAndSize(itemId,Size.of(requestDto.getSize()))){
+            throw new CommonException(ErrorCode.ALREADY_EXIST,"이미 동일한 사이즈가 존재합니다.");
+        }
 
         Option option = new Option(Size.of(requestDto.getSize()), item);
 
