@@ -18,6 +18,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -77,15 +78,15 @@ public class OAuth2UserService {
                 stringObjectMap.get("email")
         );
 
-        userRepository.save(user);
-
         String email = stringObjectMap.get("email");
 
-        User existUser = userRepository.findByEmail(email).orElse(null);
-        if (!existUser.getLoginMethod().equals("KAKAO")) {
-            throw new IllegalArgumentException("일반 계정으로 등록된 이메일입니다.");
+        // db에 정보가 없는 경우
+        User existUser = userRepository.findByEmail(email).orElse(null); //null인 경우 처리를 해줬어야함
+        if (Objects.isNull(existUser)) { //한번도 카카오 로그인을 시도해본적이 없는 사람 (=최초 카카오 로그인 사용자) && 일반 로그인의 회원가입도 하지 않은 경우
+            return login(userRepository.save(user));  //existUser가 있는지 확인하고 (null인 경우) 회원가입
+        } else {
+            return login(existUser);
         }
-        return login(existUser);
     }
 
     /**
@@ -93,7 +94,7 @@ public class OAuth2UserService {
      */
     public JwtAuthResponse login(User existUser) {
 
-        Map<String, String> generatedTokens = jwtProvider.generateTokens(existUser.getId());
+        Map<String, String> generatedTokens = jwtProvider.generateTokens(existUser.getEmail(), existUser.getRole());
         String generatedAccessToken = generatedTokens.get("access_token");
 
         return new JwtAuthResponse(AuthenticationScheme.BEARER.getName(), generatedAccessToken);
