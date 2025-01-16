@@ -8,20 +8,20 @@ public class CartResponseDto {
 
     private final Long cartId;
 
-    private final Long ItemId;
+    private final Long optionId;
 
     private final Long userId;
 
-    public CartResponseDto(Long cartId, Long ItemId, Long userId) {
+    public CartResponseDto(Long cartId,Long optionId, Long userId) {
         this.cartId = cartId;
-        this.ItemId = ItemId;
+        this.optionId = optionId;
         this.userId = userId;
     }
 
     public static CartResponseDto toDto(Cart cart) {
         return new CartResponseDto(
                 cart.getId(),
-                cart.getItem().getId(),
+                cart.getOption().getId(),
                 cart.getUser().getId()
         );
     }

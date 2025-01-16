@@ -1,12 +1,10 @@
 package com.doubleowner.revibe.domain.cart.entity;
 
-import com.doubleowner.revibe.domain.item.entity.Item;
+import com.doubleowner.revibe.domain.option.entity.Option;
 import com.doubleowner.revibe.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.util.List;
 
 @Entity
 @Getter
@@ -18,13 +16,13 @@ public class Cart {
     private Long id;
 
     @ManyToOne
-    private Item item;
+    private Option option;
 
     @ManyToOne
     private User user;
 
-    public Cart(User user, Item item) {
+    public Cart(User user,Option option) {
         this.user = user;
-        this.item = item;
+        this.option = option;
     }
 }

@@ -3,7 +3,6 @@ package com.doubleowner.revibe.domain.cart.repository;
 import com.doubleowner.revibe.domain.cart.entity.Cart;
 import com.doubleowner.revibe.domain.user.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -15,5 +14,5 @@ public interface CartRepository extends JpaRepository<Cart, Long> {
 
     Cart findByIdAndUser(Long id, User loginUser);
 
-    boolean existsByUserIdAndItemId(Long id, Long itemId);
+    boolean existsByUserIdAndOptionId(Long id, Long optionId);
 }
