@@ -5,6 +5,9 @@ on:
   pull_request:
     branches:
       - develop
+  push:
+    branches:
+      - featureGitAction-cicd-구현
 
 # 워크플로우 작업 정의
 jobs:
