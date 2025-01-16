@@ -4,6 +4,8 @@ import com.doubleowner.revibe.domain.item.dto.request.ItemRequestDto;
 import com.doubleowner.revibe.domain.item.dto.request.ItemUpdateRequestDto;
 import com.doubleowner.revibe.domain.item.dto.response.ItemResponseDto;
 import com.doubleowner.revibe.domain.item.service.ItemService;
+import com.doubleowner.revibe.domain.review.dto.ReviewResponseDto;
+import com.doubleowner.revibe.domain.review.service.ReviewService;
 import com.doubleowner.revibe.domain.user.entity.User;
 import com.doubleowner.revibe.global.common.dto.CommonResponseBody;
 import com.doubleowner.revibe.global.config.auth.UserDetailsImpl;
@@ -15,12 +17,15 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/items")
 @RequiredArgsConstructor
 public class ItemController {
 
     private final ItemService itemService;
+    private final ReviewService reviewService;
 
     // 상품 등록
     @PostMapping
@@ -62,5 +67,13 @@ public class ItemController {
     public ResponseEntity<CommonResponseBody<ItemResponseDto>> getItemDetail(@PathVariable Long itemId){
         ItemResponseDto responseDto = itemService.getItem(itemId);
         return ResponseEntity.status(HttpStatus.OK).body((new CommonResponseBody<>("상품을 조회했습니다.",responseDto)));
+    }
+
+    // todo 페이지네이션
+    @GetMapping("/{itemId}/reviews")
+    public ResponseEntity<CommonResponseBody<List<ReviewResponseDto>>> getItemReviews(@PathVariable Long itemId) {
+        List<ReviewResponseDto> responseDto = reviewService.findItemReviews(itemId);
+        return ResponseEntity.status(HttpStatus.OK).body((new CommonResponseBody<>("리뷰를 조회 했습니다.",responseDto)));
+
     }
 }

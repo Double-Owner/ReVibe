@@ -144,4 +144,8 @@ public class ReviewService {
 
     }
 
+    public List<ReviewResponseDto> findItemReviews(Long itemId) {
+        List<Review> reviews = reviewRepository.findReviewsByItem_Id(itemId);
+        return reviews.stream().map(this::toDto).toList();
+    }
 }
