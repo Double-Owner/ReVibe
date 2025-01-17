@@ -11,7 +11,7 @@ on:
 
 # 워크플로우 작업 정의
 jobs:
-  build:
+  docker-build-and-push:
     name: Build and Test
     runs-on: ubuntu-latest
 
@@ -35,3 +35,30 @@ jobs:
          file: ./Dockerfile
          push: true
          tags: ${{ secrets.DOCKERHUB_USERNAME }}/${{ vars.DOCKER_IMAGE_TAG_NAME}}:latest
+
+  deploy-to-ec2:
+    needs: docker-build-and-push
+    runs-on: ubuntu-latest
+    # https://github.com/marketplace/actions/ssh-remote-commands
+    steps:
+      - name: Deploy to EC2
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_KEY }}
+          script: |
+            # 기존 컨테이너 중지 및 제거
+            CONTAINER_ID=$(sudo docker ps -q --filter "publish=8080-8080")
+            if [ ! -z "$CONTAINER_ID" ]; then
+            sudo docker stop $CONTAINER_ID
+            sudo docker rm $CONTAINER_ID
+            fi
+            
+            # 새 이미지 Pull 및 실행
+            sudo docker pull ${{ vars.DOCKERHUB_USERNAME }}/${{ vars.DOCKER_IMAGE_TAG_NAME }}:latest
+            sudo docker run -d -p 8080:8080 \
+            -e DB_USERNAME=${{secrets.DB_USERNAME}} \
+            -e DB_PASSWORD=${{secrets.DB_PASSWORD}} \
+            -e DB_URL=${{secrets.DB_URL}} \
+            ${{ vars.DOCKERHUB_USERNAME }}/${{ vars.DOCKER_IMAGE_TAG_NAME }}:latest
