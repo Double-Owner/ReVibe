@@ -64,4 +64,4 @@ jobs:
             -e DB_USERNAME=${{secrets.DB_USERNAME}} \
             -e DB_PASSWORD=${{secrets.DB_PASSWORD}} \
             -e DB_URL=${{secrets.DB_URL}} \
-            hyojunpyeon/revibe:latest
+            ${{ vars.DOCKERHUB_USERNAME }}/test:latest
