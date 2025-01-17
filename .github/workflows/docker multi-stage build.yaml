@@ -48,6 +48,18 @@ jobs:
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_KEY }}
           script: |
+            # Docker 설치 확인 및 필요시 설치
+            if ! command -v docker &> /dev/null
+            then
+            echo "Docker is not installed. Installing now..."
+            curl -fsSL https://get.docker.com -o get-docker.sh
+            sudo sh get-docker.sh
+            sudo docker --version
+            echo "Docker installed successfully."
+            else
+            echo "Docker is already installed."
+            fi
+            
             # 기존 컨테이너 중지 및 제거
             CONTAINER_ID=$(sudo docker ps -q --filter "publish=8080-8080")
             if [ ! -z "$CONTAINER_ID" ]; then
