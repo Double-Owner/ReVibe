@@ -5,3 +5,7 @@ Error : Error: Username required
 2차 변경
 Error : Error: Username required
 - DOCKERHUB_USERNAME 추가
+
+3차 변경
+Error: Error response from daemon: Get "https://registry-1.docker.io/v2/": unauthorized: your account must log in with a Personal Access Token (PAT) - learn more at docs.docker.com/go/access-tokens
+- DOCKER_TOKEN 추가
