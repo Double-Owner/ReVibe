@@ -59,12 +59,6 @@ public class UserController {
 
     /**
      * 회원 삭제
-     * @param requestDto - 회원 삭제 정보 요청
-     * @param userDetails  - 현재 요청 보낸 사용자 식별
-     * @param httpServletRequest
-     * @param httpServletResponse
-     * @param authentication - 현재 인증된 사용자에 대한 정보
-     * @return - 회원 삭제 응답
      */
     @DeleteMapping()
     public ResponseEntity<CommonResponseBody<Void>> deleteUser(
