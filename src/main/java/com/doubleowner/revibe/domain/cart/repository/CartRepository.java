@@ -11,9 +11,10 @@ import java.util.List;
 @Repository
 public interface CartRepository extends JpaRepository<Cart, Long> {
 
+    @Query("SELECT c FROM Cart c JOIN FETCH c.option o JOIN FETCH o.item i JOIN FETCH c.user u WHERE c.user = :loginUser")
     List<Cart> findAllByUser(User loginUser);
 
-    Cart findByIdAndUser(Long id, User loginUser);
+    Cart findByIdAndUser(Long cartId, User loginUser);
 
-    boolean existsByUserIdAndItemId(Long id, Long itemId);
+    boolean existsByUserIdAndOptionId(Long id, Long itemId);
 }

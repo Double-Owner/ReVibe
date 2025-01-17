@@ -20,8 +20,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
-
 import java.io.IOException;
 
 @Service
@@ -90,7 +88,7 @@ public class ItemService {
     // 상품 전체 조회
     public Page<ItemResponseDto> getAllItems(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<Item> items = itemRepository.findAll(pageable);
+        Page<Item> items = itemRepository.findAllWithBrandAndUser(pageable);
 
         return items.map(ItemResponseDto::toDto);
     }

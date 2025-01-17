@@ -17,18 +17,18 @@ public class ItemResponseDto {
 
     private String image;
 
-    private Long brandId;
+    private String brandName;
 
-    private Long userId;
+    private String adminName;
 
-    public ItemResponseDto(Long itemId, String name, String description, Category category, String image, Long brandId, Long userId) {
+    public ItemResponseDto(Long itemId, String name, String description, Category category, String image, String brandName, String adminName) {
         this.itemId = itemId;
         this.name = name;
         this.description = description;
         this.category = category;
         this.image = image;
-        this.brandId = brandId;
-        this.userId = userId;
+        this.brandName = brandName;
+        this.adminName = adminName;
     }
 
     public static ItemResponseDto toDto(Item item) {
@@ -38,8 +38,8 @@ public class ItemResponseDto {
                 item.getDescription(),
                 item.getCategory(),
                 item.getImage(),
-                item.getBrand().getId(),
-                item.getUser().getId()
+                item.getBrand().getName(),
+                item.getUser().getNickname()
         );
     }
 
