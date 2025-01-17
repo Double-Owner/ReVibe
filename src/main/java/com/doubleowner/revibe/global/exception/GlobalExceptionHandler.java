@@ -12,9 +12,20 @@ public class GlobalExceptionHandler {
         return ErrorResponseDto.toResponseEntity(exception);
     }
 
+    @ExceptionHandler(value = {UserException.class})
+    public ResponseEntity<ErrorResponseDto> handleReviewException(UserException exception) {
+        return ErrorResponseDto.toResponseEntity(exception);
+    }
+
+    @ExceptionHandler(value = {AccountException.class})
+    public ResponseEntity<ErrorResponseDto> handleReviewException(AccountException exception) {
+        return ErrorResponseDto.toResponseEntity(exception);
+    }
+
     @ExceptionHandler(value = {ReviewException.class})
     public ResponseEntity<ErrorResponseDto> handleReviewException(ReviewException exception) {
         return ErrorResponseDto.toResponseEntity(exception);
     }
+
 
 }
