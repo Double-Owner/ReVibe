@@ -17,7 +17,6 @@ public class OAuth2Controller {
 
     /**
      * 카카오 소셜 로그인 요청 API
-     * https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=562892494e966ea0729fe09e0402ea22&redirect_uri=http://localhost:8080/login/kakao
      * @param code
      */
     @GetMapping
