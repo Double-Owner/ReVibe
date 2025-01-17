@@ -14,7 +14,7 @@ jwt:
         expiry-millis: 3600000
     refresh:
         expiry-millis: 40000000
-    secret: 7JWI64WV7ZWY7IS47JqUIOyngOq4iCDrhIjrrLQg7KG466Ck7JqUIOyCtOugpOyjvOyEuOyalA==
+    secret: ${JWT_SECRET_KEY}
 logging:
     level:
         com:

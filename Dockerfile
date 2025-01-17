@@ -12,5 +12,4 @@ FROM openjdk:17
 
 COPY --from=builder /apps/build/libs/app.jar /app.jar
 
-#COPY ${JAR_FILE_PATH} app.jar
 ENTRYPOINT ["java", "-jar", "app.jar"]

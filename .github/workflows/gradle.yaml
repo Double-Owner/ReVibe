@@ -16,21 +16,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-#      - name: Build and Test with Gradle
-#        run: ./gradlew bootJar
-#              # Docker Image 빌드
-#      - name: Build the Docker image
-#        run: docker build . --file Dockerfile --tag ${{ secrets.DOCKERHUB_USERNAME }}/revibe:latest
-#
-#       # Docker 로큰
-#      - name: Login to Docker Hub using Access Token
-#        run: echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
-#
-#      # 이미지 푸시
-#      - name: Push the Docker image
-#        run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/revibe:latest
-
-
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
 
@@ -49,27 +34,4 @@ jobs:
         with:
          file: ./Dockerfile
          push: true
-         tags: ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKER_IMAGE_TAG_NAME}}:latest
-
-      # 5. 도커 이미지 빌드 및 푸시
-#      - name: Docker Build and Push
-#        env:
-#          DOCKER_USER: ${{ secrets.DOCKER_USERNAME }}
-#          DOCKER_PASS: ${{ secrets.DOCKER_PASSWORD }}
-#          DATABASE_URL: ${{ secrets.DATABASE_URL }}
-#          DATABASE_ID: ${{ secrets.DATABASE_ID }}
-#          DATABASE_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
-#          DOCKER_HUB_REPOSITORY: ${{ secrets.DOCKER_HUB_REPOSITORY }}
-#        run: |
-#          echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
-#
-#          if [ "${{ github.base_ref }}" = "featureGitAction-cicd-구현" ]; then
-#            DOCKER_TAG="featureGitAction-cicd-구현"
-#          fi
-#
-#          docker build \
-#            --build-arg DATABASE_URL="$DATABASE_URL" \
-#            --build-arg DATABASE_ID="$DATABASE_ID" \
-#            --build-arg DATABASE_PASSWORD="$DATABASE_PASSWORD" \
-#            -t "$DOCKER_HUB_REPOSITORY:$DOCKER_TAG" .
-#          docker push "$DOCKER_HUB_REPOSITORY:$DOCKER_TAG"
+         tags: ${{ secrets.DOCKERHUB_USERNAME }}/${{ vars.DOCKER_IMAGE_TAG_NAME}}:latest
