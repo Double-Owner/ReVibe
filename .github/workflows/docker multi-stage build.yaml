@@ -1,4 +1,4 @@
-name: Java CI with Gradle
+name: docker multi-stage build
 
 # 워크플로우 실행 조건
 on:
