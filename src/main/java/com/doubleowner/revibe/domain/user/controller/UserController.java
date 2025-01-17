@@ -10,6 +10,8 @@ import com.doubleowner.revibe.domain.user.service.UserService;
 import com.doubleowner.revibe.global.common.dto.CommonResponseBody;
 import com.doubleowner.revibe.global.config.auth.UserDetailsImpl;
 import com.doubleowner.revibe.global.config.dto.JwtAuthResponse;
+import com.doubleowner.revibe.global.exception.UserException;
+import com.doubleowner.revibe.global.exception.errorCode.UserErrorCode;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
@@ -75,7 +77,7 @@ public class UserController {
         userService.deleteUser(userDetails.getUsername(),requestDto);
 
         if (authentication == null && !authentication.isAuthenticated()) {
-            throw new IllegalArgumentException("회원을 삭제할 수 없습니다.");
+            throw new UserException(UserErrorCode.USER_DELETE_NOT_ALLOWED);
         }
         new SecurityContextLogoutHandler().logout(httpServletRequest, httpServletResponse, null);
 
