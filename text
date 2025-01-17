@@ -1,3 +1,7 @@
 1차 변경
 Error : Error: Username required
 - secret에서 Username 변경
+
+2차 변경
+Error : Error: Username required
+- DOCKERHUB_USERNAME 추가
