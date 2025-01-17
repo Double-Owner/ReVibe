@@ -6,6 +6,8 @@ import com.doubleowner.revibe.domain.account.entity.Account;
 import com.doubleowner.revibe.domain.account.repository.AccountRepository;
 import com.doubleowner.revibe.domain.user.entity.User;
 import com.doubleowner.revibe.domain.user.repository.UserRepository;
+import com.doubleowner.revibe.global.exception.AccountException;
+import com.doubleowner.revibe.global.exception.errorCode.AccountErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,13 +35,13 @@ public class AccountService {
     @Transactional
     public AccountResponseDto findAccount(User user, Long id) {
         User findUserAccount = userRepository.findById(user.getId())
-                .orElseThrow(() -> new RuntimeException("계좌 정보를 찾을 수 없습니다."));
+                .orElseThrow(() -> new AccountException(AccountErrorCode.ACCOUNT_NOT_FOUND));
 
         Account account = accountRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("계좌 정보를 찾을 수 없습니다."));
+                .orElseThrow(() -> new AccountException(AccountErrorCode.ACCOUNT_NOT_FOUND));
 
         if(!findUserAccount.getAccount().equals(account)){
-            throw new RuntimeException("해당 계좌는 사용자의 계좌가 아닙니다");
+            throw new AccountException(AccountErrorCode.INVALID_ACCOUNT_NUMBER);
         }
 
         return AccountResponseDto.toDto(account);
@@ -49,7 +51,7 @@ public class AccountService {
     @Transactional
     public AccountResponseDto updateAccount(Long id ,User user, AccountRequestDto requestDto) {
         Account account = accountRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("계좌 정보를 찾을 수 없습니다."));
+                .orElseThrow(() -> new AccountException(AccountErrorCode.ACCOUNT_NOT_FOUND));
 
         account.update(requestDto);
         return AccountResponseDto.toDto(account);
@@ -58,7 +60,7 @@ public class AccountService {
     @Transactional
     public void deleteAccount(User user) {
         User finduser = userRepository.findByEmail(user.getEmail())
-                .orElseThrow(() -> new RuntimeException("계좌 삭제에 실패했습니다. ID를 다시 입력해주세요."));
+                .orElseThrow(() -> new AccountException(AccountErrorCode.REJECT_ACCOUNT_DELETE));
 
         finduser.deletedAccount();
     }
