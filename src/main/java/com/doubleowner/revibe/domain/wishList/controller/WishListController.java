@@ -15,13 +15,13 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/wishlists")
+@RequestMapping("/api")
 public class WishListController {
 
     private final WishListService wishListService;
 
     // 관심상품 등록.해제
-    @PostMapping("/{itemId}")
+    @PostMapping("/items/{itemId}/wishlists")
     public ResponseEntity<CommonResponseBody> doWishList(
             @PathVariable Long itemId,
             @AuthenticationPrincipal UserDetailsImpl userDetails
@@ -35,7 +35,7 @@ public class WishListController {
     }
 
     // 관심상품 목록 조회
-    @GetMapping
+    @GetMapping("/wishlists")
     public ResponseEntity<CommonResponseBody<List<WishListResponseDto>>> getWishList(
             @AuthenticationPrincipal UserDetailsImpl userDetails)
     {
