@@ -54,7 +54,7 @@ jobs:
             fi
             
             sudo docker pull ${{ vars.DOCKERHUB_USERNAME }}/${{ vars.DOCKER_IMAGE_TAG_NAME }}:latest
-            sudo docker run -d -p 8080:8080 \
+            sudo docker run -d -p 8080:8080 hyojunpyeon/revibe\
             -e DB_USERNAME=${{secrets.DB_USERNAME}} \
             -e DB_PASSWORD=${{secrets.DB_PASSWORD}} \
             -e DB_URL=${{secrets.DB_URL}} \
