@@ -86,12 +86,12 @@ jobs:
           script: |
             echo "$DOCKER_PASS" | sudo docker login -u "$DOCKER_USER" --password-stdin
             sudo docker rm -f server 
-            sudo docker pull "${{secrets.DOCKER_HUB_REPOSITORY}}:latest"
+            sudo docker pull "${{vars.DOCKERHUB_USERNAME}}:latest"
             sudo docker run -d \
               --name server \
               -e TZ=Asia/Seoul \
               -e DATABASE_URL=${{ secrets.DB_URL }} \
               -e DATABASE_USERNAME=${{ secrets.DOCKERHUB_USERNAME }} \
               -e DATABASE_PASSWORD=${{ secrets.DOCKER_PASSWORD }} \
-              -p 8080:8080 "${{secrets.DOCKER_HUB_REPOSITORY}}":latest
+              -p 8080:8080 "${{vars.DOCKERHUB_USERNAME}}":latest
 
