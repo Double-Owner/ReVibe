@@ -8,11 +8,14 @@ import com.doubleowner.revibe.domain.payment.entity.PayMethod;
 import com.doubleowner.revibe.domain.payment.entity.PayStatus;
 import com.doubleowner.revibe.domain.payment.entity.Payment;
 import com.doubleowner.revibe.domain.payment.repository.PaymentRepository;
+import com.doubleowner.revibe.domain.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,6 +25,7 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -29,7 +33,7 @@ import java.util.Map;
 public class PaymentService {
 
     @Value("${secret.key}")
-    private String secretKey;
+    private String cardSecretKey;
 
     private final PaymentRepository paymentRepository;
     private final BuyBidRepository buyBidRepository;
@@ -54,7 +58,7 @@ public class PaymentService {
 
         Payment save = paymentRepository.save(payment);
 
-        return Payment.toDto(save);
+        return toDto(save);
 
     }
 
@@ -63,7 +67,7 @@ public class PaymentService {
 
         URL url = new URL("https://api.tosspayments.com/v1/payments/key-in");
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-        connection.setRequestProperty("Authorization", "Basic " + Base64.getEncoder().encodeToString((secretKey + ":").getBytes(StandardCharsets.UTF_8)));
+        connection.setRequestProperty("Authorization", "Basic " + Base64.getEncoder().encodeToString((cardSecretKey + ":").getBytes(StandardCharsets.UTF_8)));
         connection.setRequestProperty("Content-Type", "application/json");
         connection.setRequestMethod("POST");
         connection.setDoOutput(true);
@@ -99,4 +103,77 @@ public class PaymentService {
         return result;
 
     }
+
+    public PaymentResponseDto paytoss(String secretKey, String paymentType, String orderId, String paymentKey, String amount) {
+        JSONObject jsonBody = new JSONObject();
+        jsonBody.put("paymentType", paymentType);
+        jsonBody.put("orderId", orderId);
+        jsonBody.put("paymentKey", paymentKey);
+        jsonBody.put("amount", amount);
+        JSONObject object;
+        try {
+            object = sendRequest(jsonBody, secretKey, "https://api.tosspayments.com/v1/payments/confirm");
+            // 받아온 paymentData 파싱하기
+            Map<String, Object> stringObjectMap = parsingData(object);
+
+            // 파싱한 paymentData와 buyBid 객체  값 DB에 넣기
+            Payment payment = Payment.builder()
+                    .payMethod(PayMethod.TOSS_PAY)
+                    .tossId(stringObjectMap.get("paymentKey").toString())
+                    .payStatus(PayStatus.PAY_SUCCESS)
+                    .build();
+
+            Payment save = paymentRepository.save(payment);
+
+            return toDto(save);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+
+    }
+
+    private JSONObject sendRequest(JSONObject requestData, String secretKey, String urlString) throws IOException {
+        HttpURLConnection connection = createConnection(secretKey, urlString);
+        try (OutputStream os = connection.getOutputStream()) {
+            os.write(requestData.toString().getBytes(StandardCharsets.UTF_8));
+        }
+        try (InputStream responseStream = connection.getResponseCode() == 200 ? connection.getInputStream() : connection.getErrorStream();
+             Reader reader = new InputStreamReader(responseStream, StandardCharsets.UTF_8)) {
+            return (JSONObject) new JSONParser().parse(reader);
+        } catch (Exception e) {
+            JSONObject errorResponse = new JSONObject();
+            errorResponse.put("error", "Error reading response");
+            return errorResponse;
+        }
+    }
+
+    private HttpURLConnection createConnection(String secretKey, String urlString) throws IOException {
+        URL url = new URL(urlString);
+        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+        connection.setRequestProperty("Authorization", "Basic " + Base64.getEncoder().encodeToString((secretKey + ":").getBytes(StandardCharsets.UTF_8)));
+        connection.setRequestProperty("Content-Type", "application/json");
+        connection.setRequestMethod("POST");
+        connection.setDoOutput(true);
+        return connection;
+    }
+
+    public List<PaymentResponseDto> getHistory(User user, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+
+        List<Payment> paymentHistory = paymentRepository.findPaymentByUserId(user.getId(), pageable);
+        return paymentHistory.stream().map(this::toDto).toList();
+
+
+    }
+
+    private PaymentResponseDto toDto(Payment payment) {
+        return PaymentResponseDto
+                .builder()
+                .paymentId(payment.getId())
+                .payMethod(payment.getPayMethod().name())
+                .build();
+    }
+
+
 }
