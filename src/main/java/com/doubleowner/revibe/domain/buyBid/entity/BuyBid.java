@@ -32,6 +32,7 @@ public class BuyBid {
 
     @Column(nullable = false, updatable = false)
     @CreationTimestamp
+    @Builder.Default
     private LocalDateTime createdAt = LocalDateTime.now();
 
     @ManyToOne
