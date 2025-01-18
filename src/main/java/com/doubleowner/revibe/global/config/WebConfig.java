@@ -1,5 +1,6 @@
 package com.doubleowner.revibe.global.config;
 
+import com.doubleowner.revibe.domain.user.entity.Role;
 import com.doubleowner.revibe.global.config.filter.JwtAuthFilter;
 import jakarta.servlet.DispatcherType;
 import lombok.RequiredArgsConstructor;
@@ -26,8 +27,7 @@ public class WebConfig {
     private final AuthenticationEntryPoint authenticationEntryPoint;
     private final AccessDeniedHandler accessDeniedHandler;
 
-    private static final String[] WHITE_LIST = { "/api/users/**", "/api/items",
-            "/api/accounts/**", "/oauth2/**", "/login/oauth2/code/**", "/oauth/authorize", "/**"};
+    private static final String[] WHITE_LIST = { "/api/users/**", "/api/reviews", "/oauth2/**", "/api/items", "/login/oauth2/code/**", "/oauth/authorize"};
 
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -38,7 +38,9 @@ public class WebConfig {
                         .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
                         .dispatcherTypeMatchers(DispatcherType.FORWARD, DispatcherType.INCLUDE, DispatcherType.ERROR).permitAll()
                         // path 별로 접근이 가능한 권한 설정
-                        .requestMatchers("/**").hasAnyRole("USER", "ADMIN")
+                        .requestMatchers("/api/accounts/**", "/api/buy-bids/**", "/api/sell-bids/**", "/api/carts/**",
+                                "/api/items/{itemId}/wishlists","/api/wishlists", "/api/v1/payments" ).hasRole(Role.ROLE_USER.getName())
+                        .requestMatchers("/api/brands","/api/items/{itemId}/options").hasRole(Role.ROLE_ADMIN.getName())
                         .anyRequest().authenticated()
                 )
                 .exceptionHandling(handler -> handler
@@ -47,7 +49,7 @@ public class WebConfig {
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider)
-                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class); // 변경된 부분
+                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }

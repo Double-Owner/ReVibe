@@ -1,7 +1,10 @@
 package com.doubleowner.revibe.global.exception;
 
+import com.doubleowner.revibe.global.common.dto.CommonResponseBody;
 import com.doubleowner.revibe.global.common.dto.ErrorResponseDto;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -27,5 +30,11 @@ public class GlobalExceptionHandler {
         return ErrorResponseDto.toResponseEntity(exception);
     }
 
+    @ExceptionHandler(AccessDeniedException.class)
+    protected ResponseEntity<CommonResponseBody<Void>> handleAccessDeniedException(AccessDeniedException e) {
+        return ResponseEntity
+                .status(HttpStatus.UNAUTHORIZED)
+                .body(new CommonResponseBody<>(e.getMessage()));
+    }
 
 }
