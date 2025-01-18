@@ -11,6 +11,10 @@ import com.doubleowner.revibe.domain.user.entity.User;
 import com.doubleowner.revibe.domain.user.repository.UserRepository;
 import com.doubleowner.revibe.global.config.auth.UserDetailsImpl;
 import com.doubleowner.revibe.global.config.dto.JwtAuthResponse;
+import com.doubleowner.revibe.global.exception.ImageException;
+import com.doubleowner.revibe.global.exception.UserException;
+import com.doubleowner.revibe.global.exception.errorCode.ImageErrorCode;
+import com.doubleowner.revibe.global.exception.errorCode.UserErrorCode;
 import com.doubleowner.revibe.global.util.AuthenticationScheme;
 import com.doubleowner.revibe.global.util.JwtProvider;
 import com.doubleowner.revibe.global.util.S3Uploader;
@@ -46,7 +50,7 @@ public class UserService {
 
         boolean duplicated = this.userRepository.findByEmail(requestDto.getEmail()).isPresent();
         if (duplicated) {
-            throw new DuplicateKeyException("중복된 이메일입니다.");
+            throw new UserException(UserErrorCode.DUPLICATED_EMAIL);
         }
 
         String profileImage = null;
@@ -54,7 +58,7 @@ public class UserService {
             try{
                 profileImage = s3Uploader.upload(requestDto.getProfileImage());
             } catch (IOException e){
-                throw new RuntimeException(e);
+                throw new ImageException(ImageErrorCode.FAILED_UPLOAD_IMAGE);
             }
         }
 
@@ -90,7 +94,7 @@ public class UserService {
     public JwtAuthResponse login(UserLoginRequestDto requestDto) {
 
         User user = userRepository.findByEmail(requestDto.getEmail())
-                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다." ));
+                .orElseThrow(() -> new UserException(UserErrorCode.USER_NOT_FOUND));
 
         Authentication authentication = this.authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
@@ -113,10 +117,10 @@ public class UserService {
     public void deleteUser(String username, UserDeleteRequestDto requestDto) {
 
         User findUser = userRepository.findByEmail(username)
-                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다"));
+                .orElseThrow(() -> new UserException(UserErrorCode.USER_NOT_FOUND));
 
         if (!passwordEncoder.matches(requestDto.getPassword(), findUser.getPassword())) {
-            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+            throw new UserException(UserErrorCode.INVALID_PASSWORD);
         }
 
         String profileImage = findUser.getProfileImage();
@@ -124,7 +128,7 @@ public class UserService {
             try {
                 s3Uploader.deleteImage(findUser.getProfileImage());
             } catch (IOException e) {
-                throw new RuntimeException(e);
+                throw new ImageException(ImageErrorCode.FAILED_UPLOAD_IMAGE);
             }
         }
         findUser.deletedUser();
@@ -138,10 +142,10 @@ public class UserService {
                                                 UserDetailsImpl userDetails) {
 
         User findUser = userRepository.findByEmail(userDetails.getUsername())
-                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다"));
+                .orElseThrow(() -> new UserException(UserErrorCode.USER_NOT_FOUND));
 
         if (!passwordEncoder.matches(requestDto.getPassword(), findUser.getPassword())) {
-            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+            throw new UserException(UserErrorCode.INVALID_PASSWORD);
         }
 
         String profileImage = findUser.getProfileImage();
@@ -152,7 +156,7 @@ public class UserService {
                 // 새 이미지 업로드
                 profileImage = s3Uploader.upload(requestDto.getProfileImage());
             } catch (IOException e) {
-                throw new RuntimeException(e);
+                throw new ImageException(ImageErrorCode.FAILED_UPLOAD_IMAGE);
             }
         }
 
@@ -182,7 +186,7 @@ public class UserService {
     public UserProfileResponseDto getProfile(UserDetailsImpl userDetails) {
 
         User findUser = userRepository.findByEmail(userDetails.getUsername())
-                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다"));
+                .orElseThrow(() -> new UserException(UserErrorCode.USER_NOT_FOUND));
 
         return new UserProfileResponseDto(
                 findUser.getId(),

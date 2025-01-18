@@ -25,7 +25,7 @@ public class AccountController {
 
         AccountResponseDto accountResponseDto = accountService.create(userDetails.getUser(), dto);
 
-        return new ResponseEntity<>(new CommonResponseBody<>("계좌 등록완료", accountResponseDto), HttpStatus.CREATED);
+        return new ResponseEntity<>(new CommonResponseBody<>("계좌 등록이 완료되었습니다.", accountResponseDto), HttpStatus.CREATED);
 
     }
 
@@ -36,7 +36,7 @@ public class AccountController {
 
         AccountResponseDto accountResponseDto = accountService.findAccount(userDetails.getUser(), id);
 
-        return new ResponseEntity<>(new CommonResponseBody<>("나의 계좌 정보 ", accountResponseDto), HttpStatus.OK);
+        return new ResponseEntity<>(new CommonResponseBody<>("나의 계좌 조회를 성공하였습니다.", accountResponseDto), HttpStatus.OK);
     }
 
     @PatchMapping("/{id}")
@@ -46,7 +46,7 @@ public class AccountController {
 
         AccountResponseDto accountResponseDto = accountService.updateAccount(id, userDetails.getUser(), dto);
 
-        return new ResponseEntity<>(new CommonResponseBody<>("나의 계좌 수정 ", accountResponseDto), HttpStatus.OK);
+        return new ResponseEntity<>(new CommonResponseBody<>("나의 계좌 정보를 수정하였습니다.", accountResponseDto), HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
@@ -56,6 +56,6 @@ public class AccountController {
 
         accountService.deleteAccount(userDetails.getUser());
 
-        return new ResponseEntity<>(new CommonResponseBody<>("계좌 삭제완료"), HttpStatus.OK);
+        return new ResponseEntity<>(new CommonResponseBody<>("나의 계좌 삭제가 완료되었습니다."), HttpStatus.OK);
     }
 }

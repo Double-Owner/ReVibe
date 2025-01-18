@@ -3,6 +3,7 @@ package com.doubleowner.revibe.domain.item.service;
 import com.doubleowner.revibe.domain.brand.entity.Brand;
 import com.doubleowner.revibe.domain.brand.repository.BrandRepository;
 import com.doubleowner.revibe.domain.item.dto.request.ItemRequestDto;
+import com.doubleowner.revibe.domain.item.dto.request.ItemSearchRequestDto;
 import com.doubleowner.revibe.domain.item.dto.request.ItemUpdateRequestDto;
 import com.doubleowner.revibe.domain.item.dto.response.ItemResponseDto;
 import com.doubleowner.revibe.domain.item.entity.Category;
@@ -20,8 +21,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
-
 import java.io.IOException;
 
 @Service
@@ -88,9 +87,9 @@ public class ItemService {
     }
 
     // 상품 전체 조회
-    public Page<ItemResponseDto> getAllItems(int page, int size) {
+    public Page<ItemResponseDto> getAllItems(int page, int size, ItemSearchRequestDto requestDto) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<Item> items = itemRepository.findAll(pageable);
+        Page<Item> items = itemRepository.searchItems(pageable,requestDto.getKeyword(), requestDto.getBrand());
 
         return items.map(ItemResponseDto::toDto);
     }
