@@ -53,45 +53,14 @@ jobs:
             sudo docker rm $CONTAINER_ID
             fi
             
-            sudo docker pull ${{ vars.DOCKERHUB_USERNAME }}/${{ vars.DOCKER_IMAGE_TAG_NAME }}:latest
-            sudo docker run -d -p 8080:8080 hyojunpyeon/revibe\
-            -e DB_USERNAME=${{secrets.DB_USERNAME}} \
-            -e DB_PASSWORD=${{secrets.DB_PASSWORD}} \
-            -e DB_URL=${{secrets.DB_URL}} \
-            ${{ vars.DOCKERHUB_USERNAME }}/test:latest
-            
+            sudo docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" -p "${{ secrets.DOCKERHUB_TOKEN }}"
+            sudo docker pull ${{ secrets.DOCKERHUB_USERNAME }}/${{ vars.DOCKER_IMAGE_TAG_NAME }}:latest
 
-      # 6. AWS 인증
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ap-northeast-2
-
-      # 7. AWS 배포
-      - name: SSH Connection and Deploy to Server
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.EC2_HOST }}
-          username: ${{ secrets.EC2_USER }}
-          key: ${{ secrets.EC2_KEY }}
-          port: 22
-          DOCKER_USER: ${{ vars.DOCKERHUB_USERNAME }}
-          DOCKER_PASS: ${{ secrets.DOCKER_PASSWORD }}
-          DATABASE_URL: ${{ secrets.DB_URL }}
-          DATABASE_USERNAME: ${{ secrets.DB_USERNAME }}
-          DATABASE_PASSWORD: ${{ secrets.DB_PASSWORD }}
-
-          script: |
-            echo "$DOCKER_PASS" | sudo docker login -u "$DOCKER_USER" --password-stdin
-            sudo docker rm -f server 
-            sudo docker pull "${{secrets.DOCKER_HUB_REPOSITORY}}:latest"
             sudo docker run -d \
               --name server \
-              -e TZ=Asia/Seoul \
-              -e DATABASE_URL=${{ secrets.DB_URL }} \
-              -e DATABASE_USERNAME=${{ secrets.DOCKERHUB_USERNAME }} \
-              -e DATABASE_PASSWORD=${{ secrets.DOCKER_PASSWORD }} \
-              -p 8080:8080 "${{secrets.DOCKER_HUB_REPOSITORY}}":latest
+              -p 8080:8080 \
+              -e DB_URL=${{ secrets.DB_URL }} \
+              -e DB_USERNAME=${{ secrets.DB_USERNAME }} \
+              -e DB_PASSWORD=${{ secrets.DB_PASSWORD }} \
+              ${{ secrets.DOCKERHUB_USERNAME }}/${{ vars.DOCKER_IMAGE_TAG_NAME }}:latest
 
