@@ -1,0 +1,15 @@
+1차 변경
+Error : Error: Username required
+- secret에서 Username 변경
+
+2차 변경
+Error : Error: Username required
+- DOCKERHUB_USERNAME 추가
+
+3차 변경
+Error: Error response from daemon: Get "https://registry-1.docker.io/v2/": unauthorized: your account must log in with a Personal Access Token (PAT) - learn more at docs.docker.com/go/access-tokens
+- DOCKER_TOKEN 추가
+
+4차 변경
+Error response from daemon: pull access denied for ***/revibe, repository does not exist or may require 'docker login': denied: requested access to the resource is denied
+- dockerhub private -> public으로 변경 해결
