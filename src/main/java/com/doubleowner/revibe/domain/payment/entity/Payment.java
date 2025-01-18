@@ -31,12 +31,5 @@ public class Payment extends BaseTimeEntity {
     @JoinColumn(name = "buyBid_id")
     private BuyBid buy; //주문 아이디
 
-    public static PaymentResponseDto toDto(Payment payment) {
-        return PaymentResponseDto
-                .builder()
-                .paymentId(payment.id)
-                .payMethod(payment.getPayMethod().name())
-                .build();
-    }
 
 }

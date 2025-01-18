@@ -10,8 +10,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public enum Role {
 
-    ROLE_ADMIN("ROLE_ADMIN"),
-    ROLE_USER("ROLE_USER");
+    ROLE_ADMIN("ADMIN"),
+    ROLE_USER("USER");
 
     private final String name;
 

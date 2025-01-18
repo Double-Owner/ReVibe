@@ -80,10 +80,14 @@ public class OAuth2UserService {
 
         String email = stringObjectMap.get("email");
 
-        // db에 정보가 없는 경우
-        User existUser = userRepository.findByEmail(email).orElse(null); //null인 경우 처리를 해줬어야함
-        if (Objects.isNull(existUser)) { //한번도 카카오 로그인을 시도해본적이 없는 사람 (=최초 카카오 로그인 사용자) && 일반 로그인의 회원가입도 하지 않은 경우
-            return login(userRepository.save(user));  //existUser가 있는지 확인하고 (null인 경우) 회원가입
+        /**
+         * DB에 정보가 없는 경우
+         * null인 경우 처리 -> 한번도 카카오 로그인을 시도해본적이 없는 사람 (=최초 카카오 로그인 사용자) && 일반 로그인의 회원가입도 하지 않은 경우
+         * existUser가 있는지 확인하고 (null인 경우) 회원가입
+         */
+        User existUser = userRepository.findByEmail(email).orElse(null);
+        if (Objects.isNull(existUser)) {
+            return login(userRepository.save(user));
         } else {
             return login(existUser);
         }
@@ -100,7 +104,9 @@ public class OAuth2UserService {
         return new JwtAuthResponse(AuthenticationScheme.BEARER.getName(), generatedAccessToken);
     }
 
-    // 2. 토큰 데이터 파싱
+    /**
+     * 2. 토큰 데이터 파싱
+     */
     private String parsingTokenData(ResponseEntity<String> response) {
         JSONParser parser = new JSONParser();
         String accessToken = "";

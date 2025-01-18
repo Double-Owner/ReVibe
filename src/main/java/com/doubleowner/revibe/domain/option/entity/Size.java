@@ -24,4 +24,8 @@ public enum Size {
         throw new CommonException(ErrorCode.ILLEGAL_ARGUMENT,"잘못된 사이즈 입력 입니다.");
     }
 
+    public static int toValue(Size size) {
+        return size.value;
+    }
+
 }

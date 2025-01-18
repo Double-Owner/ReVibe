@@ -12,9 +12,7 @@ import com.doubleowner.revibe.domain.review.repository.ReviewRepository;
 import com.doubleowner.revibe.domain.user.entity.User;
 import com.doubleowner.revibe.global.config.auth.UserDetailsImpl;
 import com.doubleowner.revibe.global.exception.ImageException;
-import com.doubleowner.revibe.global.exception.ReviewException;
 import com.doubleowner.revibe.global.exception.errorCode.ImageErrorCode;
-import com.doubleowner.revibe.global.exception.errorCode.ReviewErrorCode;
 import com.doubleowner.revibe.global.util.S3Uploader;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -35,18 +33,16 @@ public class ReviewService {
 
     @Transactional
     public ReviewResponseDto write(ReviewRequestDto reviewRequestDto, MultipartFile file, User user) {
+
         Payment payment = paymentRepository.findByPaymentId(reviewRequestDto.getPaymentId()).orElseThrow(() -> new RuntimeException());
+
         if (!user.getEmail().equals(payment.getBuy().getUser().getEmail())) {
             throw new RuntimeException("내가 구매한 상품이 아닙니다.");
         }
 
         Execution execution = executionRepository.findExecutionById(reviewRequestDto.getExecutionId()).orElseThrow(() -> new RuntimeException("내역을 찾을 수 없습니다"));
-        String image;
-        try {
-            image = s3Uploader.upload(file);
-        } catch (IOException e) {
-            throw new ImageException(ImageErrorCode.FAILED_UPLOAD_IMAGE);
-        }
+
+        String image = uploadImage(file);
 
         Review review = Review.builder()
                 .starRate(reviewRequestDto.getStarRate())
@@ -57,30 +53,27 @@ public class ReviewService {
                 .item(execution.getSell().getOptions().getItem())
                 .user(user)
                 .build();
+
         Review save = reviewRepository.save(review);
 
-        return Review.toDto(save);
+        return toDto(save);
     }
+
 
     @Transactional(readOnly = true)
     public List<ReviewResponseDto> findReview(User user) {
 
         List<Review> reviewsByUserId = reviewRepository.findReviewsByUserId(user.getId());
-        return reviewsByUserId.stream().map(Review::toDto).toList();
+        return reviewsByUserId.stream().map(this::toDto).toList();
     }
 
     @Transactional
     public void updateReview(Long id, UserDetailsImpl userDetails, UpdateReviewRequestDto updateReviewRequestDto, MultipartFile file) {
-        Review review = reviewRepository.findReviewByIdAndUser_Id(id, userDetails.getUser().getId()).orElseThrow(() -> new ReviewException(ReviewErrorCode.REVIEW_NOT_FOUND));
+
+        Review review = reviewRepository.findMyReview(id, userDetails.getUser().getId());
 
         if (file != null) {
-            try {
-                s3Uploader.deleteImage(review.getReviewImage());
-                String imageUrl = s3Uploader.upload(file);
-                review.update(imageUrl);
-            } catch (IOException e) {
-                throw new ImageException(ImageErrorCode.FAILED_UPLOAD_IMAGE);
-            }
+            this.reUploadImage(review, file);
         }
 
         review.update(updateReviewRequestDto);
@@ -89,8 +82,70 @@ public class ReviewService {
 
     @Transactional
     public void deleteReview(Long id, User user) {
-        Review review = reviewRepository.findReviewByIdAndUser_Id(id, user.getId()).orElseThrow(() -> new ReviewException(ReviewErrorCode.REVIEW_NOT_FOUND));
+
+        Review review = reviewRepository.findMyReview(id, user.getId());
 
         reviewRepository.delete(review);
+    }
+
+    /**
+     * DTO로 변경해주는 메소드
+     *
+     * @param review
+     * @return
+     */
+    private ReviewResponseDto toDto(Review review) {
+        return ReviewResponseDto.builder()
+                .reviewId(review.getId())
+                .title(review.getTitle())
+                .content(review.getContent())
+                .starRate(review.getStarRate())
+                .createdAt(review.getCreatedAt())
+                .image(review.getReviewImage())
+                .build();
+    }
+
+    /**
+     * 이미지 업로드 메소드
+     *
+     * @param file
+     * @return
+     */
+    private String uploadImage(MultipartFile file) {
+
+        if (file == null) {
+            return null;
+        }
+
+        try {
+            return s3Uploader.upload(file);
+
+        } catch (IOException e) {
+            throw new ImageException(ImageErrorCode.FAILED_UPLOAD_IMAGE);
+        }
+    }
+
+    /**
+     * 이미지 재업로드 메소드 (기존 이미지 삭제 후 업로드)
+     *
+     * @param review
+     * @param file
+     */
+    private void reUploadImage(Review review, MultipartFile file) {
+
+        try {
+            s3Uploader.deleteImage(review.getReviewImage());
+            String imageUrl = uploadImage(file);
+            review.update(imageUrl);
+
+        } catch (IOException e) {
+            throw new ImageException(ImageErrorCode.FAILED_UPLOAD_IMAGE);
+        }
+
+    }
+
+    public List<ReviewResponseDto> findItemReviews(Long itemId) {
+        List<Review> reviews = reviewRepository.findReviewsByItem_Id(itemId);
+        return reviews.stream().map(this::toDto).toList();
     }
 }
