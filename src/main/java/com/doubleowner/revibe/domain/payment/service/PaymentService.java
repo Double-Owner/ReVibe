@@ -32,7 +32,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class PaymentService {
 
-    @Value("${secretkey}")
+    @Value("${secret.key}")
     private String cardSecretKey;
 
     private final PaymentRepository paymentRepository;
