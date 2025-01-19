@@ -70,7 +70,7 @@ public class PaymentService {
         try {
             return sendRequest(requestData, cardSecretKey, url);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("올바르지 않은 요청입니다");
         }
     }
 
@@ -126,7 +126,7 @@ public class PaymentService {
              Reader reader = new InputStreamReader(responseStream, StandardCharsets.UTF_8)) {
             return (JSONObject) new JSONParser().parse(reader);
         } catch (Exception e) {
-            throw new IOException("응답 처리 중 오류가 발생했습니다.", e);
+            throw new RuntimeException("올바르지 않은 요청입니다");
         }
     }
 
@@ -140,6 +140,7 @@ public class PaymentService {
         return connection;
     }
 
+    @Transactional(readOnly = true)
     public List<PaymentResponseDto> getHistory(User user, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
 
