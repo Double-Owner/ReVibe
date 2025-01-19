@@ -87,9 +87,9 @@ public class ItemService {
     }
 
     // 상품 전체 조회
-    public Page<ItemResponseDto> getAllItems(int page, int size, ItemSearchRequestDto requestDto) {
+    public Page<ItemResponseDto> getAllItems(int page, int size, String keyword, String brand) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<Item> items = itemRepository.searchItems(pageable,requestDto.getKeyword(), requestDto.getBrand());
+        Page<Item> items = itemRepository.searchItems(pageable,keyword, brand);
 
         return items.map(ItemResponseDto::toDto);
     }

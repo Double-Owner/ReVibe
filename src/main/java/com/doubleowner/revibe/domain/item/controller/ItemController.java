@@ -57,10 +57,11 @@ public class ItemController {
     public ResponseEntity<CommonResponseBody<Page<ItemResponseDto>>> getItems(
             @RequestParam(value = "page", required = false, defaultValue = "0") int page,
             @RequestParam(value = "size", required = false, defaultValue = "3") int size,
-            @RequestBody ItemSearchRequestDto requestDto
+            @RequestParam(value = "keyword", required = false) String keyword,
+            @RequestParam(value = "brand", required = false) String brand
     )
     {
-        Page<ItemResponseDto> responseDtos = itemService.getAllItems(page, size, requestDto);
+        Page<ItemResponseDto> responseDtos = itemService.getAllItems(page, size, keyword, brand);
         return ResponseEntity.status(HttpStatus.OK).body((new CommonResponseBody<>("상품들을 조회했습니다.",responseDtos)));
     }
 
