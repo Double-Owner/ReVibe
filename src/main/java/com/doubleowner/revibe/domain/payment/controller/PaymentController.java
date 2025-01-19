@@ -27,7 +27,7 @@ public class PaymentController {
     private String API_SECRET_KEY;
 
     @PostMapping("api/v1/payments")
-    public ResponseEntity<CommonResponseBody<PaymentResponseDto>> requestCardPayment(@RequestBody CardPaymentRequestDto cardPaymentRequestDto) throws Exception {
+    public ResponseEntity<CommonResponseBody<PaymentResponseDto>> requestCardPayment(@RequestBody CardPaymentRequestDto cardPaymentRequestDto) {
         PaymentResponseDto paymentResponseDto = paymentService.payCard(cardPaymentRequestDto);
         return new ResponseEntity<>(new CommonResponseBody<>("주문이 완료 되었습니다.", paymentResponseDto), HttpStatus.CREATED);
     }
@@ -35,7 +35,7 @@ public class PaymentController {
     @RequestMapping(value = {"/v1/payments/confirm", "/confirm/payment"})
     public ResponseEntity<CommonResponseBody<PaymentResponseDto>> confirmPayment(HttpServletRequest request, @RequestParam String paymentType, @RequestParam String orderId, @RequestParam String paymentKey, @RequestParam String amount) {
         String secretKey = request.getRequestURI().contains("/confirm/payment") ? API_SECRET_KEY : WIDGET_SECRET_KEY;
-        PaymentResponseDto paytoss = paymentService.paytoss(secretKey, paymentType, orderId, paymentKey, amount);
+        PaymentResponseDto paytoss = paymentService.payToss(secretKey, paymentType, orderId, paymentKey, amount);
 
         return new ResponseEntity<>(new CommonResponseBody<>("주문이 완료 되었습니다.", paytoss), HttpStatus.CREATED);
     }
@@ -45,7 +45,7 @@ public class PaymentController {
                                                                                           @RequestParam(value = "page", required = false, defaultValue = "0") int page,
                                                                                           @RequestParam(value = "size", required = false, defaultValue = "3") int size) {
         List<PaymentResponseDto> history = paymentService.getHistory(userDetails.getUser(), page, size);
-        return new ResponseEntity<>(new CommonResponseBody<>("주문이 완료 되었습니다.", history), HttpStatus.CREATED);
+        return new ResponseEntity<>(new CommonResponseBody<>("결제 내역 조회.", history), HttpStatus.CREATED);
     }
 
 
