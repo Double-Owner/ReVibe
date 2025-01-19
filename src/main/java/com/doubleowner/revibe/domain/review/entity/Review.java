@@ -23,7 +23,7 @@ public class Review extends BaseTimeEntity {
     private Long id;
 
     @Column(nullable = false)
-    private Double starRate;
+    private Integer starRate;
 
     @Column(nullable = false)
     private String title;

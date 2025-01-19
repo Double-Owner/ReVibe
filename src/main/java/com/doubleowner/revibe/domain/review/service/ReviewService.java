@@ -15,6 +15,8 @@ import com.doubleowner.revibe.global.exception.ImageException;
 import com.doubleowner.revibe.global.exception.errorCode.ImageErrorCode;
 import com.doubleowner.revibe.global.util.S3Uploader;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -144,8 +146,9 @@ public class ReviewService {
 
     }
 
-    public List<ReviewResponseDto> findItemReviews(Long itemId) {
-        List<Review> reviews = reviewRepository.findReviewsByItem_Id(itemId);
+    public List<ReviewResponseDto> findItemReviews(Long itemId, int page, int size) {
+        Pageable pageable = PageRequest.of(page - 1, size);
+        List<Review> reviews = reviewRepository.findReviewsByItemId(itemId, pageable).stream().toList();
         return reviews.stream().map(this::toDto).toList();
     }
 }
