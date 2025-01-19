@@ -19,7 +19,7 @@ public class ReviewResponseDto {
 
     private String content;
 
-    private Double starRate;
+    private Integer starRate;
 
     private String image;
 
