@@ -33,8 +33,7 @@ public class ItemController {
     public ResponseEntity<CommonResponseBody<ItemResponseDto>> createItem(
             @Valid @ModelAttribute ItemRequestDto requestDto,
             @AuthenticationPrincipal UserDetailsImpl userDetails
-            )
-    {
+    ) {
         User loginUser = userDetails.getUser();
         ItemResponseDto responseDto = itemService.createItem(loginUser, requestDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(new CommonResponseBody<>("상품을 등록했습니다", responseDto));
@@ -45,11 +44,10 @@ public class ItemController {
     public ResponseEntity<CommonResponseBody<ItemResponseDto>> updateItem(
             @Valid @ModelAttribute ItemUpdateRequestDto requestDto,
             @PathVariable Long itemId
-    )
-    {
-        ItemResponseDto responseDto = itemService.modifyItem(itemId,requestDto);
+    ) {
+        ItemResponseDto responseDto = itemService.modifyItem(itemId, requestDto);
 
-        return ResponseEntity.status(HttpStatus.OK).body((new CommonResponseBody<>("상품이 수정 되었습니다.",responseDto)));
+        return ResponseEntity.status(HttpStatus.OK).body((new CommonResponseBody<>("상품이 수정 되었습니다.", responseDto)));
     }
 
     // 상품 전체 조회
@@ -58,24 +56,26 @@ public class ItemController {
             @RequestParam(value = "page", required = false, defaultValue = "0") int page,
             @RequestParam(value = "size", required = false, defaultValue = "3") int size,
             @RequestBody ItemSearchRequestDto requestDto
-    )
-    {
+    ) {
         Page<ItemResponseDto> responseDtos = itemService.getAllItems(page, size, requestDto);
-        return ResponseEntity.status(HttpStatus.OK).body((new CommonResponseBody<>("상품들을 조회했습니다.",responseDtos)));
+        return ResponseEntity.status(HttpStatus.OK).body((new CommonResponseBody<>("상품들을 조회했습니다.", responseDtos)));
     }
 
     // 상품 단건 조회
     @GetMapping("/{itemId}")
-    public ResponseEntity<CommonResponseBody<ItemResponseDto>> getItemDetail(@PathVariable Long itemId){
+    public ResponseEntity<CommonResponseBody<ItemResponseDto>> getItemDetail(@PathVariable Long itemId) {
         ItemResponseDto responseDto = itemService.getItem(itemId);
-        return ResponseEntity.status(HttpStatus.OK).body((new CommonResponseBody<>("상품을 조회했습니다.",responseDto)));
+        return ResponseEntity.status(HttpStatus.OK).body((new CommonResponseBody<>("상품을 조회했습니다.", responseDto)));
     }
 
-    // todo 페이지네이션
     @GetMapping("/{itemId}/reviews")
-    public ResponseEntity<CommonResponseBody<List<ReviewResponseDto>>> getItemReviews(@PathVariable Long itemId) {
-        List<ReviewResponseDto> responseDto = reviewService.findItemReviews(itemId);
-        return ResponseEntity.status(HttpStatus.OK).body((new CommonResponseBody<>("리뷰를 조회 했습니다.",responseDto)));
+    public ResponseEntity<CommonResponseBody<List<ReviewResponseDto>>> getItemReviews(
+            @PathVariable Long itemId,
+            @RequestParam(value = "page", required = false, defaultValue = "0") int page,
+            @RequestParam(value = "size", required = false, defaultValue = "3") int size
+    ) {
+        List<ReviewResponseDto> responseDto = reviewService.findItemReviews(itemId, page, size);
+        return ResponseEntity.status(HttpStatus.OK).body((new CommonResponseBody<>("리뷰를 조회 했습니다.", responseDto)));
 
     }
 }
