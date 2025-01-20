@@ -28,4 +28,5 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
     List<Review> findReviewsByUserId(@Param("userId") Long userId);
 
     Page<Review> findReviewsByItemId(Long itemId, Pageable pageable);
+
 }

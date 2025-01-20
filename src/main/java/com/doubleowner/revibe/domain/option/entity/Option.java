@@ -22,7 +22,7 @@ public class Option {
     @Column(nullable = false)
     private Long stock;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Item item;
 
     public Option(Size size, Item item) {

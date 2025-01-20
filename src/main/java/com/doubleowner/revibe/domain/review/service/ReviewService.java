@@ -2,8 +2,6 @@ package com.doubleowner.revibe.domain.review.service;
 
 import com.doubleowner.revibe.domain.execution.entity.Execution;
 import com.doubleowner.revibe.domain.execution.repository.ExecutionRepository;
-import com.doubleowner.revibe.domain.payment.entity.Payment;
-import com.doubleowner.revibe.domain.payment.repository.PaymentRepository;
 import com.doubleowner.revibe.domain.review.dto.ReviewRequestDto;
 import com.doubleowner.revibe.domain.review.dto.ReviewResponseDto;
 import com.doubleowner.revibe.domain.review.dto.UpdateReviewRequestDto;
@@ -29,20 +27,13 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ReviewService {
     private final ReviewRepository reviewRepository;
-    private final PaymentRepository paymentRepository;
     private final ExecutionRepository executionRepository;
     private final S3Uploader s3Uploader;
 
     @Transactional
     public ReviewResponseDto write(ReviewRequestDto reviewRequestDto, MultipartFile file, User user) {
 
-        Payment payment = paymentRepository.findByPaymentId(reviewRequestDto.getPaymentId()).orElseThrow(() -> new RuntimeException());
-
-        if (!user.getEmail().equals(payment.getBuy().getUser().getEmail())) {
-            throw new RuntimeException("내가 구매한 상품이 아닙니다.");
-        }
-
-        Execution execution = executionRepository.findExecutionById(reviewRequestDto.getExecutionId()).orElseThrow(() -> new RuntimeException("내역을 찾을 수 없습니다"));
+        Execution execution = executionRepository.findExecutionById(reviewRequestDto.getExecutionId(), reviewRequestDto.getPaymentId(), user.getEmail()).orElseThrow(() -> new RuntimeException("내역을 찾을 수 없습니다"));
 
         String image = uploadImage(file);
 
@@ -146,6 +137,7 @@ public class ReviewService {
 
     }
 
+    @Transactional(readOnly = true)
     public List<ReviewResponseDto> findItemReviews(Long itemId, int page, int size) {
         Pageable pageable = PageRequest.of(page - 1, size);
         List<Review> reviews = reviewRepository.findReviewsByItemId(itemId, pageable).stream().toList();
