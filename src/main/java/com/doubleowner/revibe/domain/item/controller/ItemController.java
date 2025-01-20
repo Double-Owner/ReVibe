@@ -57,10 +57,11 @@ public class ItemController {
     public ResponseEntity<CommonResponseBody<Page<ItemResponseDto>>> getItems(
             @RequestParam(value = "page", required = false, defaultValue = "0") int page,
             @RequestParam(value = "size", required = false, defaultValue = "3") int size,
-            @RequestBody ItemSearchRequestDto requestDto
+            @RequestParam(value = "keyword", required = false) String keyword,
+            @RequestParam(value = "brand", required = false) String brand
     )
     {
-        Page<ItemResponseDto> responseDtos = itemService.getAllItems(page, size, requestDto);
+        Page<ItemResponseDto> responseDtos = itemService.getAllItems(page, size, keyword, brand);
         return ResponseEntity.status(HttpStatus.OK).body((new CommonResponseBody<>("상품들을 조회했습니다.",responseDtos)));
     }
 
@@ -71,11 +72,15 @@ public class ItemController {
         return ResponseEntity.status(HttpStatus.OK).body((new CommonResponseBody<>("상품을 조회했습니다.",responseDto)));
     }
 
-    // todo 페이지네이션
     @GetMapping("/{itemId}/reviews")
-    public ResponseEntity<CommonResponseBody<List<ReviewResponseDto>>> getItemReviews(@PathVariable Long itemId) {
-        List<ReviewResponseDto> responseDto = reviewService.findItemReviews(itemId);
-        return ResponseEntity.status(HttpStatus.OK).body((new CommonResponseBody<>("리뷰를 조회 했습니다.",responseDto)));
+    public ResponseEntity<CommonResponseBody<List<ReviewResponseDto>>> getItemReviews(
+            @PathVariable Long itemId,
+            @RequestParam(value = "page", required = false, defaultValue = "0") int page,
+            @RequestParam(value = "size", required = false, defaultValue = "3") int size
+    ) {
+        List<ReviewResponseDto> responseDto = reviewService.findItemReviews(itemId, page, size);
+        return ResponseEntity.status(HttpStatus.OK).body((new CommonResponseBody<>("리뷰를 조회 했습니다.", responseDto)));
 
     }
+
 }

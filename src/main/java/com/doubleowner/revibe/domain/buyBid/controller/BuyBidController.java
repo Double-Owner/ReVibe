@@ -61,10 +61,8 @@ public class BuyBidController {
      */
     @DeleteMapping("/{buyBidId}/refund")
     public CommonResponseBody<?> deleteBuyBid(
-            @AuthenticationPrincipal UserDetailsImpl userDetails,
             @PathVariable Long buyBidId){
 
-        User loginUser = userDetails.getUser();
         bidService.deleteBuyBid(buyBidId);
 
         return new CommonResponseBody<>("구매 입찰이 취소되었습니다.", null);

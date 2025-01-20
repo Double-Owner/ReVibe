@@ -25,7 +25,7 @@ public class BuyBidService {
     private final UserRepository userRepository;
 
     //1 구매 입찰 생성
-    @Transactional(readOnly = true)
+    @Transactional
     public BuyBidResponseDto createBuyBid(User loginUser, BuyBidRequestDto requestBody) {
         Option option = optionRepository.findById(requestBody.getOptionId()).orElseThrow();
 
@@ -35,7 +35,7 @@ public class BuyBidService {
     }
 
     //1 구매 입찰 제거 -> status 값 end로 변경
-    @Transactional(readOnly = true)
+    @Transactional
     public void deleteBuyBid(Long buyBidId) {
         BuyBid buyBid = bidRepository.findById(buyBidId).orElseThrow();
         buyBid.delete();

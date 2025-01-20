@@ -32,13 +32,14 @@ public class BuyBid {
 
     @Column(nullable = false, updatable = false)
     @CreationTimestamp
+    @Builder.Default
     private LocalDateTime createdAt = LocalDateTime.now();
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "buyer_id")
     private User user;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "option_id")
     private Option option;
 

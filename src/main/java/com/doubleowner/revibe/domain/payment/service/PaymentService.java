@@ -12,7 +12,6 @@ import com.doubleowner.revibe.domain.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -40,58 +39,39 @@ public class PaymentService {
 
     // 카드 결제
     @Transactional
-    public PaymentResponseDto payCard(CardPaymentRequestDto cardPaymentRequestDto) throws IOException, ParseException {
+    public PaymentResponseDto payCard(CardPaymentRequestDto cardPaymentRequestDto) {
         BuyBid buyBid = buyBidRepository.findById(cardPaymentRequestDto.getBuyBidId()).orElseThrow(() -> new RuntimeException("요청하신 주문건이 없습니다."));
 
-        JSONObject paymentData = getPaymentData(cardPaymentRequestDto);
+        JSONObject paymentData = sendPaymentRequest(cardPaymentRequestDto, "https://api.tosspayments.com/v1/payments/key-in");
+        Map<String, Object> parsedData = parsingData(paymentData);
 
-        // 받아온 paymentData 파싱하기
-        Map<String, Object> stringObjectMap = parsingData(paymentData);
-
-        // 파싱한 paymentData와 buyBid 객체  값 DB에 넣기
         Payment payment = Payment.builder()
                 .buy(buyBid)
                 .payMethod(PayMethod.CREDIT_CARD)
-                .tossId(stringObjectMap.get("paymentKey").toString())
+                .tossId((String) parsedData.get("paymentKey"))
                 .payStatus(PayStatus.PAY_SUCCESS)
                 .build();
 
-        Payment save = paymentRepository.save(payment);
-
-        return toDto(save);
+        return toDto(paymentRepository.save(payment));
 
     }
 
-    // 토스에서 데이터 가져오가
-    private JSONObject getPaymentData(CardPaymentRequestDto cardPaymentRequestDto) throws IOException, ParseException {
+    private JSONObject sendPaymentRequest(CardPaymentRequestDto cardPaymentRequestDto, String url) {
 
-        URL url = new URL("https://api.tosspayments.com/v1/payments/key-in");
-        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-        connection.setRequestProperty("Authorization", "Basic " + Base64.getEncoder().encodeToString((cardSecretKey + ":").getBytes(StandardCharsets.UTF_8)));
-        connection.setRequestProperty("Content-Type", "application/json");
-        connection.setRequestMethod("POST");
-        connection.setDoOutput(true);
+        JSONObject requestData = new JSONObject();
+        requestData.put("orderId", cardPaymentRequestDto.getOrderId());
+        requestData.put("amount", cardPaymentRequestDto.getAmount());
+        requestData.put("cardNumber", cardPaymentRequestDto.getCardNumber());
+        requestData.put("cardExpirationYear", cardPaymentRequestDto.getCardExpirationYear());
+        requestData.put("cardExpirationMonth", cardPaymentRequestDto.getCardExpirationMonth());
+        requestData.put("cardPassword", cardPaymentRequestDto.getCardPassword());
+        requestData.put("customerIdentityNumber", cardPaymentRequestDto.getCustomerIdentityNumber());
 
-        JSONObject obj = new JSONObject();
-        obj.put("orderId", cardPaymentRequestDto.getOrderId());
-        obj.put("amount", cardPaymentRequestDto.getAmount());
-        obj.put("cardNumber", cardPaymentRequestDto.getCardNumber());
-        obj.put("cardExpirationYear", cardPaymentRequestDto.getCardExpirationYear());
-        obj.put("cardExpirationMonth", cardPaymentRequestDto.getCardExpirationMonth());
-        obj.put("cardPassword", cardPaymentRequestDto.getCardPassword());
-        obj.put("customerIdentityNumber", cardPaymentRequestDto.getCustomerIdentityNumber());
-
-        OutputStream os = connection.getOutputStream();
-        os.write(obj.toString().getBytes(StandardCharsets.UTF_8));
-        InputStream responseStream = connection.getResponseCode() == 200 ? connection.getInputStream() : connection.getErrorStream();
-
-        Reader reader = new InputStreamReader(responseStream, StandardCharsets.UTF_8);
-        JSONParser parser = new JSONParser();
-        JSONObject jsonObject = (JSONObject) parser.parse(reader);
-        responseStream.close();
-
-        System.out.println(jsonObject.toString());
-        return jsonObject;
+        try {
+            return sendRequest(requestData, cardSecretKey, url);
+        } catch (IOException e) {
+            throw new RuntimeException("올바르지 않은 요청입니다");
+        }
     }
 
     // json 파싱
@@ -104,19 +84,22 @@ public class PaymentService {
 
     }
 
-    public PaymentResponseDto paytoss(String secretKey, String paymentType, String orderId, String paymentKey, String amount) {
+    @Transactional
+    public PaymentResponseDto payToss(String secretKey, String paymentType, String orderId, String paymentKey, String amount) {
         JSONObject jsonBody = new JSONObject();
         jsonBody.put("paymentType", paymentType);
         jsonBody.put("orderId", orderId);
         jsonBody.put("paymentKey", paymentKey);
         jsonBody.put("amount", amount);
         JSONObject object;
+
         try {
             object = sendRequest(jsonBody, secretKey, "https://api.tosspayments.com/v1/payments/confirm");
             // 받아온 paymentData 파싱하기
             Map<String, Object> stringObjectMap = parsingData(object);
 
-            // 파싱한 paymentData와 buyBid 객체  값 DB에 넣기
+            // 파싱한 paymentData 값 DB에 넣기
+            // todo : 프론트단 구현시 buyBid 객체 추가
             Payment payment = Payment.builder()
                     .payMethod(PayMethod.TOSS_PAY)
                     .tossId(stringObjectMap.get("paymentKey").toString())
@@ -138,13 +121,12 @@ public class PaymentService {
         try (OutputStream os = connection.getOutputStream()) {
             os.write(requestData.toString().getBytes(StandardCharsets.UTF_8));
         }
+
         try (InputStream responseStream = connection.getResponseCode() == 200 ? connection.getInputStream() : connection.getErrorStream();
              Reader reader = new InputStreamReader(responseStream, StandardCharsets.UTF_8)) {
             return (JSONObject) new JSONParser().parse(reader);
         } catch (Exception e) {
-            JSONObject errorResponse = new JSONObject();
-            errorResponse.put("error", "Error reading response");
-            return errorResponse;
+            throw new RuntimeException("올바르지 않은 요청입니다");
         }
     }
 
@@ -158,6 +140,7 @@ public class PaymentService {
         return connection;
     }
 
+    @Transactional(readOnly = true)
     public List<PaymentResponseDto> getHistory(User user, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
 
