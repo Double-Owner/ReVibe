@@ -79,10 +79,6 @@ public class ReviewService {
 
         Review review = reviewRepository.findMyReview(id, user.getId());
 
-        if(review == null){
-            throw new CommonException(ErrorCode.NOT_FOUND_VALUE, "해당 리뷰를 찾을 수 없습니다.");
-        }
-
         reviewRepository.delete(review);
     }
 
