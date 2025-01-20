@@ -12,7 +12,6 @@ import java.util.Optional;
 @Repository
 public interface ExecutionRepository extends JpaRepository<Execution, Long> {
 
-    @EntityGraph(attributePaths = {"sell", "payment"})
-    @Query("SELECT p FROM Execution p WHERE p.id = :id")
-    Optional<Execution> findExecutionById(@Param("id") Long id);
+    @Query("SELECT e FROM Execution e JOIN FETCH e.sell s JOIN FETCH s.options o JOIN FETCH o.item where e.id=:id and e.payment.id=:paymentId and e.payment.buy.user.email=:email")
+    Optional<Execution> findExecutionById(@Param("id") Long ExecutionId ,@Param("paymentId")Long paymentId,@Param("email") String email);
 }
