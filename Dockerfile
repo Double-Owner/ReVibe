@@ -9,6 +9,6 @@ RUN gradle clean build --no-daemon --parallel
 
 FROM openjdk:17
 
-COPY --from=builder /apps/build/libs/*SNAPSHOT.jar  app.jar
+COPY --from=builder /apps/build/libs/app.jar  app.jar
 
 ENTRYPOINT ["java", "-jar", "app.jar"]
