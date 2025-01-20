@@ -6,14 +6,16 @@ import com.doubleowner.revibe.domain.account.entity.Account;
 import com.doubleowner.revibe.domain.account.repository.AccountRepository;
 import com.doubleowner.revibe.domain.user.entity.User;
 import com.doubleowner.revibe.domain.user.repository.UserRepository;
-import com.doubleowner.revibe.global.exception.AccountException;
-import com.doubleowner.revibe.global.exception.errorCode.AccountErrorCode;
+import com.doubleowner.revibe.global.exception.CommonException;
+import com.doubleowner.revibe.global.exception.errorCode.ErrorCode;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.annotations.DynamicUpdate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@DynamicUpdate
 public class AccountService {
 
     private final AccountRepository accountRepository;
@@ -21,47 +23,50 @@ public class AccountService {
 
     @Transactional
     public AccountResponseDto create(User user,AccountRequestDto dto) {
+        if(user.getAccount() != null){
+            throw new CommonException(ErrorCode.ALREADY_EXIST,"계좌가 이미 등록되어 있습니다.");
+        }
+
         Account account = Account.builder()
                 .bank(dto.getBank())
                 .account(dto.getAccount())
                 .build();
 
         Account savedAccount = accountRepository.save(account);
-        userRepository.updateUserByAccount(user.getId(),savedAccount);
+
+        userRepository.updateUserByAccount(user,savedAccount);
 
         return AccountResponseDto.toDto(savedAccount);
     }
 
     @Transactional
-    public AccountResponseDto findAccount(User user, Long id) {
-        User findUserAccount = userRepository.findById(user.getId())
-                .orElseThrow(() -> new AccountException(AccountErrorCode.ACCOUNT_NOT_FOUND));
+    public AccountResponseDto findAccount(User user) {
 
-        Account account = accountRepository.findById(id)
-                .orElseThrow(() -> new AccountException(AccountErrorCode.ACCOUNT_NOT_FOUND));
-
-        if(!findUserAccount.getAccount().equals(account)){
-            throw new AccountException(AccountErrorCode.INVALID_ACCOUNT_NUMBER);
+        if(user.getAccount() == null){
+            throw new CommonException(ErrorCode.NOT_FOUND_VALUE,"로그인 중인 사용자의 계좌가 없습니다.");
         }
-
-        return AccountResponseDto.toDto(account);
-
+        return AccountResponseDto.toDto(user.getAccount());
     }
 
     @Transactional
-    public AccountResponseDto updateAccount(Long id ,User user, AccountRequestDto requestDto) {
-        Account account = accountRepository.findById(id)
-                .orElseThrow(() -> new AccountException(AccountErrorCode.ACCOUNT_NOT_FOUND));
+    public AccountResponseDto updateAccount(User user, AccountRequestDto requestDto) {
 
-        account.update(requestDto);
-        return AccountResponseDto.toDto(account);
+        if(user.getAccount() == null){
+            throw new CommonException(ErrorCode.NOT_FOUND_VALUE,"사용자의 계좌가 없습니다.");
+        }
+
+        user.getAccount().update(requestDto);
+        accountRepository.save(user.getAccount());
+        return AccountResponseDto.toDto(user.getAccount());
     }
 
     @Transactional
     public void deleteAccount(User user) {
-        User finduser = userRepository.findByEmail(user.getEmail())
-                .orElseThrow(() -> new AccountException(AccountErrorCode.REJECT_ACCOUNT_DELETE));
+        if(user.getAccount() == null){
+            throw new CommonException(ErrorCode.NOT_FOUND_VALUE,"사용자의 계좌가 없습니다.");
+        }
+        userRepository.updateUserByAccount(user,null);
+        accountRepository.delete(user.getAccount());
 
-        finduser.deletedAccount();
     }
 }

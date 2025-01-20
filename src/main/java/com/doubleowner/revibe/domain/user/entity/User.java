@@ -5,9 +5,11 @@ import com.doubleowner.revibe.domain.user.dto.request.UserProfileUpdateRequestDt
 import com.doubleowner.revibe.global.common.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.Setter;
 
 @Entity
 @Getter
+@Setter
 @Table(name = "`user`")
 public class User extends BaseTimeEntity {
 
@@ -45,7 +47,7 @@ public class User extends BaseTimeEntity {
     @Enumerated(value = EnumType.STRING)
     private LoginMethod loginMethod = LoginMethod.LOCAL;
 
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToOne(cascade = CascadeType.ALL,orphanRemoval = true)
     @JoinColumn(name = "account_id")
     private Account account;
 
@@ -65,9 +67,6 @@ public class User extends BaseTimeEntity {
         this.status = UserStatus.USER_DELETED;
     }
 
-    public void deletedAccount() {
-        this.status = UserStatus.USER_DELETED;
-    }
 
     public void updateProfile(UserProfileUpdateRequestDto requestDto, String password) {
         this.nickname = requestDto.getNickname();
@@ -85,4 +84,5 @@ public class User extends BaseTimeEntity {
         this.status = UserStatus.USER_ACTIVE;
         this.loginMethod = LoginMethod.KAKAO;
     }
+
 }

@@ -9,6 +9,8 @@ import com.doubleowner.revibe.domain.payment.entity.PayStatus;
 import com.doubleowner.revibe.domain.payment.entity.Payment;
 import com.doubleowner.revibe.domain.payment.repository.PaymentRepository;
 import com.doubleowner.revibe.domain.user.entity.User;
+import com.doubleowner.revibe.global.exception.CommonException;
+import com.doubleowner.revibe.global.exception.errorCode.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -40,7 +42,8 @@ public class PaymentService {
     // 카드 결제
     @Transactional
     public PaymentResponseDto payCard(CardPaymentRequestDto cardPaymentRequestDto) {
-        BuyBid buyBid = buyBidRepository.findById(cardPaymentRequestDto.getBuyBidId()).orElseThrow(() -> new RuntimeException("요청하신 주문건이 없습니다."));
+        BuyBid buyBid = buyBidRepository.findById(cardPaymentRequestDto.getBuyBidId())
+                .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_VALUE, "요청하신 구매 요청건이 없습니다."));
 
         JSONObject paymentData = sendPaymentRequest(cardPaymentRequestDto, "https://api.tosspayments.com/v1/payments/key-in");
         Map<String, Object> parsedData = parsingData(paymentData);
@@ -70,7 +73,7 @@ public class PaymentService {
         try {
             return sendRequest(requestData, cardSecretKey, url);
         } catch (IOException e) {
-            throw new RuntimeException("올바르지 않은 요청입니다");
+            throw new CommonException(ErrorCode.BAD_REQUEST, "유효하지 않은 요청입니다.");
         }
     }
 
@@ -110,7 +113,7 @@ public class PaymentService {
 
             return toDto(save);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new CommonException(ErrorCode.BAD_REQUEST, "결제에 실패했습니다.");
         }
 
 
@@ -126,7 +129,7 @@ public class PaymentService {
              Reader reader = new InputStreamReader(responseStream, StandardCharsets.UTF_8)) {
             return (JSONObject) new JSONParser().parse(reader);
         } catch (Exception e) {
-            throw new RuntimeException("올바르지 않은 요청입니다");
+            throw new CommonException(ErrorCode.BAD_REQUEST, "올바르지 않은 요청입니다.");
         }
     }
 

@@ -9,8 +9,8 @@ import com.doubleowner.revibe.domain.review.entity.Review;
 import com.doubleowner.revibe.domain.review.repository.ReviewRepository;
 import com.doubleowner.revibe.domain.user.entity.User;
 import com.doubleowner.revibe.global.config.auth.UserDetailsImpl;
-import com.doubleowner.revibe.global.exception.ImageException;
-import com.doubleowner.revibe.global.exception.errorCode.ImageErrorCode;
+import com.doubleowner.revibe.global.exception.CommonException;
+import com.doubleowner.revibe.global.exception.errorCode.ErrorCode;
 import com.doubleowner.revibe.global.util.S3Uploader;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -33,7 +33,8 @@ public class ReviewService {
     @Transactional
     public ReviewResponseDto write(ReviewRequestDto reviewRequestDto, MultipartFile file, User user) {
 
-        Execution execution = executionRepository.findExecutionById(reviewRequestDto.getExecutionId(), reviewRequestDto.getPaymentId(), user.getEmail()).orElseThrow(() -> new RuntimeException("내역을 찾을 수 없습니다"));
+        Execution execution = executionRepository.findExecutionById(reviewRequestDto.getExecutionId(), reviewRequestDto.getPaymentId(), user.getEmail())
+                .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_VALUE, "내역을 찾을 수 없습니다"));
 
         String image = uploadImage(file);
 
@@ -78,6 +79,10 @@ public class ReviewService {
 
         Review review = reviewRepository.findMyReview(id, user.getId());
 
+        if(review == null){
+            throw new CommonException(ErrorCode.NOT_FOUND_VALUE, "해당 리뷰를 찾을 수 없습니다.");
+        }
+
         reviewRepository.delete(review);
     }
 
@@ -114,7 +119,7 @@ public class ReviewService {
             return s3Uploader.upload(file);
 
         } catch (IOException e) {
-            throw new ImageException(ImageErrorCode.FAILED_UPLOAD_IMAGE);
+            throw new CommonException(ErrorCode.FAILED_UPLOAD_IMAGE);
         }
     }
 
@@ -132,7 +137,7 @@ public class ReviewService {
             review.update(imageUrl);
 
         } catch (IOException e) {
-            throw new ImageException(ImageErrorCode.FAILED_UPLOAD_IMAGE);
+            throw new CommonException(ErrorCode.FAILED_UPLOAD_IMAGE);
         }
 
     }
