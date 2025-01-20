@@ -29,29 +29,27 @@ public class AccountController {
 
     }
 
-    @GetMapping("/{id}")
+    @GetMapping
     public ResponseEntity<CommonResponseBody<AccountResponseDto>> findAccount(
-            @PathVariable Long id,
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
-        AccountResponseDto accountResponseDto = accountService.findAccount(userDetails.getUser(), id);
+        AccountResponseDto accountResponseDto = accountService.findAccount(userDetails.getUser());
 
         return new ResponseEntity<>(new CommonResponseBody<>("나의 계좌 조회를 성공하였습니다.", accountResponseDto), HttpStatus.OK);
     }
 
-    @PatchMapping("/{id}")
+    @PatchMapping
     public ResponseEntity<CommonResponseBody<AccountResponseDto>> updateAccount(
-            @PathVariable Long id, @RequestBody AccountRequestDto dto,
+             @RequestBody AccountRequestDto dto,
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
-        AccountResponseDto accountResponseDto = accountService.updateAccount(id, userDetails.getUser(), dto);
+        AccountResponseDto accountResponseDto = accountService.updateAccount(userDetails.getUser(), dto);
 
         return new ResponseEntity<>(new CommonResponseBody<>("나의 계좌 정보를 수정하였습니다.", accountResponseDto), HttpStatus.OK);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping
     public ResponseEntity<CommonResponseBody<Void>> delete(
-            @PathVariable Long id,
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
         accountService.deleteAccount(userDetails.getUser());

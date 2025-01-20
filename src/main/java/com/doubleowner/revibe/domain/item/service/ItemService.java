@@ -1,9 +1,9 @@
 package com.doubleowner.revibe.domain.item.service;
 
+import com.amazonaws.services.s3.model.AmazonS3Exception;
 import com.doubleowner.revibe.domain.brand.entity.Brand;
 import com.doubleowner.revibe.domain.brand.repository.BrandRepository;
 import com.doubleowner.revibe.domain.item.dto.request.ItemRequestDto;
-import com.doubleowner.revibe.domain.item.dto.request.ItemSearchRequestDto;
 import com.doubleowner.revibe.domain.item.dto.request.ItemUpdateRequestDto;
 import com.doubleowner.revibe.domain.item.dto.response.ItemResponseDto;
 import com.doubleowner.revibe.domain.item.entity.Category;
@@ -11,9 +11,7 @@ import com.doubleowner.revibe.domain.item.entity.Item;
 import com.doubleowner.revibe.domain.item.repository.ItemRepository;
 import com.doubleowner.revibe.domain.user.entity.User;
 import com.doubleowner.revibe.global.exception.CommonException;
-import com.doubleowner.revibe.global.exception.ImageException;
 import com.doubleowner.revibe.global.exception.errorCode.ErrorCode;
-import com.doubleowner.revibe.global.exception.errorCode.ImageErrorCode;
 import com.doubleowner.revibe.global.util.S3Uploader;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -44,7 +42,7 @@ public class ItemService {
             try{
                 image = s3Uploader.upload(requestDto.getImage());
             } catch (IOException e){
-                throw new ImageException(ImageErrorCode.FAILED_UPLOAD_IMAGE);
+                throw new CommonException(ErrorCode.FAILED_UPLOAD_IMAGE);
             }
         }
         // 동일한 상품명이 이미 존재할 경우 예외처리
@@ -75,7 +73,9 @@ public class ItemService {
                 // 새 이미지 업로드
                 image = s3Uploader.upload(requestDto.getImage());
             } catch (IOException e) {
-                throw new ImageException(ImageErrorCode.FAILED_UPLOAD_IMAGE);
+                throw new CommonException(ErrorCode.FAILED_UPLOAD_IMAGE);
+            } catch (AmazonS3Exception e) {
+                throw new CommonException(ErrorCode.FAILED_DELETE_IMAGE);
             }
         }
 
