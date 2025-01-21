@@ -1,11 +1,11 @@
-package com.doubleowner.revibe.domain.sellBid.service;
+package com.doubleowner.revibe.domain.sellbid.service;
 
 import com.doubleowner.revibe.domain.option.entity.Option;
 import com.doubleowner.revibe.domain.option.repository.OptionRepository;
-import com.doubleowner.revibe.domain.sellBid.dto.SellBidRequestDto;
-import com.doubleowner.revibe.domain.sellBid.dto.SellBidResponseDto;
-import com.doubleowner.revibe.domain.sellBid.entity.SellBid;
-import com.doubleowner.revibe.domain.sellBid.repository.SellBidRepository;
+import com.doubleowner.revibe.domain.sellbid.dto.SellBidRequestDto;
+import com.doubleowner.revibe.domain.sellbid.dto.SellBidResponseDto;
+import com.doubleowner.revibe.domain.sellbid.entity.SellBid;
+import com.doubleowner.revibe.domain.sellbid.repository.SellBidRepository;
 import com.doubleowner.revibe.domain.user.entity.User;
 import com.doubleowner.revibe.global.exception.CommonException;
 import com.doubleowner.revibe.global.exception.errorCode.ErrorCode;

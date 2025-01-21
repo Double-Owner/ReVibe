@@ -1,7 +1,6 @@
-package com.doubleowner.revibe.domain.sellBid.repository;
+package com.doubleowner.revibe.domain.sellbid.repository;
 
-import com.doubleowner.revibe.domain.buyBid.entity.BuyBid;
-import com.doubleowner.revibe.domain.sellBid.entity.SellBid;
+import com.doubleowner.revibe.domain.sellbid.entity.SellBid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

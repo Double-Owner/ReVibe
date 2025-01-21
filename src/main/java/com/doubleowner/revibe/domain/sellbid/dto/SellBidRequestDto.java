@@ -1,12 +1,10 @@
-package com.doubleowner.revibe.domain.sellBid.dto;
+package com.doubleowner.revibe.domain.sellbid.dto;
 
 import com.doubleowner.revibe.domain.option.entity.Option;
-import com.doubleowner.revibe.domain.sellBid.entity.SellBid;
+import com.doubleowner.revibe.domain.sellbid.entity.SellBid;
 import com.doubleowner.revibe.domain.user.entity.User;
 import com.doubleowner.revibe.global.common.enumType.BidStatus;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import lombok.Builder;
 import lombok.Getter;
 
 import java.time.LocalDateTime;

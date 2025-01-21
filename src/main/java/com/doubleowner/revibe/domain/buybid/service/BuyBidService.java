@@ -1,9 +1,9 @@
-package com.doubleowner.revibe.domain.buyBid.service;
+package com.doubleowner.revibe.domain.buybid.service;
 
-import com.doubleowner.revibe.domain.buyBid.dto.BuyBidRequestDto;
-import com.doubleowner.revibe.domain.buyBid.dto.BuyBidResponseDto;
-import com.doubleowner.revibe.domain.buyBid.entity.BuyBid;
-import com.doubleowner.revibe.domain.buyBid.repository.BuyBidRepository;
+import com.doubleowner.revibe.domain.buybid.dto.BuyBidRequestDto;
+import com.doubleowner.revibe.domain.buybid.dto.BuyBidResponseDto;
+import com.doubleowner.revibe.domain.buybid.entity.BuyBid;
+import com.doubleowner.revibe.domain.buybid.repository.BuyBidRepository;
 import com.doubleowner.revibe.domain.option.entity.Option;
 import com.doubleowner.revibe.domain.option.repository.OptionRepository;
 import com.doubleowner.revibe.domain.user.entity.User;

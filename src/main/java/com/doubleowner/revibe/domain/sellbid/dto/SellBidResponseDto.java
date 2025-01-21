@@ -1,11 +1,10 @@
-package com.doubleowner.revibe.domain.sellBid.dto;
+package com.doubleowner.revibe.domain.sellbid.dto;
 
 import com.doubleowner.revibe.domain.option.entity.Size;
-import com.doubleowner.revibe.domain.sellBid.entity.SellBid;
+import com.doubleowner.revibe.domain.sellbid.entity.SellBid;
 import com.doubleowner.revibe.global.common.enumType.BidStatus;
 import lombok.Builder;
 import lombok.Getter;
-import org.springframework.cglib.core.Local;
 
 import java.time.LocalDateTime;
 

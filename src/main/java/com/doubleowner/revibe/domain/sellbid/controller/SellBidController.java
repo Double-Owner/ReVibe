@@ -1,9 +1,8 @@
-package com.doubleowner.revibe.domain.sellBid.controller;
+package com.doubleowner.revibe.domain.sellbid.controller;
 
-import com.doubleowner.revibe.domain.buyBid.dto.BuyBidResponseDto;
-import com.doubleowner.revibe.domain.sellBid.dto.SellBidRequestDto;
-import com.doubleowner.revibe.domain.sellBid.dto.SellBidResponseDto;
-import com.doubleowner.revibe.domain.sellBid.service.SellBidService;
+import com.doubleowner.revibe.domain.sellbid.dto.SellBidRequestDto;
+import com.doubleowner.revibe.domain.sellbid.dto.SellBidResponseDto;
+import com.doubleowner.revibe.domain.sellbid.service.SellBidService;
 import com.doubleowner.revibe.domain.user.entity.User;
 import com.doubleowner.revibe.global.common.dto.CommonResponseBody;
 import com.doubleowner.revibe.global.config.auth.UserDetailsImpl;
