@@ -1,4 +1,4 @@
-package com.doubleowner.revibe.domain.wishList.entity;
+package com.doubleowner.revibe.domain.wishlist.entity;
 
 import com.doubleowner.revibe.domain.item.entity.Item;
 import com.doubleowner.revibe.domain.user.entity.User;
@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor
-public class WishList extends BaseTimeEntity {
+public class Wishlist extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,7 +24,7 @@ public class WishList extends BaseTimeEntity {
     @JoinColumn(name = "itemId")
     private Item item;
 
-    public WishList(User user, Item item) {
+    public Wishlist(User user, Item item) {
         this.user = user;
         this.item = item;
     }
