@@ -1,5 +1,7 @@
 package com.doubleowner.revibe.domain.user.entity;
 
+import com.doubleowner.revibe.global.exception.CommonException;
+import com.doubleowner.revibe.global.exception.errorCode.ErrorCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -15,13 +17,13 @@ public enum Role {
 
     private final String name;
 
-    public static Role of(String roleName) throws IllegalArgumentException {
+    public static Role of(String roleName) {
         for (Role role : values()) {
             if (role.getName().equals(roleName.toUpperCase())) {
                 return role;
             }
         }
-        throw new IllegalArgumentException("해당하는 이름의 권한을 찾을 수 없습니다: " + roleName);
+        throw new CommonException(ErrorCode.ILLEGAL_ARGUMENT, "해당하는 이름의 권한을 찾을 수 없습니다: " + roleName);
     }
 
     public List<SimpleGrantedAuthority> getAuthorities() {

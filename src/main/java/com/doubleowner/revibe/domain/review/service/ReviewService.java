@@ -2,8 +2,6 @@ package com.doubleowner.revibe.domain.review.service;
 
 import com.doubleowner.revibe.domain.execution.entity.Execution;
 import com.doubleowner.revibe.domain.execution.repository.ExecutionRepository;
-import com.doubleowner.revibe.domain.payment.entity.Payment;
-import com.doubleowner.revibe.domain.payment.repository.PaymentRepository;
 import com.doubleowner.revibe.domain.review.dto.ReviewRequestDto;
 import com.doubleowner.revibe.domain.review.dto.ReviewResponseDto;
 import com.doubleowner.revibe.domain.review.dto.UpdateReviewRequestDto;
@@ -11,10 +9,12 @@ import com.doubleowner.revibe.domain.review.entity.Review;
 import com.doubleowner.revibe.domain.review.repository.ReviewRepository;
 import com.doubleowner.revibe.domain.user.entity.User;
 import com.doubleowner.revibe.global.config.auth.UserDetailsImpl;
-import com.doubleowner.revibe.global.exception.ImageException;
-import com.doubleowner.revibe.global.exception.errorCode.ImageErrorCode;
+import com.doubleowner.revibe.global.exception.CommonException;
+import com.doubleowner.revibe.global.exception.errorCode.ErrorCode;
 import com.doubleowner.revibe.global.util.S3Uploader;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -27,20 +27,14 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ReviewService {
     private final ReviewRepository reviewRepository;
-    private final PaymentRepository paymentRepository;
     private final ExecutionRepository executionRepository;
     private final S3Uploader s3Uploader;
 
     @Transactional
     public ReviewResponseDto write(ReviewRequestDto reviewRequestDto, MultipartFile file, User user) {
 
-        Payment payment = paymentRepository.findByPaymentId(reviewRequestDto.getPaymentId()).orElseThrow(() -> new RuntimeException());
-
-        if (!user.getEmail().equals(payment.getBuy().getUser().getEmail())) {
-            throw new RuntimeException("내가 구매한 상품이 아닙니다.");
-        }
-
-        Execution execution = executionRepository.findExecutionById(reviewRequestDto.getExecutionId()).orElseThrow(() -> new RuntimeException("내역을 찾을 수 없습니다"));
+        Execution execution = executionRepository.findExecutionById(reviewRequestDto.getExecutionId(), reviewRequestDto.getPaymentId(), user.getEmail())
+                .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_VALUE, "내역을 찾을 수 없습니다"));
 
         String image = uploadImage(file);
 
@@ -121,7 +115,7 @@ public class ReviewService {
             return s3Uploader.upload(file);
 
         } catch (IOException e) {
-            throw new ImageException(ImageErrorCode.FAILED_UPLOAD_IMAGE);
+            throw new CommonException(ErrorCode.FAILED_UPLOAD_IMAGE);
         }
     }
 
@@ -139,13 +133,15 @@ public class ReviewService {
             review.update(imageUrl);
 
         } catch (IOException e) {
-            throw new ImageException(ImageErrorCode.FAILED_UPLOAD_IMAGE);
+            throw new CommonException(ErrorCode.FAILED_UPLOAD_IMAGE);
         }
 
     }
 
-    public List<ReviewResponseDto> findItemReviews(Long itemId) {
-        List<Review> reviews = reviewRepository.findReviewsByItem_Id(itemId);
+    @Transactional(readOnly = true)
+    public List<ReviewResponseDto> findItemReviews(Long itemId, int page, int size) {
+        Pageable pageable = PageRequest.of(page - 1, size);
+        List<Review> reviews = reviewRepository.findReviewsByItemId(itemId, pageable).stream().toList();
         return reviews.stream().map(this::toDto).toList();
     }
 }

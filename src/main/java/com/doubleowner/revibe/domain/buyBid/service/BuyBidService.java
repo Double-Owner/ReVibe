@@ -8,7 +8,8 @@ import com.doubleowner.revibe.domain.option.entity.Option;
 import com.doubleowner.revibe.domain.option.repository.OptionRepository;
 import com.doubleowner.revibe.domain.user.entity.User;
 import com.doubleowner.revibe.domain.user.repository.UserRepository;
-import com.doubleowner.revibe.global.common.enumType.BidStatus;
+import com.doubleowner.revibe.global.exception.CommonException;
+import com.doubleowner.revibe.global.exception.errorCode.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -27,7 +28,8 @@ public class BuyBidService {
     //1 구매 입찰 생성
     @Transactional
     public BuyBidResponseDto createBuyBid(User loginUser, BuyBidRequestDto requestBody) {
-        Option option = optionRepository.findById(requestBody.getOptionId()).orElseThrow();
+        Option option = optionRepository.findById(requestBody.getOptionId())
+                .orElseThrow(()->new CommonException(ErrorCode.NOT_FOUND_VALUE,"해당 옵션을 찾을 수 없습니다."));
 
         BuyBid buyBid = bidRepository.save(requestBody.toEntity(option, loginUser));
 
@@ -37,7 +39,8 @@ public class BuyBidService {
     //1 구매 입찰 제거 -> status 값 end로 변경
     @Transactional
     public void deleteBuyBid(Long buyBidId) {
-        BuyBid buyBid = bidRepository.findById(buyBidId).orElseThrow();
+        BuyBid buyBid = bidRepository.findById(buyBidId)
+                .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_VALUE, "해당 구매입찰을 찾을 수 없습니다."));
         buyBid.delete();
 
         bidRepository.save(buyBid);

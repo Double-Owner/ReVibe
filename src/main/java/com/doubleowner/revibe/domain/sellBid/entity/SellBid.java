@@ -40,11 +40,11 @@ public class SellBid {
     @Column(nullable = false)
     private LocalDateTime endedAt;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "seller_id")
     private User user;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "option_id")
     private Option options;
 

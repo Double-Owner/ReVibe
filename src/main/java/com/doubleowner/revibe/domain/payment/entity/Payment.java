@@ -1,7 +1,6 @@
 package com.doubleowner.revibe.domain.payment.entity;
 
 import com.doubleowner.revibe.domain.buyBid.entity.BuyBid;
-import com.doubleowner.revibe.domain.payment.dto.PaymentResponseDto;
 import com.doubleowner.revibe.global.common.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -27,7 +26,7 @@ public class Payment extends BaseTimeEntity {
     @Enumerated(value = EnumType.STRING)
     private PayStatus payStatus;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "buyBid_id")
     private BuyBid buy; //주문 아이디
 
