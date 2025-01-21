@@ -24,10 +24,10 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public class OAuth2UserService {
 
-    @Value("${KAKAO_CLIENT_ID}")
+    @Value("${kakao.client.id}")
     private String client_id;
 
-    @Value("${KAKAO_REDIRECT_URI}")
+    @Value("${kakao.redirect-url}")
     private String redirect_uri;
 
     private final UserRepository userRepository;

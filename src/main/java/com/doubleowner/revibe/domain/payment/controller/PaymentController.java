@@ -21,9 +21,9 @@ import java.util.List;
 @Slf4j
 public class PaymentController {
     private final PaymentService paymentService;
-    @Value("${WIDGET_SECRET_KEY}")
+    @Value("${toss.widget-key}")
     private String WIDGET_SECRET_KEY;
-    @Value("${API_SECRET_KEY}")
+    @Value("${toss.secret-key}")
     private String API_SECRET_KEY;
 
     @PostMapping("api/v1/payments")
