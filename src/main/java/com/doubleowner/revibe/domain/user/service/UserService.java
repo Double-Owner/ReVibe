@@ -104,8 +104,9 @@ public class UserService {
 
         Map<String, String> generatedTokens = jwtProvider.generateTokens(user.getEmail(), user.getRole());
         String accessToken = generatedTokens.get("access_token");
+        String refreshToken = generatedTokens.get("refresh_token");
 
-        return new JwtAuthResponse(AuthenticationScheme.BEARER.getName(), accessToken);
+        return new JwtAuthResponse(AuthenticationScheme.BEARER.getName(), accessToken, refreshToken);
     }
 
     /**

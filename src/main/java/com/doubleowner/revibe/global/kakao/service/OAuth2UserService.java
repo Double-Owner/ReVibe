@@ -25,10 +25,10 @@ import java.util.Objects;
 public class OAuth2UserService {
 
     @Value("${kakao.client.id}")
-    private String client_id;
+    private String clientId;
 
     @Value("${kakao.redirect-url}")
-    private String redirect_uri;
+    private String redirectUri;
 
     private final UserRepository userRepository;
     private final JwtProvider jwtProvider;
@@ -42,8 +42,8 @@ public class OAuth2UserService {
         URI uri = UriComponentsBuilder
                 .fromUriString("https://kauth.kakao.com/oauth/token")
                 .queryParam("grant_type", "authorization_code")
-                .queryParam("client_id", client_id)
-                .queryParam("redirect_uri", redirect_uri)
+                .queryParam("client_id", clientId)
+                .queryParam("redirect_uri", redirectUri)
                 .queryParam("code", code)
                 .encode()
                 .build().toUri();
@@ -100,8 +100,9 @@ public class OAuth2UserService {
 
         Map<String, String> generatedTokens = jwtProvider.generateTokens(existUser.getEmail(), existUser.getRole());
         String generatedAccessToken = generatedTokens.get("access_token");
+        String generatedRefreshToken = generatedTokens.get("refresh_token");
 
-        return new JwtAuthResponse(AuthenticationScheme.BEARER.getName(), generatedAccessToken);
+        return new JwtAuthResponse(AuthenticationScheme.BEARER.getName(), generatedAccessToken, generatedRefreshToken);
     }
 
     /**

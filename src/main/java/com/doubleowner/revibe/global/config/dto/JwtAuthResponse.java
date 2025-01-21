@@ -10,11 +10,12 @@ public class JwtAuthResponse {
 
     private String tokenAuthScheme;
     private String accessToken;
-//    private String refreshToken;
+    private String refreshToken;
 
-    public JwtAuthResponse(String tokenAuthScheme, String accessToken) {
+    public JwtAuthResponse(String tokenAuthScheme, String accessToken, String refreshToken) {
         this.tokenAuthScheme = tokenAuthScheme;
         this.accessToken = accessToken;
+        this.refreshToken = refreshToken;
 
     }
 }
