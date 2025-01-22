@@ -35,8 +35,12 @@ public class ReviewService {
 
         Execution execution = executionRepository.findExecutionById(reviewRequestDto.getExecutionId(), reviewRequestDto.getPaymentId(), user.getEmail())
                 .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_VALUE, "내역을 찾을 수 없습니다"));
+        String image = null;
 
-        String image = uploadImage(file);
+        if (file != null) {
+            image = uploadImage(file);
+        }
+
 
         Review review = Review.builder()
                 .starRate(reviewRequestDto.getStarRate())
@@ -106,10 +110,6 @@ public class ReviewService {
      * @return
      */
     private String uploadImage(MultipartFile file) {
-
-        if (file == null) {
-            return null;
-        }
 
         try {
             return s3Uploader.upload(file);
