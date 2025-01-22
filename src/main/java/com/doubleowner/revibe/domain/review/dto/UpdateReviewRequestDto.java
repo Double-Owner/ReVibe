@@ -3,8 +3,11 @@ package com.doubleowner.revibe.domain.review.dto;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import org.springframework.web.multipart.MultipartFile;
 
+@AllArgsConstructor
 @Getter
 public class UpdateReviewRequestDto {
 
@@ -18,5 +21,7 @@ public class UpdateReviewRequestDto {
 
     @NotNull(message = "내용은 필수 값입니다.")
     private String content;
+
+    private MultipartFile image;
 
 }

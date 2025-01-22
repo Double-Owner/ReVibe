@@ -13,7 +13,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -24,8 +23,8 @@ public class ReviewController {
     private final ReviewService reviewService;
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<CommonResponseBody<ReviewResponseDto>> writeReview(@AuthenticationPrincipal UserDetailsImpl userDetails, @Valid @RequestPart ReviewRequestDto reviewRequestDto, @RequestPart(name = "image", required = false) MultipartFile file) {
-        ReviewResponseDto review = reviewService.write(reviewRequestDto, file, userDetails.getUser());
+    public ResponseEntity<CommonResponseBody<ReviewResponseDto>> writeReview(@ModelAttribute ReviewRequestDto requestDto, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        ReviewResponseDto review = reviewService.write(requestDto, userDetails.getUser());
         return new ResponseEntity<>(new CommonResponseBody<>("리뷰가 등록되었습니다.", review), HttpStatus.CREATED);
     }
 
@@ -35,9 +34,9 @@ public class ReviewController {
         return new ResponseEntity<>(new CommonResponseBody<>("리뷰가 조회 되었습니다", read), HttpStatus.OK);
     }
 
-    @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<CommonResponseBody<Void>> updateReview(@PathVariable Long id, @AuthenticationPrincipal UserDetailsImpl userDetails, @Valid @RequestPart UpdateReviewRequestDto updateReviewRequestDto, @RequestPart(name = "image", required = false) MultipartFile file) {
-        reviewService.updateReview(id, userDetails, updateReviewRequestDto, file);
+    @PutMapping("/{id}")
+    public ResponseEntity<CommonResponseBody<Void>> updateReview(@PathVariable Long id, @AuthenticationPrincipal UserDetailsImpl userDetails, @Valid @ModelAttribute UpdateReviewRequestDto updateReviewRequestDto) {
+        reviewService.updateReview(id, userDetails, updateReviewRequestDto);
         return new ResponseEntity<>(new CommonResponseBody<>("리뷰가 수정되었습니다."), HttpStatus.OK);
 
     }

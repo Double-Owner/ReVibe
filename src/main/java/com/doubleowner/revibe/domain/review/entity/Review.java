@@ -57,4 +57,8 @@ public class Review extends BaseTimeEntity {
     public void update(String reviewImage) {
         this.reviewImage = reviewImage;
     }
+
+    public void deleteImage() {
+        this.reviewImage = null;
+    }
 }

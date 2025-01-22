@@ -34,17 +34,18 @@ public class ReviewService {
 
     private static final int TEXT_ONLY_POINT = 100;
     private static final int TEXT_IMAGE_POINT = 500;
+    private static final int DIFFERENCE_POINT = 400;
 
     @Transactional
-    public ReviewResponseDto write(ReviewRequestDto reviewRequestDto, MultipartFile file, User user) {
+    public ReviewResponseDto write(ReviewRequestDto reviewRequestDto, User user) {
 
 
-        Execution execution = executionRepository.findExecutionById(reviewRequestDto.getExecutionId(), reviewRequestDto.getPaymentId(), user.getEmail())
+        Execution execution = executionRepository.findExecutionById(reviewRequestDto.getPaymentId(), user.getEmail())
                 .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_VALUE, "내역을 찾을 수 없습니다"));
         String image = null;
         int point = TEXT_ONLY_POINT;
-        if (file != null) {
-            image = uploadImage(file);
+        if (reviewRequestDto.getImage() != null) {
+            image = uploadImage(reviewRequestDto.getImage());
             point = TEXT_IMAGE_POINT;
         }
 
@@ -76,14 +77,14 @@ public class ReviewService {
     }
 
     @Transactional
-    public void updateReview(Long id, UserDetailsImpl userDetails, UpdateReviewRequestDto updateReviewRequestDto, MultipartFile file) {
+    public void updateReview(Long id, UserDetailsImpl userDetails, UpdateReviewRequestDto updateReviewRequestDto) {
 
         Review review = reviewRepository.findMyReview(id, userDetails.getUser().getId());
 
-        if (file != null) {
-            this.reUploadImage(review, file);
-        }
+        // 이미지 관련 처리
+        handlePoint(review, updateReviewRequestDto.getImage());
 
+        // 나머지 필드 업데이트
         review.update(updateReviewRequestDto);
 
     }
@@ -97,6 +98,27 @@ public class ReviewService {
             review.getUser().minusPoint(TEXT_ONLY_POINT);
         }
         reviewRepository.delete(review);
+    }
+
+    private void handlePoint(Review review, MultipartFile newImage) {
+        try {
+            if (newImage != null) {
+                if (review.getReviewImage() == null) {
+                    review.getUser().addPoint(DIFFERENCE_POINT);
+                }
+                // 새 이미지 업로드
+                reUploadImage(review, newImage);
+
+            } else {
+                if (review.getReviewImage() != null) {
+                    s3Uploader.deleteImage(review.getReviewImage());
+                    review.deleteImage();
+                    review.getUser().minusPoint(DIFFERENCE_POINT);
+                }
+            }
+        } catch (IOException e) {
+            throw new CommonException(ErrorCode.FAILED_UPLOAD_IMAGE);
+        }
     }
 
     /**
@@ -141,7 +163,10 @@ public class ReviewService {
     private void reUploadImage(Review review, MultipartFile file) {
 
         try {
-            s3Uploader.deleteImage(review.getReviewImage());
+            if (review.getReviewImage() != null) {
+                s3Uploader.deleteImage(review.getReviewImage());
+            }
+
             String imageUrl = uploadImage(file);
             review.update(imageUrl);
 
