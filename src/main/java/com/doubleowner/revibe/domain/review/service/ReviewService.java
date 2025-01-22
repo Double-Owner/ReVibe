@@ -8,6 +8,7 @@ import com.doubleowner.revibe.domain.review.dto.UpdateReviewRequestDto;
 import com.doubleowner.revibe.domain.review.entity.Review;
 import com.doubleowner.revibe.domain.review.repository.ReviewRepository;
 import com.doubleowner.revibe.domain.user.entity.User;
+import com.doubleowner.revibe.domain.user.repository.UserRepository;
 import com.doubleowner.revibe.global.config.auth.UserDetailsImpl;
 import com.doubleowner.revibe.global.exception.CommonException;
 import com.doubleowner.revibe.global.exception.errorCode.ErrorCode;
@@ -28,17 +29,23 @@ import java.util.List;
 public class ReviewService {
     private final ReviewRepository reviewRepository;
     private final ExecutionRepository executionRepository;
+    private final UserRepository userRepository;
     private final S3Uploader s3Uploader;
+
+    private static final int TEXT_ONLY_POINT=100;
+    private static final int TEXT_IMAGE_POINT=500;
 
     @Transactional
     public ReviewResponseDto write(ReviewRequestDto reviewRequestDto, MultipartFile file, User user) {
 
+
         Execution execution = executionRepository.findExecutionById(reviewRequestDto.getExecutionId(), reviewRequestDto.getPaymentId(), user.getEmail())
                 .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_VALUE, "내역을 찾을 수 없습니다"));
         String image = null;
-
+        int point=TEXT_ONLY_POINT;
         if (file != null) {
             image = uploadImage(file);
+            point=TEXT_IMAGE_POINT;
         }
 
 
@@ -53,6 +60,9 @@ public class ReviewService {
                 .build();
 
         Review save = reviewRepository.save(review);
+        user.addPoint(point);
+        userRepository.save(user);
+
 
         return toDto(save);
     }

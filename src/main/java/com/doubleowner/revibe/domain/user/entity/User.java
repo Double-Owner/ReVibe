@@ -47,11 +47,15 @@ public class User extends BaseTimeEntity {
     @Enumerated(value = EnumType.STRING)
     private LoginMethod loginMethod = LoginMethod.LOCAL;
 
-    @OneToOne(cascade = CascadeType.ALL,orphanRemoval = true)
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "account_id")
     private Account account;
 
-    public User() {}
+    @Column(nullable = false, columnDefinition = "INT DEFAULT 0")
+    private int point;
+
+    public User() {
+    }
 
     public User(String email, String nickname, String password, String profileImage, String address, String phoneNumber, Role role) {
         this.email = email;
@@ -83,6 +87,10 @@ public class User extends BaseTimeEntity {
         this.role = Role.ROLE_USER;
         this.status = UserStatus.USER_ACTIVE;
         this.loginMethod = LoginMethod.KAKAO;
+    }
+
+    public void addPoint(int point) {
+        this.point += point;
     }
 
 }
