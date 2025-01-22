@@ -32,8 +32,8 @@ public class ReviewService {
     private final UserRepository userRepository;
     private final S3Uploader s3Uploader;
 
-    private static final int TEXT_ONLY_POINT=100;
-    private static final int TEXT_IMAGE_POINT=500;
+    private static final int TEXT_ONLY_POINT = 100;
+    private static final int TEXT_IMAGE_POINT = 500;
 
     @Transactional
     public ReviewResponseDto write(ReviewRequestDto reviewRequestDto, MultipartFile file, User user) {
@@ -42,10 +42,10 @@ public class ReviewService {
         Execution execution = executionRepository.findExecutionById(reviewRequestDto.getExecutionId(), reviewRequestDto.getPaymentId(), user.getEmail())
                 .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_VALUE, "내역을 찾을 수 없습니다"));
         String image = null;
-        int point=TEXT_ONLY_POINT;
+        int point = TEXT_ONLY_POINT;
         if (file != null) {
             image = uploadImage(file);
-            point=TEXT_IMAGE_POINT;
+            point = TEXT_IMAGE_POINT;
         }
 
 
@@ -90,9 +90,12 @@ public class ReviewService {
 
     @Transactional
     public void deleteReview(Long id, User user) {
-
         Review review = reviewRepository.findMyReview(id, user.getId());
-
+        if (review.getReviewImage() != null) {
+            review.getUser().minusPoint(TEXT_IMAGE_POINT);
+        } else {
+            review.getUser().minusPoint(TEXT_ONLY_POINT);
+        }
         reviewRepository.delete(review);
     }
 
