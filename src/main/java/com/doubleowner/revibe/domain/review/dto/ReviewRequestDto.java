@@ -6,16 +6,12 @@ import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
+import org.springframework.web.multipart.MultipartFile;
 
 @Getter
-@NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class ReviewRequestDto {
-
-    @NotNull(message = "Execution ID는 필수 값입니다")
-    private Long executionId;
 
     @NotNull(message = "Payment ID는 필수 값입니다")
     private Long paymentId;
@@ -30,4 +26,6 @@ public class ReviewRequestDto {
 
     @NotNull(message = "내용은 필수 값입니다.")
     private String content;
+
+    private MultipartFile image;
 }
