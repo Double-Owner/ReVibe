@@ -19,7 +19,7 @@ public class S3Uploader {
 
     private final AmazonS3Client amazonS3Client;
 
-    @Value("${cloud.aws.s3}")
+    @Value("${cloud.aws.s3.bucket}")
     private String bucket;
 
     private static final String[] PERMITTED_FILE_EXTENSIONS = {"jpg", "png", "jpeg", "gif", "pdf", "csv"};
@@ -45,7 +45,7 @@ public class S3Uploader {
     }
 
     private void validateFile(String fileName) {
-        
+
         String extension = fileName.substring(fileName.lastIndexOf(".") + 1).toLowerCase();
 
 
