@@ -1,4 +1,4 @@
-package com.doubleowner.revibe.domain.buyBid.entity;
+package com.doubleowner.revibe.domain.sellbid.entity;
 
 import com.doubleowner.revibe.domain.option.entity.Option;
 import com.doubleowner.revibe.domain.user.entity.User;
@@ -13,11 +13,11 @@ import org.hibernate.annotations.CreationTimestamp;
 import java.time.LocalDateTime;
 
 @Entity
-@Getter
 @Builder
-@AllArgsConstructor
+@Getter
 @NoArgsConstructor
-public class BuyBid {
+@AllArgsConstructor
+public class SellBid {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,25 +27,28 @@ public class BuyBid {
     private Long price;
 
     @Column(nullable = false)
-    @Enumerated(EnumType.STRING)
-    private BidStatus buyStatus;
+    private Long amount;
 
-    @Column(nullable = false, updatable = false)
-    @CreationTimestamp
-    @Builder.Default
-    private LocalDateTime createdAt = LocalDateTime.now();
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private BidStatus status;
+
+    @Column(nullable = false)
+    @CreationTimestamp()
+    private LocalDateTime startedAt;
+
+    @Column(nullable = false)
+    private LocalDateTime endedAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "buyer_id")
+    @JoinColumn(name = "seller_id")
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "option_id")
-    private Option option;
+    private Option options;
 
-    //softDelete
-    public void delete(){
-        this.buyStatus = BidStatus.END;
+    public void delete() {
+        status = BidStatus.END;
     }
-
 }

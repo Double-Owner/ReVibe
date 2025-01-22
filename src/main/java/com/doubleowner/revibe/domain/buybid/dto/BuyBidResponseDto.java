@@ -1,7 +1,6 @@
-package com.doubleowner.revibe.domain.buyBid.dto;
+package com.doubleowner.revibe.domain.buybid.dto;
 
-import com.doubleowner.revibe.domain.buyBid.entity.BuyBid;
-import com.doubleowner.revibe.domain.option.entity.Option;
+import com.doubleowner.revibe.domain.buybid.entity.BuyBid;
 import com.doubleowner.revibe.domain.option.entity.Size;
 import com.doubleowner.revibe.global.common.enumType.BidStatus;
 import lombok.Builder;

@@ -1,7 +1,7 @@
 package com.doubleowner.revibe.domain.payment.service;
 
-import com.doubleowner.revibe.domain.buyBid.entity.BuyBid;
-import com.doubleowner.revibe.domain.buyBid.repository.BuyBidRepository;
+import com.doubleowner.revibe.domain.buybid.entity.BuyBid;
+import com.doubleowner.revibe.domain.buybid.repository.BuyBidRepository;
 import com.doubleowner.revibe.domain.payment.dto.CardPaymentRequestDto;
 import com.doubleowner.revibe.domain.payment.dto.PaymentResponseDto;
 import com.doubleowner.revibe.domain.payment.entity.PayMethod;

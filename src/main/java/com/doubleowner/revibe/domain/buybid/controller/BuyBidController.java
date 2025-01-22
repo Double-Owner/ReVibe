@@ -1,9 +1,8 @@
-package com.doubleowner.revibe.domain.buyBid.controller;
+package com.doubleowner.revibe.domain.buybid.controller;
 
-import com.doubleowner.revibe.domain.buyBid.dto.BuyBidRequestDto;
-import com.doubleowner.revibe.domain.buyBid.dto.BuyBidResponseDto;
-import com.doubleowner.revibe.domain.buyBid.service.BuyBidService;
-import com.doubleowner.revibe.domain.user.dto.response.UserSignupResponseDto;
+import com.doubleowner.revibe.domain.buybid.dto.BuyBidRequestDto;
+import com.doubleowner.revibe.domain.buybid.dto.BuyBidResponseDto;
+import com.doubleowner.revibe.domain.buybid.service.BuyBidService;
 import com.doubleowner.revibe.domain.user.entity.User;
 import com.doubleowner.revibe.global.common.dto.CommonResponseBody;
 import com.doubleowner.revibe.global.config.auth.UserDetailsImpl;
@@ -12,8 +11,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/buy-bids")

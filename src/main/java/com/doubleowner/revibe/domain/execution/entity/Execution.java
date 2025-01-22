@@ -1,7 +1,7 @@
 package com.doubleowner.revibe.domain.execution.entity;
 
 import com.doubleowner.revibe.domain.payment.entity.Payment;
-import com.doubleowner.revibe.domain.sellBid.entity.SellBid;
+import com.doubleowner.revibe.domain.sellbid.entity.SellBid;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
