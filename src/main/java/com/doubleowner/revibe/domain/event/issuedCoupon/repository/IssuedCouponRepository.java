@@ -1,6 +1,6 @@
 package com.doubleowner.revibe.domain.event.issuedCoupon.repository;
 
-import com.doubleowner.revibe.domain.event.entity.IssuedCoupon;
+import com.doubleowner.revibe.domain.event.issuedCoupon.entity.IssuedCoupon;
 import com.doubleowner.revibe.domain.user.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
