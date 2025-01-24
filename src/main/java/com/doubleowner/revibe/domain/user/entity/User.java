@@ -56,8 +56,8 @@ public class User extends BaseTimeEntity {
     @Column(nullable = false, columnDefinition = "INT DEFAULT 0")
     private int point;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<IssuedCoupon> issuedCoupons;
+//    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+//    private List<IssuedCoupon> issuedCoupons;
 
     public User() {
     }
