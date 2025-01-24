@@ -7,6 +7,8 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.List;
+
 @Entity
 @Getter
 @Setter
@@ -53,6 +55,9 @@ public class User extends BaseTimeEntity {
 
     @Column(nullable = false, columnDefinition = "INT DEFAULT 0")
     private int point;
+
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<IssuedCoupon> issuedCoupons;
 
     public User() {
     }
