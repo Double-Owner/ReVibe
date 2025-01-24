@@ -1,6 +1,7 @@
 package com.doubleowner.revibe.domain.event.coupon.entity;
 
 import com.doubleowner.revibe.domain.event.coupon.dto.request.CouponRequestDto;
+import com.doubleowner.revibe.domain.event.issuedCoupon.entity.IssuedCoupon;
 import com.doubleowner.revibe.global.common.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -37,8 +38,8 @@ public class Coupon extends BaseTimeEntity {
     @Column(nullable = true)
     private LocalDateTime issuedEnd;
 
-//    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-//    private List<IssuedCoupon> issuedCoupons;
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<IssuedCoupon> issuedCoupons;
 
     public Coupon(long l, String firstComeFirstServed, int i, int i1) {
         this.name = firstComeFirstServed;
