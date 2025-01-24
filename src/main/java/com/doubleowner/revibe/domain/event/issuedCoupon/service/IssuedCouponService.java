@@ -1,10 +1,10 @@
 package com.doubleowner.revibe.domain.event.issuedCoupon.service;
 
-import com.doubleowner.revibe.domain.event.coupon.dto.response.IssuedCouponResponseDto;
+import com.doubleowner.revibe.domain.event.coupon.entity.Coupon;
 import com.doubleowner.revibe.domain.event.coupon.repository.CouponRepository;
-import com.doubleowner.revibe.domain.event.coupon.repository.IssuedCouponRepository;
-import com.doubleowner.revibe.domain.event.entity.Coupon;
-import com.doubleowner.revibe.domain.event.entity.IssuedCoupon;
+import com.doubleowner.revibe.domain.event.issuedCoupon.dto.IssuedCouponResponseDto;
+import com.doubleowner.revibe.domain.event.issuedCoupon.entity.IssuedCoupon;
+import com.doubleowner.revibe.domain.event.issuedCoupon.repository.IssuedCouponRepository;
 import com.doubleowner.revibe.domain.user.entity.User;
 import com.doubleowner.revibe.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;

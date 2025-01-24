@@ -44,7 +44,7 @@ public class Coupon extends BaseTimeEntity {
     public Coupon(long l, String firstComeFirstServed, int i, int i1) {
         this.name = firstComeFirstServed;
         this.price = i;
-        this.totalQuantity = i;
+        this.totalQuantity = i1;
     }
 
     public void updateCoupon(CouponRequestDto dto) {
@@ -56,6 +56,10 @@ public class Coupon extends BaseTimeEntity {
     }
 
     public void decrementCoupon() {
-        this.totalQuantity--;
+        if(this.totalQuantity > 0) {
+            this.totalQuantity--;
+        } else {
+            throw new IllegalArgumentException("쿠폰이 소진되었습니다.");
+        }
     }
 }

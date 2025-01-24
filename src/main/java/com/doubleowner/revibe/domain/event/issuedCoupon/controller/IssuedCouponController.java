@@ -1,7 +1,7 @@
 package com.doubleowner.revibe.domain.event.issuedCoupon.controller;
 
-import com.doubleowner.revibe.domain.event.coupon.dto.response.IssuedCouponResponseDto;
-import com.doubleowner.revibe.domain.event.coupon.service.IssuedCouponService;
+import com.doubleowner.revibe.domain.event.issuedCoupon.dto.IssuedCouponResponseDto;
+import com.doubleowner.revibe.domain.event.issuedCoupon.service.IssuedCouponService;
 import com.doubleowner.revibe.global.common.dto.CommonResponseBody;
 import com.doubleowner.revibe.global.config.auth.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;

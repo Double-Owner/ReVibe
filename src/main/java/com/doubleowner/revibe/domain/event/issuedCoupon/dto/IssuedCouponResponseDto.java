@@ -1,6 +1,6 @@
 package com.doubleowner.revibe.domain.event.issuedCoupon.dto;
 
-import com.doubleowner.revibe.domain.event.entity.CouponStatus;
+import com.doubleowner.revibe.domain.event.coupon.entity.CouponStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
