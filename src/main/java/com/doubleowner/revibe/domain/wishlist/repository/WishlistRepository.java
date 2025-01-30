@@ -13,8 +13,7 @@ public interface WishlistRepository extends JpaRepository<Wishlist, Long> {
     @EntityGraph(attributePaths = {"user", "item"})
     boolean existsByUserIdAndItemId(Long userId, Long itemId);
 
-    @EntityGraph(attributePaths = {"user", "item"})
-    void deleteByUserIdAndItemId(Long userId, Long itemId);
-
+    @EntityGraph(attributePaths = {"item"})
     List<Wishlist> findByUser(User loginUser);
+
 }
