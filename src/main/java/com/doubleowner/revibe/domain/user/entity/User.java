@@ -1,6 +1,7 @@
 package com.doubleowner.revibe.domain.user.entity;
 
 import com.doubleowner.revibe.domain.account.entity.Account;
+import com.doubleowner.revibe.domain.chat.entity.UserChat;
 import com.doubleowner.revibe.domain.event.issuedCoupon.entity.IssuedCoupon;
 import com.doubleowner.revibe.domain.user.dto.request.UserProfileUpdateRequestDto;
 import com.doubleowner.revibe.global.common.BaseTimeEntity;
@@ -59,6 +60,9 @@ public class User extends BaseTimeEntity {
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     private List<IssuedCoupon> issuedCoupons;
+
+    @OneToMany(mappedBy = "user")
+    private List<UserChat> userChats;
 
     public User() {
     }
