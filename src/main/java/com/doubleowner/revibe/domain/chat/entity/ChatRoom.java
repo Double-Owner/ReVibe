@@ -1,12 +1,12 @@
 package com.doubleowner.revibe.domain.chat.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import com.doubleowner.revibe.domain.chat.dto.ChatRoomResponseDto;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
+
+import java.util.List;
 
 @Entity
 @AllArgsConstructor
@@ -19,4 +19,14 @@ public class ChatRoom {
 
     private String title;
 
+    @OneToMany(mappedBy = "chatRoom")
+    private List<UserChat> userChats;
+
+
+    public ChatRoomResponseDto toDto() {
+        return ChatRoomResponseDto.builder()
+                .id(this.id)
+                .title(this.title)
+                .build();
+    }
 }
