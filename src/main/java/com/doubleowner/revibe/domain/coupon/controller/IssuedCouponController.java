@@ -1,7 +1,7 @@
-package com.doubleowner.revibe.domain.event.issuedCoupon.controller;
+package com.doubleowner.revibe.domain.coupon.controller;
 
-import com.doubleowner.revibe.domain.event.issuedCoupon.dto.IssuedCouponResponseDto;
-import com.doubleowner.revibe.domain.event.issuedCoupon.service.IssuedCouponService;
+import com.doubleowner.revibe.domain.coupon.dto.response.IssuedCouponResponseDto;
+import com.doubleowner.revibe.domain.coupon.service.IssuedCouponService;
 import com.doubleowner.revibe.global.common.dto.CommonResponseBody;
 import com.doubleowner.revibe.global.config.auth.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
@@ -30,9 +30,9 @@ public class IssuedCouponController {
             @AuthenticationPrincipal UserDetailsImpl userDetails
     ){
 
-        IssuedCouponResponseDto issuedCouponResponseDto = issuedCouponService.issueCoupon(id, userDetails.getUser());
+        issuedCouponService.issuedCoupon(id, userDetails.getUser());
 
-        return new ResponseEntity<>(new CommonResponseBody<>("쿠폰 등록이 완료되었습니다.", issuedCouponResponseDto), HttpStatus.CREATED);
+        return new ResponseEntity<>(new CommonResponseBody<>("쿠폰 등록이 완료되었습니다."), HttpStatus.CREATED);
     }
 
 

@@ -2,19 +2,17 @@ package com.doubleowner.revibe.domain.user.entity;
 
 import com.doubleowner.revibe.domain.account.entity.Account;
 import com.doubleowner.revibe.domain.chat.entity.UserChat;
-import com.doubleowner.revibe.domain.event.issuedCoupon.entity.IssuedCoupon;
+import com.doubleowner.revibe.domain.coupon.entity.IssuedCoupon;
 import com.doubleowner.revibe.domain.user.dto.request.UserProfileUpdateRequestDto;
 import com.doubleowner.revibe.global.common.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
-import lombok.Setter;
 
 import java.util.List;
 
 @Entity
 @Getter
-@Setter
-@Table(name = "`user`")
+@Table
 public class User extends BaseTimeEntity {
 
     @Id
@@ -58,7 +56,7 @@ public class User extends BaseTimeEntity {
     @Column(nullable = false, columnDefinition = "INT DEFAULT 0")
     private int point;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<IssuedCoupon> issuedCoupons;
 
     @OneToMany(mappedBy = "user")

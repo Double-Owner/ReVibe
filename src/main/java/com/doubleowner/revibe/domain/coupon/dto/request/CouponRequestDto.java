@@ -1,4 +1,4 @@
-package com.doubleowner.revibe.domain.event.coupon.dto.request;
+package com.doubleowner.revibe.domain.coupon.dto.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
