@@ -27,11 +27,12 @@ public class OAuth2UserService {
     @Value("${kakao.client.id}")
     private String clientId;
 
-    @Value("${kakao.client.redirect-url}")
+    @Value("${kakao.redirect-url}")
     private String redirectUri;
 
     private final UserRepository userRepository;
     private final JwtProvider jwtProvider;
+    private final RestTemplate restTemplate;
 
     /**
      * 카카오 서버에서 생성된 accessToken 가져오는 과정
@@ -48,7 +49,6 @@ public class OAuth2UserService {
                 .encode()
                 .build().toUri();
 
-        RestTemplate restTemplate = new RestTemplate();
         ResponseEntity<String> response = restTemplate.getForEntity(uri, String.class);
 
         return parsingTokenData(response);
@@ -66,8 +66,6 @@ public class OAuth2UserService {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
         headers.setBearerAuth(accessToken);
-
-        RestTemplate restTemplate = new RestTemplate();
 
         ResponseEntity<String> response = restTemplate
                 .exchange(builder, HttpMethod.GET, new HttpEntity<>(null, headers), String.class);
