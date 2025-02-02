@@ -27,7 +27,7 @@ public class OAuth2UserService {
     @Value("${kakao.client.id}")
     private String clientId;
 
-    @Value("${kakao.redirect-url}")
+    @Value("${kakao.client.redirect-url}")
     private String redirectUri;
 
     private final UserRepository userRepository;

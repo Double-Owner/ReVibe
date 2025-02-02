@@ -1,20 +1,16 @@
-package com.doubleowner.revibe.domain.event.coupon.entity;
+package com.doubleowner.revibe.domain.coupon.entity;
 
-import com.doubleowner.revibe.domain.event.coupon.dto.request.CouponRequestDto;
-import com.doubleowner.revibe.domain.event.issuedCoupon.entity.IssuedCoupon;
+import com.doubleowner.revibe.domain.coupon.dto.request.CouponRequestDto;
 import com.doubleowner.revibe.global.common.BaseTimeEntity;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
 @Getter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
 public class Coupon extends BaseTimeEntity {
@@ -38,13 +34,11 @@ public class Coupon extends BaseTimeEntity {
     @Column(nullable = true)
     private LocalDateTime issuedEnd;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "coupon", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<IssuedCoupon> issuedCoupons;
 
-    public Coupon(long l, String firstComeFirstServed, int i, int i1) {
-        this.name = firstComeFirstServed;
-        this.price = i;
-        this.totalQuantity = i1;
+    public Coupon(String name){
+        this.name = name;
     }
 
     public void updateCoupon(CouponRequestDto dto) {
@@ -56,7 +50,7 @@ public class Coupon extends BaseTimeEntity {
     }
 
     public void decrementCoupon() {
-        if(this.totalQuantity > 0) {
+        if(this.totalQuantity >= 0) {
             this.totalQuantity--;
         } else {
             throw new IllegalArgumentException("쿠폰이 소진되었습니다.");

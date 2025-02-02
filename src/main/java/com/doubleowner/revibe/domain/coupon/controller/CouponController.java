@@ -1,8 +1,8 @@
-package com.doubleowner.revibe.domain.event.coupon.controller;
+package com.doubleowner.revibe.domain.coupon.controller;
 
-import com.doubleowner.revibe.domain.event.coupon.dto.request.CouponRequestDto;
-import com.doubleowner.revibe.domain.event.coupon.dto.response.CouponResponseDto;
-import com.doubleowner.revibe.domain.event.coupon.service.CouponService;
+import com.doubleowner.revibe.domain.coupon.dto.request.CouponRequestDto;
+import com.doubleowner.revibe.domain.coupon.dto.response.CouponResponseDto;
+import com.doubleowner.revibe.domain.coupon.service.CouponService;
 import com.doubleowner.revibe.global.common.dto.CommonResponseBody;
 import com.doubleowner.revibe.global.config.auth.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
@@ -36,7 +36,8 @@ public class CouponController {
     @GetMapping
     public ResponseEntity<CommonResponseBody<List<CouponResponseDto>>> findCoupon(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
-            @RequestParam int page, @RequestParam int size
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
     ) {
 
         List<CouponResponseDto> couponResponseDto = couponService.findCoupons(userDetails.getUser(), page, size);

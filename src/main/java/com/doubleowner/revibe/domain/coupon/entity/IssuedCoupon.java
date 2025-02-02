@@ -1,13 +1,12 @@
-package com.doubleowner.revibe.domain.event.issuedCoupon.entity;
+package com.doubleowner.revibe.domain.coupon.entity;
 
-import com.doubleowner.revibe.domain.event.coupon.entity.Coupon;
-import com.doubleowner.revibe.domain.event.coupon.entity.CouponStatus;
 import com.doubleowner.revibe.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 
@@ -29,7 +28,8 @@ public class IssuedCoupon {
     @Column(nullable = true)
     private LocalDateTime usedAt;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
+    @CreationTimestamp
     private LocalDateTime createdAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
