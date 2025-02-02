@@ -1,9 +1,9 @@
-package com.doubleowner.revibe.domain.event.coupon.service;
+package com.doubleowner.revibe.domain.coupon.service;
 
-import com.doubleowner.revibe.domain.event.coupon.dto.request.CouponRequestDto;
-import com.doubleowner.revibe.domain.event.coupon.dto.response.CouponResponseDto;
-import com.doubleowner.revibe.domain.event.coupon.entity.Coupon;
-import com.doubleowner.revibe.domain.event.coupon.repository.CouponRepository;
+import com.doubleowner.revibe.domain.coupon.dto.request.CouponRequestDto;
+import com.doubleowner.revibe.domain.coupon.dto.response.CouponResponseDto;
+import com.doubleowner.revibe.domain.coupon.entity.Coupon;
+import com.doubleowner.revibe.domain.coupon.repository.CouponRepository;
 import com.doubleowner.revibe.domain.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;

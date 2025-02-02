@@ -63,6 +63,10 @@ dependencies {
 
     //websocket
     implementation 'org.springframework.boot:spring-boot-starter-websocket'
+
+    //레디슨
+    implementation 'org.redisson:redisson-spring-boot-starter:3.23.3'
+    implementation 'org.springframework.boot:spring-boot-starter-aop'
 }
 
 test {
