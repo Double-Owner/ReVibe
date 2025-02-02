@@ -1,5 +1,6 @@
 package com.doubleowner.revibe.domain.execution.entity;
 
+import com.doubleowner.revibe.domain.buybid.entity.BuyBid;
 import com.doubleowner.revibe.domain.payment.entity.Payment;
 import com.doubleowner.revibe.domain.sellbid.entity.SellBid;
 import jakarta.persistence.*;
@@ -24,6 +25,6 @@ public class Execution {
     private SellBid sell;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "payment_id")
-    private Payment payment;
+    @JoinColumn(name = "buyBid_id")
+    private BuyBid buyBid;
 }

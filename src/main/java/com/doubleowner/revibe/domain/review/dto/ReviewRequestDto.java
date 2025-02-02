@@ -13,8 +13,8 @@ import org.springframework.web.multipart.MultipartFile;
 @Builder
 public class ReviewRequestDto {
 
-    @NotNull(message = "Payment ID는 필수 값입니다")
-    private Long paymentId;
+    @NotNull(message = "execution ID는 필수 값입니다")
+    private Long executionId;
 
     @NotNull(message = "별점은 필수 값입니다.")
     @Min(value = 0, message = "별점은 0 이상이어야 합니다.")

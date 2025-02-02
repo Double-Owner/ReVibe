@@ -10,7 +10,6 @@ import java.util.Optional;
 
 @Repository
 public interface ExecutionRepository extends JpaRepository<Execution, Long> {
-
-    @Query("SELECT e FROM Execution e JOIN FETCH e.sell s JOIN FETCH s.options o JOIN FETCH o.item where e.payment.id=:paymentId and e.payment.buy.user.email=:email")
-    Optional<Execution> findExecutionById(@Param("paymentId")Long paymentId,@Param("email") String email);
+    @Query("SELECT e FROM Execution e JOIN FETCH e.sell s JOIN FETCH s.options o JOIN FETCH o.item where e.id=:executionId and e.buyBid.user.email=:email")
+    Optional<Execution> findExecutionById(@Param("executionId")Long ExecutionId,@Param("email") String email);
 }

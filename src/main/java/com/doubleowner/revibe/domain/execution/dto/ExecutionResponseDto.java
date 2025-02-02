@@ -13,6 +13,6 @@ public class ExecutionResponseDto {
 
     private Long id;
     private Long sellBidId;
-    private Long paymentId;
+    private Long buyBidId;
 
 }

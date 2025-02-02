@@ -36,7 +36,7 @@ public class ReviewService {
     @Transactional
     public ReviewResponseDto write(ReviewRequestDto reviewRequestDto, User user) {
 
-        Execution execution = executionRepository.findExecutionById(reviewRequestDto.getPaymentId(), user.getEmail())
+        Execution execution = executionRepository.findExecutionById(reviewRequestDto.getExecutionId(), user.getEmail())
                 .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_VALUE, "내역을 찾을 수 없습니다"));
 
         String image = null;
