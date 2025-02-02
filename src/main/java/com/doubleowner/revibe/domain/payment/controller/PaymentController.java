@@ -7,7 +7,6 @@ import com.doubleowner.revibe.global.common.dto.CommonResponseBody;
 import com.doubleowner.revibe.global.config.auth.UserDetailsImpl;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,7 +17,6 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@Slf4j
 public class PaymentController {
     private final PaymentService paymentService;
     @Value("${toss.widget-key}")
@@ -27,8 +25,8 @@ public class PaymentController {
     private String API_SECRET_KEY;
 
     @PostMapping("api/v1/payments")
-    public ResponseEntity<CommonResponseBody<PaymentResponseDto>> requestCardPayment(@RequestBody CardPaymentRequestDto cardPaymentRequestDto) {
-        PaymentResponseDto paymentResponseDto = paymentService.payCard(cardPaymentRequestDto);
+    public ResponseEntity<CommonResponseBody<PaymentResponseDto>> requestCardPayment(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestBody CardPaymentRequestDto cardPaymentRequestDto) {
+        PaymentResponseDto paymentResponseDto = paymentService.payCard(userDetails.getUser(), cardPaymentRequestDto);
         return new ResponseEntity<>(new CommonResponseBody<>("주문이 완료 되었습니다.", paymentResponseDto), HttpStatus.CREATED);
     }
 

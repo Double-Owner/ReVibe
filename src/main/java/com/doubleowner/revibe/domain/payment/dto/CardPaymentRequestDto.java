@@ -4,12 +4,12 @@ import lombok.Getter;
 
 @Getter
 public class CardPaymentRequestDto {
-    private String orderId;
-    private Long amount;
+    private Long executionId;
     private String cardNumber;
     private String cardExpirationYear;
     private String cardExpirationMonth;
     private String cardPassword;
     private String customerIdentityNumber;
-    private Long buyBidId;
+    private Long useCouponId;
+    private int usePoint;
 }

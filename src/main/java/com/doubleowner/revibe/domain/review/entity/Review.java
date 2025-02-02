@@ -1,7 +1,7 @@
 package com.doubleowner.revibe.domain.review.entity;
 
-import com.doubleowner.revibe.domain.execution.entity.Execution;
 import com.doubleowner.revibe.domain.item.entity.Item;
+import com.doubleowner.revibe.domain.payment.entity.Payment;
 import com.doubleowner.revibe.domain.review.dto.UpdateReviewRequestDto;
 import com.doubleowner.revibe.domain.user.entity.User;
 import com.doubleowner.revibe.global.common.BaseTimeEntity;
@@ -39,8 +39,8 @@ public class Review extends BaseTimeEntity {
     private Item item;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "execution_id")
-    private Execution execution;
+    @JoinColumn(name = "payment_id")
+    private Payment payment;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")

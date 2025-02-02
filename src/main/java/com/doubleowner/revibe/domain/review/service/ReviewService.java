@@ -1,7 +1,7 @@
 package com.doubleowner.revibe.domain.review.service;
 
-import com.doubleowner.revibe.domain.execution.entity.Execution;
-import com.doubleowner.revibe.domain.execution.repository.ExecutionRepository;
+import com.doubleowner.revibe.domain.payment.entity.Payment;
+import com.doubleowner.revibe.domain.payment.repository.PaymentRepository;
 import com.doubleowner.revibe.domain.point.PointService;
 import com.doubleowner.revibe.domain.review.dto.ReviewRequestDto;
 import com.doubleowner.revibe.domain.review.dto.ReviewResponseDto;
@@ -28,7 +28,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ReviewService {
     private final ReviewRepository reviewRepository;
-    private final ExecutionRepository executionRepository;
+    private final PaymentRepository paymentRepository;
     private final PointService pointService;
     private final ImageService imageService;
 
@@ -36,7 +36,7 @@ public class ReviewService {
     @Transactional
     public ReviewResponseDto write(ReviewRequestDto reviewRequestDto, User user) {
 
-        Execution execution = executionRepository.findExecutionById(reviewRequestDto.getExecutionId(), user.getEmail())
+        Payment payment = paymentRepository.findByPaymentId(reviewRequestDto.getPaymentId(), user.getEmail())
                 .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_VALUE, "내역을 찾을 수 없습니다"));
 
         String image = null;
@@ -50,8 +50,8 @@ public class ReviewService {
                 .title(reviewRequestDto.getTitle())
                 .content(reviewRequestDto.getContent())
                 .reviewImage(image)
-                .execution(execution)
-                .item(execution.getSell().getOptions().getItem())
+                .payment(payment)
+                .item(payment.getExecution().getBuyBid().getOption().getItem())
                 .user(user)
                 .build();
 

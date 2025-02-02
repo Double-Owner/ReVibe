@@ -13,11 +13,11 @@ import java.util.Optional;
 @Repository
 public interface PaymentRepository extends JpaRepository<Payment, Long> {
 
-    @Query("SELECT p FROM Payment p WHERE p.buy.user.email = :email AND p.id = :paymentId")
+    @Query("SELECT p FROM Payment p WHERE p.execution.buyBid.user.email = :email AND p.id = :paymentId")
     Optional<Payment> findByPaymentId(@Param("paymentId") Long id, @Param("email") String email);
 
 
-    @Query("SELECT p FROM Payment p where p.buy.user.id=:userId")
+    @Query("SELECT p FROM Payment p where p.execution.buyBid.user.id=:userId")
     List<Payment> findPaymentByUserId(@Param("userId") Long userId, Pageable pageable);
 
 }
