@@ -35,7 +35,7 @@ public class LockAspect {
 
         boolean lock = false;
         try {
-            lock = couponLock.tryLock(5L, 10L, TimeUnit.SECONDS);
+            lock = couponLock.tryLock(distributedLock.waitTime(), distributedLock.leaseTime(), distributedLock.timeUnit());
             if (!lock) {
                 System.out.println("락 획득 실패 !");
             }
