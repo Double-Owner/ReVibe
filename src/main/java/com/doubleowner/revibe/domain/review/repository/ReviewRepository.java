@@ -3,8 +3,8 @@ package com.doubleowner.revibe.domain.review.repository;
 import com.doubleowner.revibe.domain.review.entity.Review;
 import com.doubleowner.revibe.global.exception.CommonException;
 import com.doubleowner.revibe.global.exception.errorCode.ErrorCode;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -28,6 +28,6 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
     @Query("SELECT r FROM Review r WHERE r.user.id = :userId")
     List<Review> findReviewsByUserId(@Param("userId") Long userId);
 
-    Page<Review> findReviewsByItemId(Long itemId, Pageable pageable);
+    Slice<Review> findReviewsByItemId(Long itemId, Pageable pageable);
 
 }

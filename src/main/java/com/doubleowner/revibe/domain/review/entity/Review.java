@@ -47,18 +47,11 @@ public class Review extends BaseTimeEntity {
     private User user;
 
 
-    public void update(UpdateReviewRequestDto updateReviewRequestDto) {
+    public void update(UpdateReviewRequestDto updateReviewRequestDto, String image) {
         this.starRate = updateReviewRequestDto.getStarRate();
         this.title = updateReviewRequestDto.getTitle();
         this.content = updateReviewRequestDto.getContent();
+        this.reviewImage = image;
 
-    }
-
-    public void update(String reviewImage) {
-        this.reviewImage = reviewImage;
-    }
-
-    public void deleteImage() {
-        this.reviewImage = null;
     }
 }
