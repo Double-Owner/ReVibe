@@ -61,7 +61,7 @@ public class IssuedCouponService {
     // 사용자에게 발급된 모든 쿠폰 조회
     public List<IssuedCouponResponseDto> getUserCoupons(User user, int page, int size) {
 
-        Pageable pageable = PageRequest.of(page -1, size);
+        Pageable pageable = PageRequest.of(page, size);
         List<IssuedCoupon> issuedCoupons = issuedCouponRepository.findByUser(user, pageable);
 
         return issuedCoupons.stream()

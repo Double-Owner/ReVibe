@@ -39,7 +39,7 @@ public class CouponService {
     @Transactional
     public List<CouponResponseDto> findCoupons(User user, int page, int size) {
 
-        Pageable pageable = PageRequest.of(page -1, size);
+        Pageable pageable = PageRequest.of(page, size);
         List<Coupon> coupons = couponRepository.findAll(pageable).stream().toList();
 
         return coupons.stream().map(this::toDto).toList();

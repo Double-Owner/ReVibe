@@ -36,8 +36,8 @@ public class CouponController {
     @GetMapping
     public ResponseEntity<CommonResponseBody<List<CouponResponseDto>>> findCoupon(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
+            @RequestParam(value = "page", required = false, defaultValue = "0") int page,
+            @RequestParam(value = "size", required = false, defaultValue = "3") int size
     ) {
 
         List<CouponResponseDto> couponResponseDto = couponService.findCoupons(userDetails.getUser(), page, size);
