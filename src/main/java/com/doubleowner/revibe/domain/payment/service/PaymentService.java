@@ -1,7 +1,9 @@
 package com.doubleowner.revibe.domain.payment.service;
 
-import com.doubleowner.revibe.domain.buybid.entity.BuyBid;
-import com.doubleowner.revibe.domain.buybid.repository.BuyBidRepository;
+import com.doubleowner.revibe.domain.coupon.entity.IssuedCoupon;
+import com.doubleowner.revibe.domain.coupon.repository.IssuedCouponRepository;
+import com.doubleowner.revibe.domain.execution.entity.Execution;
+import com.doubleowner.revibe.domain.execution.repository.ExecutionRepository;
 import com.doubleowner.revibe.domain.payment.dto.CardPaymentRequestDto;
 import com.doubleowner.revibe.domain.payment.dto.PaymentResponseDto;
 import com.doubleowner.revibe.domain.payment.entity.PayMethod;
@@ -9,6 +11,7 @@ import com.doubleowner.revibe.domain.payment.entity.PayStatus;
 import com.doubleowner.revibe.domain.payment.entity.Payment;
 import com.doubleowner.revibe.domain.payment.repository.PaymentRepository;
 import com.doubleowner.revibe.domain.user.entity.User;
+import com.doubleowner.revibe.domain.user.repository.UserRepository;
 import com.doubleowner.revibe.global.exception.CommonException;
 import com.doubleowner.revibe.global.exception.errorCode.ErrorCode;
 import lombok.RequiredArgsConstructor;
@@ -23,10 +26,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.Base64;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -36,20 +36,35 @@ public class PaymentService {
     private String cardSecretKey;
 
     private final PaymentRepository paymentRepository;
-    private final BuyBidRepository buyBidRepository;
     private final RestTemplate template;
+    private final ExecutionRepository executionRepository;
+    private final UserRepository userRepository;
+    private final IssuedCouponRepository issuedCouponRepository;
 
     // 카드 결제
     @Transactional
-    public PaymentResponseDto payCard(CardPaymentRequestDto cardPaymentRequestDto) {
-        BuyBid buyBid = buyBidRepository.findById(cardPaymentRequestDto.getBuyBidId())
-                .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_VALUE, "요청하신 구매 요청건이 없습니다."));
+    public PaymentResponseDto payCard(User user, CardPaymentRequestDto cardPaymentRequestDto) {
+        User findUser = userRepository.findByEmailOrElseThrow(user.getEmail());
 
-        JSONObject paymentData = sendPaymentRequest(cardPaymentRequestDto, "https://api.tosspayments.com/v1/payments/key-in");
+        Execution execution = executionRepository.findExecutionById(cardPaymentRequestDto.getExecutionId(), user.getEmail()).orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_VALUE));
+
+        Long price = execution.getBuyBid().getPrice();
+        if (cardPaymentRequestDto.getUsePoint() != 0) {
+            price -= cardPaymentRequestDto.getUsePoint();
+            findUser.minusPoint(cardPaymentRequestDto.getUsePoint());
+        }
+        if (cardPaymentRequestDto.getUseCouponId().longValue() != 0) {
+            IssuedCoupon useCoupon = issuedCouponRepository.findByIdAndUser(cardPaymentRequestDto.getUseCouponId(), user).orElseThrow(() -> new CommonException(ErrorCode.INVALID_COUPON_CODE));
+            price -= useCoupon.getCoupon().getPrice();
+            useCoupon.usedCoupon();
+
+        }
+
+        JSONObject paymentData = sendPaymentRequest(cardPaymentRequestDto, "https://api.tosspayments.com/v1/payments/key-in", price);
         Map<String, Object> parsedData = parsingData(paymentData);
 
         Payment payment = Payment.builder()
-                .buy(buyBid)
+                .execution(execution)
                 .payMethod(PayMethod.CREDIT_CARD)
                 .tossId((String) parsedData.get("paymentKey"))
                 .payStatus(PayStatus.PAY_SUCCESS)
@@ -59,11 +74,11 @@ public class PaymentService {
 
     }
 
-    private JSONObject sendPaymentRequest(CardPaymentRequestDto cardPaymentRequestDto, String url) {
+    private JSONObject sendPaymentRequest(CardPaymentRequestDto cardPaymentRequestDto, String url, Long price) {
 
         JSONObject requestData = new JSONObject();
-        requestData.put("orderId", cardPaymentRequestDto.getOrderId());
-        requestData.put("amount", cardPaymentRequestDto.getAmount());
+        requestData.put("orderId", "ORDER_ID" + UUID.randomUUID() + cardPaymentRequestDto.getExecutionId());
+        requestData.put("amount", price);
         requestData.put("cardNumber", cardPaymentRequestDto.getCardNumber());
         requestData.put("cardExpirationYear", cardPaymentRequestDto.getCardExpirationYear());
         requestData.put("cardExpirationMonth", cardPaymentRequestDto.getCardExpirationMonth());

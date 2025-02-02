@@ -1,6 +1,6 @@
 package com.doubleowner.revibe.domain.payment.entity;
 
-import com.doubleowner.revibe.domain.buybid.entity.BuyBid;
+import com.doubleowner.revibe.domain.execution.entity.Execution;
 import com.doubleowner.revibe.global.common.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -27,8 +27,7 @@ public class Payment extends BaseTimeEntity {
     private PayStatus payStatus;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "buyBid_id")
-    private BuyBid buy; //주문 아이디
-
+    @JoinColumn(name = "execution_id")
+    private Execution execution; //체결  아이디
 
 }
