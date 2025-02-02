@@ -22,10 +22,7 @@ public class SellBidResponseDto {
 
     private BidStatus status;
 
-    private LocalDateTime startedAt;
-
-    private LocalDateTime endedAt;
-
+    private LocalDateTime createdAt;
 
     public static SellBidResponseDto toDto(SellBid sellBid) {
         return SellBidResponseDto.builder()
@@ -34,8 +31,7 @@ public class SellBidResponseDto {
                 .price(sellBid.getPrice())
                 .amount(sellBid.getAmount())
                 .status(sellBid.getStatus())
-                .startedAt(sellBid.getStartedAt())
-                .endedAt(sellBid.getEndedAt())
+                .createdAt(sellBid.getCreatedAt())
                 .build();
 
     }

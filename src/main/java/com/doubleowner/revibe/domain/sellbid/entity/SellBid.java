@@ -35,10 +35,7 @@ public class SellBid {
 
     @Column(nullable = false)
     @CreationTimestamp()
-    private LocalDateTime startedAt;
-
-    @Column(nullable = false)
-    private LocalDateTime endedAt;
+    private LocalDateTime createdAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "seller_id")
@@ -50,5 +47,9 @@ public class SellBid {
 
     public void delete() {
         status = BidStatus.END;
+    }
+
+    public void decrease() {
+        this.amount = this.amount -1;
     }
 }

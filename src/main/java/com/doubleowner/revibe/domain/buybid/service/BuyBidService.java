@@ -88,9 +88,15 @@ public class BuyBidService {
                 //체결 생성
                 executionService.createExecution(sellBidId, buyBid.getId());
 
+                if(sellBid.getAmount() > 1){
+                    sellBid.decrease();
+                }
+                else {
+                    sellBid.delete();
+                }
+
                 //체결된 입찰 상태 변경
                 buyBid.delete();
-                sellBid.delete();
                 sellBidRepository.save(sellBid);
                 buyBidRepository.save(buyBid);
 
@@ -115,6 +121,8 @@ public class BuyBidService {
     //1 구매 입찰 조회
     @Transactional(readOnly = true)
     public Page<BuyBidResponseDto> findAllBuyBid(User loginUser, int page, int size) {
+//        redisTemplate.opsForZSet().removeRange("sell" + 1,0, Long.MAX_VALUE);
+//        redisTemplate.opsForZSet().removeRange("buy" + 1,0, Long.MAX_VALUE);
 
         Pageable pageable = PageRequest.of(page, size);
         Page<BuyBid> buyBids = buyBidRepository.findByUserId(loginUser.getId(), pageable);

@@ -83,8 +83,15 @@ public class SellBidService {
 
                 // 입찰 상태 변경
                 BuyBid buybid = buyBidRepository.findById(buyBidId).orElseThrow();
+
+                if(sellBid.getAmount() > 1){
+                    sellBid.decrease();
+                }
+                else {
+                    sellBid.delete();
+                }
+
                 buybid.delete();
-                sellBid.delete();
                 sellBidRepository.save(sellBid);
                 buyBidRepository.save(buybid);
 
