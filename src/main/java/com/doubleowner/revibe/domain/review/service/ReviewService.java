@@ -42,7 +42,7 @@ public class ReviewService {
         String image = null;
 
         if (hasImage(reviewRequestDto.getImage())) {
-            image = imageService.UploadImage(image, reviewRequestDto.getImage());
+            image = imageService.uploadImage(image, reviewRequestDto.getImage());
         }
 
         Review review = Review.builder()
@@ -85,7 +85,7 @@ public class ReviewService {
         // 이미지 관련 처리
         String image = null;
         if (hasImage(updateReviewRequestDto.getImage())) {
-            image = imageService.UploadImage(review.getReviewImage(), updateReviewRequestDto.getImage());
+            image = imageService.uploadImage(review.getReviewImage(), updateReviewRequestDto.getImage());
         }
         pointService.handlePoint(userDetails.getUser(), review.getReviewImage(), updateReviewRequestDto.getImage());
         // 필드 업데이트

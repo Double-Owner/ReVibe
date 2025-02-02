@@ -1,6 +1,5 @@
 package com.doubleowner.revibe.domain.item.service;
 
-import com.amazonaws.services.s3.model.AmazonS3Exception;
 import com.doubleowner.revibe.domain.brand.entity.Brand;
 import com.doubleowner.revibe.domain.brand.repository.BrandRepository;
 import com.doubleowner.revibe.domain.item.dto.request.ItemRequestDto;
@@ -10,16 +9,17 @@ import com.doubleowner.revibe.domain.item.entity.Category;
 import com.doubleowner.revibe.domain.item.entity.Item;
 import com.doubleowner.revibe.domain.item.repository.ItemRepository;
 import com.doubleowner.revibe.domain.user.entity.User;
+import com.doubleowner.revibe.global.common.service.ImageService;
 import com.doubleowner.revibe.global.exception.CommonException;
 import com.doubleowner.revibe.global.exception.errorCode.ErrorCode;
-import com.doubleowner.revibe.global.util.S3Uploader;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import java.io.IOException;
+import org.springframework.web.multipart.MultipartFile;
+
 
 @Service
 @RequiredArgsConstructor
@@ -28,26 +28,27 @@ public class ItemService {
     private final ItemRepository itemRepository;
 
     private final BrandRepository brandRepository;
-    private final S3Uploader s3Uploader;
+    private final ImageService imageService;
 
 
     // 상품 등록
     @Transactional
     public ItemResponseDto createItem(User loginUser, ItemRequestDto requestDto) {
         // 브랜드 찾기
-        Brand brand = brandRepository.findByIdOrElseThrow(requestDto.getBrandId());
-        String image = null;
-        // 상품이미지 추가
-        if(requestDto.getImage() != null) {
-            try{
-                image = s3Uploader.upload(requestDto.getImage());
-            } catch (IOException e){
-                throw new CommonException(ErrorCode.FAILED_UPLOAD_IMAGE);
-            }
+        Brand brand = brandRepository.findByName(requestDto.getBrandName());
+        if(brand == null) {
+            throw new CommonException(ErrorCode.NOT_FOUND_VALUE, "해당 브랜드를 찾을 수 없습니다.");
         }
+
         // 동일한 상품명이 이미 존재할 경우 예외처리
         if(itemRepository.existsByName(requestDto.getName())){
             throw new CommonException(ErrorCode.ALREADY_EXIST,"이미 존재하는 상품명 입니다.");
+        }
+
+        String image = null;
+        // 상품이미지 추가
+        if (hasImage(requestDto.getImage())) {
+            image = imageService.uploadImage(image, requestDto.getImage());
         }
 
         Item item = new Item(brand, requestDto.getName(), requestDto.getDescription(),
@@ -66,17 +67,11 @@ public class ItemService {
 
         String image = item.getImage();
 
-        if(requestDto.getImage() != null) {
-            try {
-                // 기존 이미지 삭제
-                s3Uploader.deleteImage(item.getImage());
-                // 새 이미지 업로드
-                image = s3Uploader.upload(requestDto.getImage());
-            } catch (IOException e) {
-                throw new CommonException(ErrorCode.FAILED_UPLOAD_IMAGE);
-            } catch (AmazonS3Exception e) {
-                throw new CommonException(ErrorCode.FAILED_DELETE_IMAGE);
-            }
+        if(hasImage(requestDto.getImage())) {
+            image = imageService.uploadImage(image, requestDto.getImage());
+            item.updateItem(requestDto,image);
+            itemRepository.save(item);
+            return ItemResponseDto.toDto(item);
         }
 
         item.updateItem(requestDto,image);
@@ -99,5 +94,9 @@ public class ItemService {
         Item item = itemRepository.findByIdOrElseThrow(itemId);
 
         return ItemResponseDto.toDto(item);
+    }
+
+    private static boolean hasImage(MultipartFile multipartFile) {
+        return multipartFile != null && !multipartFile.isEmpty();
     }
 }

@@ -10,7 +10,7 @@ import org.springframework.web.multipart.MultipartFile;
 @AllArgsConstructor
 public class ItemRequestDto {
     @NotNull(message = "브랜드 입력은 필수입니다")
-    private Long brandId;
+    private String brandName;
 
     @NotBlank(message = "카테고리 입력은 필수입니다")
     private String category;

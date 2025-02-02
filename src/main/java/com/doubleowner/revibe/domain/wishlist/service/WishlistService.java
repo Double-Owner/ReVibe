@@ -35,7 +35,7 @@ public class WishlistService {
         // Redis에서 해당 아이템의 관심 여부 확인
         String wishlistKey = WISHLIST_COUNT_KEY_PREFIX + itemId;
 
-        // 이미 관심상품 목록에 있으면 삭제
+        // 이미 관심상품 목록에 있으면 삭제 TODO 해당상품이 있는지 유효성 검사
         if (redisTemplate.opsForSet().isMember(wishlistKey, loginUser.getId().toString())) {
 
             redisTemplate.opsForSet().remove(wishlistKey, loginUser.getId().toString());

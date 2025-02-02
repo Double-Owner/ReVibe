@@ -14,7 +14,7 @@ import java.io.IOException;
 public class ImageService {
     private final S3Uploader s3Uploader;
 
-    public String UploadImage(String image, MultipartFile file) {
+    public String uploadImage(String image, MultipartFile file) {
         try {
             if (image != null) {
                 s3Uploader.deleteImage(image);
