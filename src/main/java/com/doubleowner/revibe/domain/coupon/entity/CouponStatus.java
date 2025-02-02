@@ -1,4 +1,4 @@
-package com.doubleowner.revibe.domain.event.coupon.entity;
+package com.doubleowner.revibe.domain.coupon.entity;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
