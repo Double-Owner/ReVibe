@@ -41,9 +41,11 @@ public class IssuedCouponController {
      */
     @GetMapping()
     public ResponseEntity<CommonResponseBody<List<IssuedCouponResponseDto>>> getIssuedCoupons(
-            @AuthenticationPrincipal UserDetailsImpl userDetails
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @RequestParam(value = "page", required = false, defaultValue = "0") int page,
+            @RequestParam(value = "size", required = false, defaultValue = "3") int size
     ) {
-        List<IssuedCouponResponseDto> coupons = issuedCouponService.getUserCoupons(userDetails.getUser());
+        List<IssuedCouponResponseDto> coupons = issuedCouponService.getUserCoupons(userDetails.getUser(), page, size);
 
         return new ResponseEntity<>(new CommonResponseBody<>("발급된 쿠폰을 조회하였습니다.", coupons), HttpStatus.OK);
     }
