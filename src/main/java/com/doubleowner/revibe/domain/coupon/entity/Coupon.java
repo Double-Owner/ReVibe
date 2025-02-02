@@ -2,6 +2,8 @@ package com.doubleowner.revibe.domain.coupon.entity;
 
 import com.doubleowner.revibe.domain.coupon.dto.request.CouponRequestDto;
 import com.doubleowner.revibe.global.common.BaseTimeEntity;
+import com.doubleowner.revibe.global.exception.CommonException;
+import com.doubleowner.revibe.global.exception.errorCode.ErrorCode;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -37,10 +39,6 @@ public class Coupon extends BaseTimeEntity {
     @OneToMany(mappedBy = "coupon", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<IssuedCoupon> issuedCoupons;
 
-    public Coupon(String name){
-        this.name = name;
-    }
-
     public void updateCoupon(CouponRequestDto dto) {
         this.name = dto.getName();
         this.price = dto.getPrice();
@@ -50,10 +48,10 @@ public class Coupon extends BaseTimeEntity {
     }
 
     public void decrementCoupon() {
-        if(this.totalQuantity >= 0) {
+        if(this.totalQuantity > 0) {
             this.totalQuantity--;
         } else {
-            throw new IllegalArgumentException("쿠폰이 소진되었습니다.");
+            throw new CommonException(ErrorCode.GENERATE_MORE_THAN_MAX_COUNT);
         }
     }
 }

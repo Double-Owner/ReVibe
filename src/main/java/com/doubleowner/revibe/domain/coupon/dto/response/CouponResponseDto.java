@@ -15,7 +15,6 @@ public class CouponResponseDto {
     private final String name;
     private final int price;
     private final int totalQuantity;
-    private final int issuedQuantity;
     private LocalDateTime issuedStart;
     private LocalDateTime issuedEnd;
 
