@@ -27,7 +27,6 @@ public class Item extends BaseTimeEntity {
     @Column(nullable = false)
     private String description;
 
-    @Column(nullable = false)
     private String image;
 
     @ManyToOne(fetch = FetchType.LAZY)
