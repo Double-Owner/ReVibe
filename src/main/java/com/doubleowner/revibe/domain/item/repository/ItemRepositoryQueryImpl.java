@@ -10,6 +10,7 @@ import jakarta.persistence.PersistenceContext;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 
 public class ItemRepositoryQueryImpl implements ItemRepositoryQuery {
 
@@ -30,15 +31,15 @@ public class ItemRepositoryQueryImpl implements ItemRepositoryQuery {
                 .leftJoin(item.brand, brand).fetchJoin();
 
         if (keyword != null && !keyword.isEmpty()) {
-            query.where(item.name.likeIgnoreCase("%"+ keyword + "%"));
+            query.where(item.name.likeIgnoreCase("%" + keyword + "%"));
         }
-        if(brandName != null) {
+        if (brandName != null) {
             query.where(item.brand.name.eq(brandName));
         }
 
         query.offset(pageable.getOffset())
                 .limit(pageable.getPageSize());
 
-        return new PageImpl<>(query.fetch(), pageable, query.fetchCount());
+        return new PageImpl<>(query.fetch());
     }
 }

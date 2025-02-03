@@ -29,8 +29,9 @@ public class ReviewController {
     }
 
     @GetMapping
-    public ResponseEntity<CommonResponseBody<List<ReviewResponseDto>>> findReviews(@AuthenticationPrincipal UserDetailsImpl userDetails) {
-        List<ReviewResponseDto> read = reviewService.findReview(userDetails.getUser());
+    public ResponseEntity<CommonResponseBody<List<ReviewResponseDto>>> findReviews(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestParam(value = "page", required = false, defaultValue = "1") int page,
+                                                                                   @RequestParam(value = "size", required = false, defaultValue = "3") int size) {
+        List<ReviewResponseDto> read = reviewService.findReview(userDetails.getUser(), page, size);
         return new ResponseEntity<>(new CommonResponseBody<>("리뷰가 조회 되었습니다", read), HttpStatus.OK);
     }
 
