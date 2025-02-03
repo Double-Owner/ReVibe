@@ -96,6 +96,9 @@ public class ReviewService {
     @Transactional
     public void deleteReview(Long id, User user) {
         Review review = getMyReview(id, user);
+        if (review.getReviewImage() != null) {
+            imageService.deleteImage(review.getReviewImage());
+        }
         pointService.deletePoint(user, review.getReviewImage());
         reviewRepository.delete(review);
     }
