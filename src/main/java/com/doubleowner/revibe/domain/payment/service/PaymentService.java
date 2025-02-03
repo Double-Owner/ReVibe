@@ -5,6 +5,7 @@ import com.doubleowner.revibe.domain.coupon.repository.IssuedCouponRepository;
 import com.doubleowner.revibe.domain.execution.entity.Execution;
 import com.doubleowner.revibe.domain.execution.repository.ExecutionRepository;
 import com.doubleowner.revibe.domain.payment.dto.CardPaymentRequestDto;
+import com.doubleowner.revibe.domain.payment.dto.PaymentRequestDto;
 import com.doubleowner.revibe.domain.payment.dto.PaymentResponseDto;
 import com.doubleowner.revibe.domain.payment.entity.PayMethod;
 import com.doubleowner.revibe.domain.payment.entity.PayStatus;
@@ -14,6 +15,8 @@ import com.doubleowner.revibe.domain.user.entity.User;
 import com.doubleowner.revibe.domain.user.repository.UserRepository;
 import com.doubleowner.revibe.global.exception.CommonException;
 import com.doubleowner.revibe.global.exception.errorCode.ErrorCode;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -76,15 +79,24 @@ public class PaymentService {
 
     private JSONObject sendPaymentRequest(CardPaymentRequestDto cardPaymentRequestDto, String url, Long price) {
 
-        JSONObject requestData = new JSONObject();
-        requestData.put("orderId", "ORDER_ID" + UUID.randomUUID() + cardPaymentRequestDto.getExecutionId());
-        requestData.put("amount", price);
-        requestData.put("cardNumber", cardPaymentRequestDto.getCardNumber());
-        requestData.put("cardExpirationYear", cardPaymentRequestDto.getCardExpirationYear());
-        requestData.put("cardExpirationMonth", cardPaymentRequestDto.getCardExpirationMonth());
-        requestData.put("cardPassword", cardPaymentRequestDto.getCardPassword());
-        requestData.put("customerIdentityNumber", cardPaymentRequestDto.getCustomerIdentityNumber());
-        return sendRequest(requestData, cardSecretKey, url);
+
+        PaymentRequestDto paymentRequestDto = PaymentRequestDto.builder().orderId("ORDER_ID" + UUID.randomUUID() + cardPaymentRequestDto.getExecutionId())
+                .amount(price)
+                .cardNumber(cardPaymentRequestDto.getCardNumber())
+                .cardExpirationYear(cardPaymentRequestDto.getCardExpirationYear())
+                .cardExpirationMonth(cardPaymentRequestDto.getCardExpirationMonth())
+                .cardPassword(cardPaymentRequestDto.getCardPassword())
+                .customerIdentityNumber(cardPaymentRequestDto.getCustomerIdentityNumber())
+                .build();
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            String jsonBody = objectMapper.writeValueAsString(paymentRequestDto);
+            return sendRequest(jsonBody, cardSecretKey, url);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+
     }
 
 
@@ -100,14 +112,22 @@ public class PaymentService {
 
     @Transactional
     public PaymentResponseDto payToss(String secretKey, String paymentType, String orderId, String paymentKey, String amount) {
-        JSONObject jsonBody = new JSONObject();
-        jsonBody.put("paymentType", paymentType);
-        jsonBody.put("orderId", orderId);
-        jsonBody.put("paymentKey", paymentKey);
-        jsonBody.put("amount", amount);
-        JSONObject object;
+        PaymentRequestDto paymentRequestDto = PaymentRequestDto.builder()
+                .orderId(orderId)
+                .amount(Long.parseLong(amount))
+                .paymentKey(paymentKey)
+                .paymentType(paymentType)
+                .build();
 
-        object = sendRequest(jsonBody, secretKey, "https://api.tosspayments.com/v1/payments/confirm");
+        ObjectMapper objectMapper = new ObjectMapper();
+        String jsonBody;
+        try {
+            jsonBody = objectMapper.writeValueAsString(paymentRequestDto);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+
+        JSONObject object = sendRequest(jsonBody, secretKey, "https://api.tosspayments.com/v1/payments/confirm");
         // 받아온 paymentData 파싱하기
         Map<String, Object> stringObjectMap = parsingData(object);
 
@@ -124,9 +144,9 @@ public class PaymentService {
         return toDto(save);
     }
 
-    private JSONObject sendRequest(JSONObject requestData, String secretKey, String urlString) {
+    private JSONObject sendRequest(String requestData, String secretKey, String urlString) {
         HttpHeaders headers = createHeader(secretKey);
-        HttpEntity<String> requestEntity = new HttpEntity<>(requestData.toJSONString(), headers);
+        HttpEntity<String> requestEntity = new HttpEntity<>(requestData, headers);
 
         ResponseEntity<String> responseEntity;
         try {
