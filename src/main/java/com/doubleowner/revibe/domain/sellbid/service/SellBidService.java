@@ -10,6 +10,7 @@ import com.doubleowner.revibe.domain.sellbid.dto.SellBidResponseDto;
 import com.doubleowner.revibe.domain.sellbid.entity.SellBid;
 import com.doubleowner.revibe.domain.sellbid.repository.SellBidRepository;
 import com.doubleowner.revibe.domain.user.entity.User;
+import com.doubleowner.revibe.global.aop.DistributedLock;
 import com.doubleowner.revibe.global.exception.CommonException;
 import com.doubleowner.revibe.global.exception.errorCode.ErrorCode;
 import lombok.RequiredArgsConstructor;
@@ -100,7 +101,7 @@ public class SellBidService {
                 redisTemplate.opsForZSet().remove("buy"+option.getId(), lowestValue);
             }
         }
-
+        increaseOptionStocks(option, sellBid.getAmount());
         //옵션 id가 같은 구매입찰이 없거나 판매가가 즉시 구매가보다 높을 시 판매 입찰 생성 후 리턴
         return SellBidResponseDto.toDto(sellBid);
     }
@@ -125,5 +126,12 @@ public class SellBidService {
         Page<SellBid> sellBids = sellBidRepository.findByUserId(loginUser.getId(), pageable);
 
         return sellBids.map(SellBidResponseDto::toDto);
+    }
+
+    @Transactional
+    @DistributedLock(key = "#option.id")
+    public void increaseOptionStocks(Option option, Long amount){
+        option.increaseStrock(amount);
+        optionRepository.save(option);
     }
 }

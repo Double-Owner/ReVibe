@@ -30,4 +30,12 @@ public class Option {
         this.stock = 0L;
         this.item = item;
     }
+
+    public void increaseStrock(Long amounts) {
+        this.stock += amounts;
+    }
+
+    public void decreaseStrock(Long amounts) {
+        this.stock -= amounts;
+    }
 }
