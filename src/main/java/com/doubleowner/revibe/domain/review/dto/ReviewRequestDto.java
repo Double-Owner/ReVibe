@@ -1,5 +1,8 @@
 package com.doubleowner.revibe.domain.review.dto;
 
+import com.doubleowner.revibe.domain.payment.entity.Payment;
+import com.doubleowner.revibe.domain.review.entity.Review;
+import com.doubleowner.revibe.domain.user.entity.User;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
@@ -28,4 +31,16 @@ public class ReviewRequestDto {
     private String content;
 
     private MultipartFile image;
+
+    public static Review toEntity(ReviewRequestDto reviewRequestDto, Payment payment, User user, String image) {
+        return Review.builder()
+                .starRate(reviewRequestDto.getStarRate())
+                .title(reviewRequestDto.getTitle())
+                .content(reviewRequestDto.getContent())
+                .reviewImage(image)
+                .payment(payment)
+                .item(payment.getExecution().getBuyBid().getOption().getItem())
+                .user(user)
+                .build();
+    }
 }

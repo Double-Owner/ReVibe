@@ -45,21 +45,13 @@ public class ReviewService {
             image = imageService.uploadImage(image, reviewRequestDto.getImage());
         }
 
-        Review review = Review.builder()
-                .starRate(reviewRequestDto.getStarRate())
-                .title(reviewRequestDto.getTitle())
-                .content(reviewRequestDto.getContent())
-                .reviewImage(image)
-                .payment(payment)
-                .item(payment.getExecution().getBuyBid().getOption().getItem())
-                .user(user)
-                .build();
+        Review review = ReviewRequestDto.toEntity(reviewRequestDto, payment, user, image);
 
         Review savedReview = reviewRepository.save(review);
 
         pointService.addReviewPoint(user, image);
 
-        return toDto(savedReview);
+        return Review.toDto(savedReview);
     }
 
 
@@ -67,14 +59,14 @@ public class ReviewService {
     public List<ReviewResponseDto> findReview(User user) {
 
         List<Review> reviewsByUserId = reviewRepository.findReviewsByUserId(user.getId());
-        return reviewsByUserId.stream().map(this::toDto).toList();
+        return reviewsByUserId.stream().map(Review::toDto).toList();
     }
 
     @Transactional(readOnly = true)
     public List<ReviewResponseDto> findItemReviews(Long itemId, int page, int size) {
         Pageable pageable = PageRequest.of(page - 1, size);
         Slice<Review> reviews = reviewRepository.findReviewsByItemId(itemId, pageable);
-        return reviews.stream().map(this::toDto).toList();
+        return reviews.stream().map(Review::toDto).toList();
     }
 
     @Transactional
@@ -111,21 +103,5 @@ public class ReviewService {
         return multipartFile != null && !multipartFile.isEmpty();
     }
 
-    /**
-     * DTO로 변경해주는 메소드
-     *
-     * @param review
-     * @return
-     */
-    private ReviewResponseDto toDto(Review review) {
-        return ReviewResponseDto.builder()
-                .reviewId(review.getId())
-                .title(review.getTitle())
-                .content(review.getContent())
-                .starRate(review.getStarRate())
-                .createdAt(review.getCreatedAt())
-                .image(review.getReviewImage())
-                .build();
-    }
 
 }
