@@ -9,6 +9,7 @@ import com.doubleowner.revibe.domain.user.dto.response.UserSignupResponseDto;
 import com.doubleowner.revibe.domain.user.entity.Role;
 import com.doubleowner.revibe.domain.user.entity.User;
 import com.doubleowner.revibe.domain.user.repository.UserRepository;
+import com.doubleowner.revibe.global.common.service.ImageService;
 import com.doubleowner.revibe.global.config.auth.UserDetailsImpl;
 import com.doubleowner.revibe.global.config.dto.JwtAuthResponse;
 import com.doubleowner.revibe.global.exception.CommonException;
@@ -38,7 +39,7 @@ public class UserService {
     private final JwtProvider jwtProvider;
     private final AuthenticationManager authenticationManager;
     private final BCryptPasswordEncoder passwordEncoder;
-    private final S3Uploader s3Uploader;
+    private final ImageService imageService;
 
     /**
      * 회원가입
@@ -53,11 +54,7 @@ public class UserService {
 
         String profileImage = null;
         if(requestDto.getProfileImage() != null) {
-            try{
-                profileImage = s3Uploader.upload(requestDto.getProfileImage());
-            } catch (IOException e){
-                throw new CommonException(ErrorCode.FAILED_UPLOAD_IMAGE);
-            }
+                profileImage = imageService.uploadImage(profileImage, requestDto.getProfileImage());
         }
 
         String encodedPassword = bCryptPasswordEncoder.encode(requestDto.getPassword());
@@ -124,11 +121,7 @@ public class UserService {
 
         String profileImage = findUser.getProfileImage();
         if(profileImage != null) {
-            try {
-                s3Uploader.deleteImage(findUser.getProfileImage());
-            } catch (IOException e) {
-                throw new CommonException(ErrorCode.FAILED_UPLOAD_IMAGE);
-            }
+                imageService.deleteImage(findUser.getProfileImage());
         }
         findUser.deletedUser();
     }
@@ -149,14 +142,10 @@ public class UserService {
 
         String profileImage = findUser.getProfileImage();
         if(requestDto.getProfileImage() != null) {
-            try {
                 // 기존 이미지 삭제
-                s3Uploader.deleteImage(findUser.getProfileImage());
+                imageService.deleteImage(findUser.getProfileImage());
                 // 새 이미지 업로드
-                profileImage = s3Uploader.upload(requestDto.getProfileImage());
-            } catch (IOException e) {
-                throw new CommonException(ErrorCode.FAILED_UPLOAD_IMAGE);
-            }
+                profileImage = imageService.uploadImage(profileImage, requestDto.getProfileImage());
         }
 
         String encodedPassword = bCryptPasswordEncoder.encode(requestDto.getPassword());
