@@ -9,8 +9,11 @@ import com.doubleowner.revibe.global.config.auth.UserDetailsImpl;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Slice;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/sell-bids")
@@ -40,13 +43,13 @@ public class SellBidController {
      * @return  판매입찰 조회 응답 message
      */
     @GetMapping
-    public CommonResponseBody<Page<SellBidResponseDto>> findBuyBid(
+    public CommonResponseBody<List<SellBidResponseDto>> findBuyBid(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @RequestParam(value = "page", required = false, defaultValue = "0") int page,
             @RequestParam(value = "size", required = false, defaultValue = "3") int size
     ) {
         User loginUser = userDetails.getUser();
-        Page<SellBidResponseDto> sellBidResponseDtos = sellBidService.findAllBuyBid(loginUser, page, size);
+        List<SellBidResponseDto> sellBidResponseDtos = sellBidService.findAllBuyBid(loginUser, page, size);
         return new CommonResponseBody<>("사용자 구매 입찰 내역입니다.",sellBidResponseDtos );
     }
 

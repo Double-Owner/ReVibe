@@ -12,6 +12,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/buy-bids")
 @RequiredArgsConstructor
@@ -41,13 +43,13 @@ public class BuyBidController {
      * @return  구매입찰 조회 응답 message
      */
     @GetMapping
-    public CommonResponseBody<Page<BuyBidResponseDto>> findBuyBid(
+    public CommonResponseBody<List<BuyBidResponseDto>> findBuyBid(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @RequestParam(value = "page", required = false, defaultValue = "0") int page,
             @RequestParam(value = "size", required = false, defaultValue = "3") int size
     ) {
         User loginUser = userDetails.getUser();
-        Page<BuyBidResponseDto> buyBidResponseDtos = bidService.findAllBuyBid(loginUser, page, size);
+        List<BuyBidResponseDto> buyBidResponseDtos = bidService.findAllBuyBid(loginUser, page, size);
         return new CommonResponseBody<>("사용자 구매 입찰 내역입니다.",buyBidResponseDtos );
     }
 

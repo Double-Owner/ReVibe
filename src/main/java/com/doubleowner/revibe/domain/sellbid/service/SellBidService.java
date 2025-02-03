@@ -18,11 +18,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Set;
 
 @Slf4j
@@ -88,13 +90,12 @@ public class SellBidService {
                 if(sellBid.getAmount() > 1){
                     sellBid.decrease();
                 }
-                else {
+                else if(sellBid.getAmount() == 1){
+                    sellBid.decrease();
                     sellBid.delete();
                 }
 
                 buybid.delete();
-                sellBidRepository.save(sellBid);
-                buyBidRepository.save(buybid);
 
                 //sorted set에서 value 삭제
                 redisTemplate.opsForZSet().remove("sell"+option.getId(), sellBid.getId().toString());
@@ -114,18 +115,16 @@ public class SellBidService {
         if(sellBid.getUser().equals(loginUser)) {
             throw new CommonException(ErrorCode.ILLEGAL_ARGUMENT, "사용자가 올바르지 않습니다.");
         }
-
         sellBid.delete();
-        sellBidRepository.save(sellBid);
     }
 
     // 판매 입찰 조회
     @Transactional(readOnly = true)
-    public Page<SellBidResponseDto> findAllBuyBid(User loginUser, int page, int size) {
+    public List<SellBidResponseDto> findAllBuyBid(User loginUser, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<SellBid> sellBids = sellBidRepository.findByUserId(loginUser.getId(), pageable);
+        Slice<SellBid> sellBids = sellBidRepository.findByUserId(loginUser.getId(), pageable);
 
-        return sellBids.map(SellBidResponseDto::toDto);
+        return sellBids.map(SellBidResponseDto::toDto).toList();
     }
 
     @Transactional
