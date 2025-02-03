@@ -50,7 +50,7 @@ public class SellBidController {
     ) {
         User loginUser = userDetails.getUser();
         List<SellBidResponseDto> sellBidResponseDtos = sellBidService.findAllBuyBid(loginUser, page, size);
-        return new CommonResponseBody<>("사용자 구매 입찰 내역입니다.",sellBidResponseDtos );
+        return new CommonResponseBody<>("사용자 판매 입찰 내역입니다.",sellBidResponseDtos );
     }
 
     /**
@@ -68,5 +68,4 @@ public class SellBidController {
 
         return new CommonResponseBody<>("판매 입찰이 취소되었습니다.", null);
     }
-
 }

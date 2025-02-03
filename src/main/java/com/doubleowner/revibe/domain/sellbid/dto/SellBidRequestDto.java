@@ -19,14 +19,10 @@ public class SellBidRequestDto {
     @NotNull
     private Long price;
 
-    @NotNull
-    @Min(1)
-    private Long amount;
 
     public SellBid toEntity(Option option, User user) {
         return SellBid.builder()
                 .price(this.price)
-                .amount(this.amount)
                 .status(BidStatus.ONPROGRESS)
                 .user(user)
                 .options(option)

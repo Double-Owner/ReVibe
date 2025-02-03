@@ -55,21 +55,21 @@ class IssuedCouponServiceTest {
     void getCouponWithLock() throws InterruptedException {
 
         int threadCount = 100; // 스레드 수 (쿠폰 발급 신청 유저 수)
-        ExecutorService eventExecutor = Executors.newFixedThreadPool(5); //스레드 pool의 개수
+        ExecutorService eventExecutor = Executors.newFixedThreadPool(10); //스레드 pool의 개수
         CountDownLatch countDownLatch = new CountDownLatch(threadCount);
 
         for (int i = 1; i <= threadCount; i++) {
             int userId = i;
             eventExecutor.submit(() -> {
-                    issuedCouponService.issuedCoupon(1L, userRepository.findById((long) userId).get());
+                    issuedCouponService.issuedCoupon(15L, userRepository.findById((long) userId).get());
                     countDownLatch.countDown();
             });
         }
 
         countDownLatch.await();
-        int totalQuantity = couponRepository.findById(1L).get().getTotalQuantity();
+        int totalQuantity = couponRepository.findById(15L).get().getTotalQuantity();
 
-        assertEquals(0, totalQuantity);
+        assertEquals(" == 잔여 쿠폰 개수 == ",0, totalQuantity);
 
     }
 }

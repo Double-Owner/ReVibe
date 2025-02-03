@@ -31,11 +31,11 @@ public class Option {
         this.item = item;
     }
 
-    public void increaseStrock(Long amounts) {
-        this.stock += amounts;
+    public void increaseStrock() {
+        this.stock ++;
     }
 
-    public void decreaseStrock(Long amounts) {
-        this.stock -= amounts;
+    public void decreaseStrock() {
+        this.stock--;
     }
 }
