@@ -7,6 +7,7 @@ import com.doubleowner.revibe.domain.user.entity.QUser;
 import com.querydsl.jpa.impl.JPAQuery;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -17,7 +18,7 @@ public class ItemRepositoryQueryImpl implements ItemRepositoryQuery {
     private EntityManager entityManager;
 
     @Override
-    public Slice<Item> searchItems(Pageable pageable, String keyword, String brandName) {
+    public Page<Item> searchItems(Pageable pageable, String keyword, String brandName) {
         JPAQuery<Item> query = new JPAQuery<>(entityManager);
 
         QItem item = QItem.item;
@@ -39,6 +40,6 @@ public class ItemRepositoryQueryImpl implements ItemRepositoryQuery {
         query.offset(pageable.getOffset())
                 .limit(pageable.getPageSize());
 
-        return new PageImpl<>(query.fetch(), pageable, query.fetchCount());
+        return new PageImpl<>(query.fetch());
     }
 }

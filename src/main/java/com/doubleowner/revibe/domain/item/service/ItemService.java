@@ -13,9 +13,9 @@ import com.doubleowner.revibe.global.exception.CommonException;
 import com.doubleowner.revibe.global.exception.errorCode.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -86,7 +86,7 @@ public class ItemService {
     @Cacheable(cacheNames = "getItems", key = "'items:page:'+ #page+':size'+#size", cacheManager = "itemCacheManager", condition = "#page==1")
     public List<ItemResponseDto> getAllItems(int page, int size, String keyword, String brand) {
         Pageable pageable = PageRequest.of(page - 1, size);
-        Slice<Item> items = itemRepository.searchItems(pageable, keyword, brand);
+        Page<Item> items = itemRepository.searchItems(pageable, keyword, brand);
 
         return items.map(ItemResponseDto::toDto).toList();
     }
