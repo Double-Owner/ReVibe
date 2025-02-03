@@ -7,9 +7,9 @@ import com.doubleowner.revibe.domain.user.entity.QUser;
 import com.querydsl.jpa.impl.JPAQuery;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 
 public class ItemRepositoryQueryImpl implements ItemRepositoryQuery {
 
@@ -17,7 +17,7 @@ public class ItemRepositoryQueryImpl implements ItemRepositoryQuery {
     private EntityManager entityManager;
 
     @Override
-    public Page<Item> searchItems(Pageable pageable, String keyword, String brandName) {
+    public Slice<Item> searchItems(Pageable pageable, String keyword, String brandName) {
         JPAQuery<Item> query = new JPAQuery<>(entityManager);
 
         QItem item = QItem.item;
@@ -30,9 +30,9 @@ public class ItemRepositoryQueryImpl implements ItemRepositoryQuery {
                 .leftJoin(item.brand, brand).fetchJoin();
 
         if (keyword != null && !keyword.isEmpty()) {
-            query.where(item.name.likeIgnoreCase("%"+ keyword + "%"));
+            query.where(item.name.likeIgnoreCase("%" + keyword + "%"));
         }
-        if(brandName != null) {
+        if (brandName != null) {
             query.where(item.brand.name.eq(brandName));
         }
 
