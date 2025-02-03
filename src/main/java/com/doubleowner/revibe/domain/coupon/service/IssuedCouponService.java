@@ -27,14 +27,13 @@ public class IssuedCouponService {
     private final IssuedCouponRepository issuedCouponRepository;
 
     @DistributedLock(key = "#couponId")
-    @Transactional
     public IssuedCouponResponseDto issuedCoupon(Long id, User user) {
 
         // 쿠폰 조회
         Coupon findCoupon = couponRepository.findById(id)
                 .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_COUPON));
 
-        if (issuedCouponRepository.existsByIdAndUser(findCoupon.getId(),user)) {
+        if (issuedCouponRepository.existsByCouponIdAndUserId(findCoupon.getId(),user.getId())) {
             throw new CommonException(ErrorCode.ALREADY_ISSUED_COUPON);
         }
 
@@ -83,7 +82,8 @@ public class IssuedCouponService {
     }
 
     // 쿠폰 유효성 검증
-    private static void checkCouponValidity(User user, IssuedCoupon issuedCoupon) {
+//    @Transactional
+    public void checkCouponValidity(User user, IssuedCoupon issuedCoupon) {
         if (!issuedCoupon.getUser().getId().equals(user.getId())) {
             throw new CommonException(ErrorCode.INVALID_COUPON_CODE);
         }
