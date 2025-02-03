@@ -17,7 +17,7 @@ public class ImageService {
     public String uploadImage(String image, MultipartFile file) {
         try {
             if (image != null) {
-                s3Uploader.deleteImage(image);
+                deleteImage(image);
             }
             return s3Uploader.upload(file);
         } catch (IOException e) {

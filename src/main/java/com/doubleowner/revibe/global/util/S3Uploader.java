@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.net.URLDecoder;
 import java.util.Arrays;
 
 import static com.doubleowner.revibe.global.exception.errorCode.ErrorCode.FAILED_UPLOAD_IMAGE;
@@ -41,7 +42,9 @@ public class S3Uploader {
 
     // S3 에서 이미지 삭제
     public void deleteImage(String image) throws IOException {
-        amazonS3Client.deleteObject(bucket, image.substring(image.lastIndexOf("/") + 1));
+        String imageKey = image.replace("https://" + bucket + ".s3.ap-northeast-2.amazonaws.com/", "");
+        imageKey = URLDecoder.decode(imageKey, "UTF-8");
+        amazonS3Client.deleteObject(bucket, imageKey);
     }
 
     private void validateFile(String fileName) {
