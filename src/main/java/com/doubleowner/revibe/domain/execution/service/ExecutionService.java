@@ -4,6 +4,7 @@ import com.doubleowner.revibe.domain.buybid.entity.BuyBid;
 import com.doubleowner.revibe.domain.buybid.repository.BuyBidRepository;
 import com.doubleowner.revibe.domain.execution.dto.ExecutionResponseDto;
 import com.doubleowner.revibe.domain.execution.entity.Execution;
+import com.doubleowner.revibe.domain.execution.entity.ExecutionStatus;
 import com.doubleowner.revibe.domain.execution.repository.ExecutionRepository;
 import com.doubleowner.revibe.domain.payment.entity.Payment;
 import com.doubleowner.revibe.domain.payment.repository.PaymentRepository;
@@ -37,6 +38,7 @@ public class ExecutionService {
         Execution execution = Execution.builder()
                 .sell(sellBid)
                 .buyBid(buyBid)
+                .status(ExecutionStatus.WAITING_FOR_PAYMENT)
                 .build();
 
         // 3. Execution 저장

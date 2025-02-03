@@ -27,4 +27,12 @@ public class Execution {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "buyBid_id")
     private BuyBid buyBid;
+
+    @Column(nullable = false)
+    @Enumerated(value = EnumType.STRING)
+    private ExecutionStatus status;
+
+    public void statusUpdate() {
+        this.status = ExecutionStatus.PAYMENT_SUCCESS;
+    }
 }
