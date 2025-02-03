@@ -10,7 +10,6 @@ import com.doubleowner.revibe.domain.option.repository.OptionRepository;
 import com.doubleowner.revibe.domain.sellbid.entity.SellBid;
 import com.doubleowner.revibe.domain.sellbid.repository.SellBidRepository;
 import com.doubleowner.revibe.domain.user.entity.User;
-import com.doubleowner.revibe.domain.user.repository.UserRepository;
 import com.doubleowner.revibe.global.exception.CommonException;
 import com.doubleowner.revibe.global.exception.errorCode.ErrorCode;
 import lombok.RequiredArgsConstructor;
@@ -18,16 +17,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Comparator;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -40,7 +37,7 @@ public class BuyBidService {
     private final ExecutionService executionService;
     private final RedisTemplate<String, String> redisTemplate;
 
-    //1 구매 입찰 생성
+    // 구매 입찰 생성
     @Transactional
     public BuyBidResponseDto createBuyBid(User loginUser, BuyBidRequestDto requestBody) {
         Option option = optionRepository.findById(requestBody.getOptionId())
@@ -88,45 +85,42 @@ public class BuyBidService {
                 //체결 생성
                 executionService.createExecution(sellBidId, buyBid.getId());
 
+                //재고에 따른 체결된 입찰 상태 변경
                 if(sellBid.getAmount() > 1){
                     sellBid.decrease();
                 }
-                else {
+                else if(sellBid.getAmount() == 1){
+                    sellBid.decrease();
                     sellBid.delete();
                 }
-
-                //체결된 입찰 상태 변경
                 buyBid.delete();
-                sellBidRepository.save(sellBid);
-                buyBidRepository.save(buyBid);
 
                 //sorted set에서 해당 입찰 value 삭제
                 redisTemplate.opsForZSet().remove("sell" + option.getId(), lowestValue);
                 redisTemplate.opsForZSet().remove("buy" + option.getId(), buyBid.getId().toString());
+
             }
         }
         return BuyBidResponseDto.toDto(buyBid);
     }
 
-    //1 구매 입찰 제거 -> status 값 end로 변경
+    // 구매 입찰 제거 -> status 값 end로 변경
     @Transactional
     public void deleteBuyBid(Long buyBidId) {
         BuyBid buyBid = buyBidRepository.findById(buyBidId)
                 .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_VALUE, "해당 구매입찰을 찾을 수 없습니다."));
         buyBid.delete();
-
-        buyBidRepository.save(buyBid);
     }
 
-    //1 구매 입찰 조회
+    // 구매 입찰 조회
     @Transactional(readOnly = true)
-    public Page<BuyBidResponseDto> findAllBuyBid(User loginUser, int page, int size) {
+    public List<BuyBidResponseDto> findAllBuyBid(User loginUser, int page, int size) {
 //        redisTemplate.opsForZSet().removeRange("sell" + 1,0, Long.MAX_VALUE);
 //        redisTemplate.opsForZSet().removeRange("buy" + 1,0, Long.MAX_VALUE);
 
         Pageable pageable = PageRequest.of(page, size);
-        Page<BuyBid> buyBids = buyBidRepository.findByUserId(loginUser.getId(), pageable);
+        Slice<BuyBid> buyBids = buyBidRepository.findByUserId(loginUser.getId(), pageable);
 
-        return buyBids.map(BuyBidResponseDto::toDto);
+        return buyBids.map(BuyBidResponseDto::toDto).toList();
     }
 }
