@@ -27,9 +27,6 @@ public class SellBid {
     private Long price;
 
     @Column(nullable = false)
-    private Long amount;
-
-    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private BidStatus status;
 
@@ -47,9 +44,5 @@ public class SellBid {
 
     public void delete() {
         status = BidStatus.END;
-    }
-
-    public void decrease() {
-        this.amount = this.amount -1;
     }
 }
