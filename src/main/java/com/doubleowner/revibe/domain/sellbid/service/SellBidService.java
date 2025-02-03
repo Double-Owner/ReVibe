@@ -15,7 +15,6 @@ import com.doubleowner.revibe.global.exception.CommonException;
 import com.doubleowner.revibe.global.exception.errorCode.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -51,7 +50,7 @@ public class SellBidService {
         sellBidRepository.save(sellBid);
 
         //sorted set에 sell+optionId 키로 추가
-        redisTemplate.opsForZSet().add("sell"+option.getId(),  sellBid.getId().toString(), sellBid.getPrice());
+        redisTemplate.opsForZSet().add("sell" + option.getId(), sellBid.getId().toString(), sellBid.getPrice());
 
         //가장 높은 구매 입찰가 조회
         Set<ZSetOperations.TypedTuple<String>> highestScoreSet = redisTemplate.opsForZSet()
@@ -69,10 +68,10 @@ public class SellBidService {
                     .rangeByScore("buy" + option.getId(), highestScore, highestScore);
 
             //즉시구매가와 일치하지 않고 판매가가 더 높을 때 -> 판매 입찰 등록
-            if(valuesWithHighestScore != null && highestScore < sellBid.getPrice()) {
+            if (valuesWithHighestScore != null && highestScore < sellBid.getPrice()) {
                 log.info("판매 입찰 등록됨");
             } //즉시구매가와 일치하지 않고 판매가가 더 낮을 때 -> 예외 처리
-            else if(valuesWithHighestScore != null && highestScore > sellBid.getPrice()) {
+            else if (valuesWithHighestScore != null && highestScore > sellBid.getPrice()) {
                 throw new CommonException(ErrorCode.BAD_REQUEST, "판매 입찰가는 즉시 구매가보다 높아야합니다.");
             }
             // 즉시 판매가와 일치할 경우
@@ -87,22 +86,16 @@ public class SellBidService {
                 // 입찰 상태 변경
                 BuyBid buybid = buyBidRepository.findById(buyBidId).orElseThrow();
 
-                if(sellBid.getAmount() > 1){
-                    sellBid.decrease();
-                }
-                else if(sellBid.getAmount() == 1){
-                    sellBid.decrease();
-                    sellBid.delete();
-                }
-
+                sellBid.delete();
                 buybid.delete();
 
                 //sorted set에서 value 삭제
-                redisTemplate.opsForZSet().remove("sell"+option.getId(), sellBid.getId().toString());
-                redisTemplate.opsForZSet().remove("buy"+option.getId(), lowestValue);
+                redisTemplate.opsForZSet().remove("buy" + option.getId(), lowestValue);
+                redisTemplate.opsForZSet().remove("sell" + option.getId(), sellBid.getId().toString());
             }
         }
-        increaseOptionStocks(option, sellBid.getAmount());
+        increaseOptionStocks(option);
+
         //옵션 id가 같은 구매입찰이 없거나 판매가가 즉시 구매가보다 높을 시 판매 입찰 생성 후 리턴
         return SellBidResponseDto.toDto(sellBid);
     }
@@ -112,7 +105,7 @@ public class SellBidService {
     public void deleteSellBid(User loginUser, Long sellBidId) {
         SellBid sellBid = sellBidRepository.findById(sellBidId)
                 .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_VALUE, ("해당 판매 요청을 찾을 수 없습니다.")));
-        if(sellBid.getUser().equals(loginUser)) {
+        if (sellBid.getUser().equals(loginUser)) {
             throw new CommonException(ErrorCode.ILLEGAL_ARGUMENT, "사용자가 올바르지 않습니다.");
         }
         sellBid.delete();
@@ -129,8 +122,7 @@ public class SellBidService {
 
     @Transactional
     @DistributedLock(key = "#option.id")
-    public void increaseOptionStocks(Option option, Long amount){
-        option.increaseStrock(amount);
-        optionRepository.save(option);
+    public void increaseOptionStocks(Option option){
+        option.increaseStrock();
     }
 }

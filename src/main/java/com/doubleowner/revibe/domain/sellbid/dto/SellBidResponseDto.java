@@ -18,8 +18,6 @@ public class SellBidResponseDto {
 
     private Long price;
 
-    private Long amount;
-
     private BidStatus status;
 
     private LocalDateTime createdAt;
@@ -29,7 +27,6 @@ public class SellBidResponseDto {
                 .sellBidId(sellBid.getId())
                 .size(sellBid.getOptions().getSize())
                 .price(sellBid.getPrice())
-                .amount(sellBid.getAmount())
                 .status(sellBid.getStatus())
                 .createdAt(sellBid.getCreatedAt())
                 .build();

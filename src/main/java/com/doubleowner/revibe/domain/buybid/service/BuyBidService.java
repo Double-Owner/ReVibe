@@ -85,20 +85,13 @@ public class BuyBidService {
                 //체결 생성
                 executionService.createExecution(sellBidId, buyBid.getId());
 
-                //재고에 따른 체결된 입찰 상태 변경
-                if(sellBid.getAmount() > 1){
-                    sellBid.decrease();
-                }
-                else if(sellBid.getAmount() == 1){
-                    sellBid.decrease();
-                    sellBid.delete();
-                }
+                //입찰 상태 변경
+                sellBid.delete();
                 buyBid.delete();
 
                 //sorted set에서 해당 입찰 value 삭제
-                redisTemplate.opsForZSet().remove("sell" + option.getId(), lowestValue);
                 redisTemplate.opsForZSet().remove("buy" + option.getId(), buyBid.getId().toString());
-
+                redisTemplate.opsForZSet().remove("sell" + option.getId(), lowestValue);
             }
         }
         return BuyBidResponseDto.toDto(buyBid);
@@ -115,8 +108,8 @@ public class BuyBidService {
     // 구매 입찰 조회
     @Transactional(readOnly = true)
     public List<BuyBidResponseDto> findAllBuyBid(User loginUser, int page, int size) {
-//        redisTemplate.opsForZSet().removeRange("sell" + 1,0, Long.MAX_VALUE);
-//        redisTemplate.opsForZSet().removeRange("buy" + 1,0, Long.MAX_VALUE);
+        redisTemplate.opsForZSet().removeRange("sell" + 3, 0, Long.MAX_VALUE);
+        redisTemplate.opsForZSet().removeRange("buy" + 3, 0, Long.MAX_VALUE);
 
         Pageable pageable = PageRequest.of(page, size);
         Slice<BuyBid> buyBids = buyBidRepository.findByUserId(loginUser.getId(), pageable);
