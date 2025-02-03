@@ -2,6 +2,7 @@ package com.doubleowner.revibe.domain.review.entity;
 
 import com.doubleowner.revibe.domain.item.entity.Item;
 import com.doubleowner.revibe.domain.payment.entity.Payment;
+import com.doubleowner.revibe.domain.review.dto.ReviewResponseDto;
 import com.doubleowner.revibe.domain.review.dto.UpdateReviewRequestDto;
 import com.doubleowner.revibe.domain.user.entity.User;
 import com.doubleowner.revibe.global.common.BaseTimeEntity;
@@ -46,6 +47,23 @@ public class Review extends BaseTimeEntity {
     @JoinColumn(name = "user_id")
     private User user;
 
+
+    /**
+     * DTO로 변경해주는 메소드
+     *
+     * @param review
+     * @return
+     */
+    public static ReviewResponseDto toDto(Review review) {
+        return ReviewResponseDto.builder()
+                .reviewId(review.getId())
+                .title(review.getTitle())
+                .content(review.getContent())
+                .starRate(review.getStarRate())
+                .createdAt(review.getCreatedAt())
+                .image(review.getReviewImage())
+                .build();
+    }
 
     public void update(UpdateReviewRequestDto updateReviewRequestDto, String image) {
         this.starRate = updateReviewRequestDto.getStarRate();
