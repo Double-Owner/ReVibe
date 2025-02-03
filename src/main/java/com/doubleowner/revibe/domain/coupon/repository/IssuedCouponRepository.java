@@ -12,7 +12,7 @@ import java.util.Optional;
 @Repository
 public interface IssuedCouponRepository extends JpaRepository<IssuedCoupon, Long> {
 
-    boolean existsByIdAndUser(Long id, User user);
+    boolean existsByCouponIdAndUserId(Long couponId, Long userId);
 
     List<IssuedCoupon> findByUser(User user, Pageable pageable);
 
