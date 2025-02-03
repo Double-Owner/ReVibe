@@ -11,7 +11,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -24,9 +23,9 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
                 .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_VALUE, "리뷰를 찾을 수 없습니다."));
     }
 
-    @EntityGraph(attributePaths = {"user", "item", "execution"})
+    @EntityGraph(attributePaths = {"user", "item", "payment"})
     @Query("SELECT r FROM Review r WHERE r.user.id = :userId")
-    List<Review> findReviewsByUserId(@Param("userId") Long userId);
+    Slice<Review> findReviewsByUserId(@Param("userId") Long userId, Pageable pageable);
 
     Slice<Review> findReviewsByItemId(Long itemId, Pageable pageable);
 

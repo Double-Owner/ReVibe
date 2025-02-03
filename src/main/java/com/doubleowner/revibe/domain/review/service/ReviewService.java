@@ -56,9 +56,10 @@ public class ReviewService {
 
 
     @Transactional(readOnly = true)
-    public List<ReviewResponseDto> findReview(User user) {
+    public List<ReviewResponseDto> findReview(User user, int page, int size) {
+        Pageable pageable = PageRequest.of(page - 1, size);
 
-        List<Review> reviewsByUserId = reviewRepository.findReviewsByUserId(user.getId());
+        Slice<Review> reviewsByUserId = reviewRepository.findReviewsByUserId(user.getId(), pageable);
         return reviewsByUserId.stream().map(Review::toDto).toList();
     }
 
