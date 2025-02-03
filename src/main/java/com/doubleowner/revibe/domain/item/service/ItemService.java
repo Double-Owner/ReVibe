@@ -5,7 +5,6 @@ import com.doubleowner.revibe.domain.brand.repository.BrandRepository;
 import com.doubleowner.revibe.domain.item.dto.request.ItemRequestDto;
 import com.doubleowner.revibe.domain.item.dto.request.ItemUpdateRequestDto;
 import com.doubleowner.revibe.domain.item.dto.response.ItemResponseDto;
-import com.doubleowner.revibe.domain.item.entity.Category;
 import com.doubleowner.revibe.domain.item.entity.Item;
 import com.doubleowner.revibe.domain.item.repository.ItemRepository;
 import com.doubleowner.revibe.domain.user.entity.User;
@@ -51,8 +50,7 @@ public class ItemService {
             image = imageService.uploadImage(image, requestDto.getImage());
         }
 
-        Item item = new Item(brand, requestDto.getName(), requestDto.getDescription(),
-                Category.of(requestDto.getCategory()), image, loginUser);
+        Item item = requestDto.toEntity(brand,image,loginUser);
 
         itemRepository.save(item);
 

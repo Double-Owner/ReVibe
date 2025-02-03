@@ -5,6 +5,8 @@ import com.doubleowner.revibe.global.common.BaseTimeEntity;
 import com.doubleowner.revibe.domain.brand.entity.Brand;
 import com.doubleowner.revibe.domain.user.entity.User;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicUpdate;
@@ -12,7 +14,9 @@ import org.hibernate.annotations.DynamicUpdate;
 @Entity
 @Getter
 @NoArgsConstructor
+@AllArgsConstructor
 @DynamicUpdate
+@Builder
 public class Item extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -36,15 +40,6 @@ public class Item extends BaseTimeEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "admin_id")
     private User user;
-
-    public Item(Brand brand, String name, String description, Category category, String image, User user) {
-        this.brand = brand;
-        this.name = name;
-        this.description = description;
-        this.category = category;
-        this.image = image;
-        this.user = user;
-    }
 
     public void updateItem(ItemUpdateRequestDto requestDto,String image) {
         if(requestDto.getName() != null && !requestDto.getName().isEmpty()) {
