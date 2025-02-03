@@ -15,9 +15,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 
 @Service
@@ -80,11 +83,11 @@ public class ItemService {
     }
 
     // 상품 전체 조회
-    public Page<ItemResponseDto> getAllItems(int page, int size, String keyword, String brand) {
-        Pageable pageable = PageRequest.of(page, size);
-        Page<Item> items = itemRepository.searchItems(pageable,keyword, brand);
+    public List<ItemResponseDto> getAllItems(int page, int size, String keyword, String brand) {
+        Pageable pageable = PageRequest.of(page -1 , size);
+        Slice<Item> items = itemRepository.searchItems(pageable,keyword, brand);
 
-        return items.map(ItemResponseDto::toDto);
+        return items.map(ItemResponseDto::toDto).toList();
     }
 
     // 상품 상세 조회
