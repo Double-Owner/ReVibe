@@ -1,8 +1,10 @@
 package com.doubleowner.revibe.domain.payment.dto;
 
+import lombok.Builder;
 import lombok.Getter;
 
 @Getter
+@Builder
 public class CardPaymentRequestDto {
     private Long executionId;
     private String cardNumber;

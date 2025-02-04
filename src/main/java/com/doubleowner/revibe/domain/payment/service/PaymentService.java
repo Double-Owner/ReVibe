@@ -48,16 +48,17 @@ public class PaymentService {
     // 카드 결제
     @Transactional
     public PaymentResponseDto payCard(User user, CardPaymentRequestDto cardPaymentRequestDto) {
-
-        Execution execution = executionRepository.findExecutionById(cardPaymentRequestDto.getExecutionId(), user.getEmail()).orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_VALUE));
+        User findUser = userRepository.findByEmailOrElseThrow(user.getEmail());
+        Execution execution = executionRepository.findExecutionById(cardPaymentRequestDto.getExecutionId(), findUser.getEmail()).orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_VALUE));
 
         Long price = execution.getBuyBid().getPrice();
         if (cardPaymentRequestDto.getUsePoint() != 0) {
+            findUser.minusPoint(cardPaymentRequestDto.getUsePoint());
             price -= cardPaymentRequestDto.getUsePoint();
-            user.minusPoint(cardPaymentRequestDto.getUsePoint());
+
         }
         if (cardPaymentRequestDto.getUseCouponId().longValue() != 0) {
-            IssuedCoupon useCoupon = issuedCouponRepository.findByIdAndUser(cardPaymentRequestDto.getUseCouponId(), user).orElseThrow(() -> new CommonException(ErrorCode.INVALID_COUPON_CODE));
+            IssuedCoupon useCoupon = issuedCouponRepository.findByIdAndUser(cardPaymentRequestDto.getUseCouponId(), findUser).orElseThrow(() -> new CommonException(ErrorCode.INVALID_COUPON_CODE));
             price -= useCoupon.getCoupon().getPrice();
             useCoupon.usedCoupon();
 
