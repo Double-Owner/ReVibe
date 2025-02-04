@@ -5,18 +5,15 @@ import lombok.Getter;
 
 @Getter
 public class WishlistResponseDto {
-    private final Long wishlistId;
 
     private final Long itemId;
 
-    public WishlistResponseDto(Long wishlistId, Long itemId) {
-        this.wishlistId = wishlistId;
+    public WishlistResponseDto(Long itemId) {
         this.itemId = itemId;
     }
 
     public static WishlistResponseDto toDto(Wishlist wishlist) {
         return new WishlistResponseDto(
-                wishlist.getId(),
                 wishlist.getItem().getId()
         );
     }

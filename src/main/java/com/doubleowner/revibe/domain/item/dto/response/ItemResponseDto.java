@@ -21,7 +21,9 @@ public class ItemResponseDto {
 
     private String adminName;
 
-    public ItemResponseDto(Long itemId, String name, String description, Category category, String image, String brandName, String adminName) {
+    private Long likeCount;
+
+    public ItemResponseDto(Long itemId, String name, String description, Category category, String image, String brandName, String adminName, Long likeCount) {
         this.itemId = itemId;
         this.name = name;
         this.description = description;
@@ -29,6 +31,7 @@ public class ItemResponseDto {
         this.image = image;
         this.brandName = brandName;
         this.adminName = adminName;
+        this.likeCount = likeCount;
     }
 
     public static ItemResponseDto toDto(Item item) {
@@ -39,7 +42,8 @@ public class ItemResponseDto {
                 item.getCategory(),
                 item.getImage(),
                 item.getBrand().getName(),
-                item.getUser().getNickname()
+                item.getUser().getNickname(),
+                item.getLikeCount()
         );
     }
 
