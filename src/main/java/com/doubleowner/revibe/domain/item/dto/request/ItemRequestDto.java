@@ -36,6 +36,7 @@ public class ItemRequestDto {
                 .category(Category.of(this.category))
                 .name(this.name)
                 .description(this.description)
+                .likeCount(0L)
                 .build();
     }
 }

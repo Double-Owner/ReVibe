@@ -9,6 +9,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.DynamicUpdate;
 
 @Entity
@@ -33,6 +34,9 @@ public class Item extends BaseTimeEntity {
 
     private String image;
 
+    @ColumnDefault("0")
+    private Long likeCount;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "brand_id")
     private Brand brand;
@@ -53,5 +57,9 @@ public class Item extends BaseTimeEntity {
             this.description = requestDto.getDescription();
         }
         this.image = image;
+    }
+
+    public void setLikesCount(Long likesCount) {
+        this.likeCount = likesCount;
     }
 }
