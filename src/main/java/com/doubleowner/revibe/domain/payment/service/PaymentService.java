@@ -4,6 +4,7 @@ import com.doubleowner.revibe.domain.coupon.entity.IssuedCoupon;
 import com.doubleowner.revibe.domain.coupon.repository.IssuedCouponRepository;
 import com.doubleowner.revibe.domain.execution.entity.Execution;
 import com.doubleowner.revibe.domain.execution.repository.ExecutionRepository;
+import com.doubleowner.revibe.domain.option.entity.Option;
 import com.doubleowner.revibe.domain.payment.dto.CardPaymentRequestDto;
 import com.doubleowner.revibe.domain.payment.dto.PaymentRequestDto;
 import com.doubleowner.revibe.domain.payment.dto.PaymentResponseDto;
@@ -48,16 +49,16 @@ public class PaymentService {
     @Transactional
     public PaymentResponseDto payCard(User user, CardPaymentRequestDto cardPaymentRequestDto) {
         User findUser = userRepository.findByEmailOrElseThrow(user.getEmail());
-
-        Execution execution = executionRepository.findExecutionById(cardPaymentRequestDto.getExecutionId(), user.getEmail()).orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_VALUE));
+        Execution execution = executionRepository.findExecutionById(cardPaymentRequestDto.getExecutionId(), findUser.getEmail()).orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_VALUE));
 
         Long price = execution.getBuyBid().getPrice();
         if (cardPaymentRequestDto.getUsePoint() != 0) {
-            price -= cardPaymentRequestDto.getUsePoint();
             findUser.minusPoint(cardPaymentRequestDto.getUsePoint());
+            price -= cardPaymentRequestDto.getUsePoint();
+
         }
         if (cardPaymentRequestDto.getUseCouponId().longValue() != 0) {
-            IssuedCoupon useCoupon = issuedCouponRepository.findByIdAndUser(cardPaymentRequestDto.getUseCouponId(), user).orElseThrow(() -> new CommonException(ErrorCode.INVALID_COUPON_CODE));
+            IssuedCoupon useCoupon = issuedCouponRepository.findByIdAndUser(cardPaymentRequestDto.getUseCouponId(), findUser).orElseThrow(() -> new CommonException(ErrorCode.INVALID_COUPON_CODE));
             price -= useCoupon.getCoupon().getPrice();
             useCoupon.usedCoupon();
 
@@ -73,8 +74,15 @@ public class PaymentService {
                 .payStatus(PayStatus.PAY_SUCCESS)
                 .build();
 
+        Option option = getOption(execution);
+        option.decreaseStrock();
+
         return toDto(paymentRepository.save(payment));
 
+    }
+
+    private Option getOption(Execution execution) {
+        return execution.getSell().getOptions();
     }
 
     private JSONObject sendPaymentRequest(CardPaymentRequestDto cardPaymentRequestDto, String url, Long price) {

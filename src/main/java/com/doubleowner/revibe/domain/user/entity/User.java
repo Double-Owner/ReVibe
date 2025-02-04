@@ -5,6 +5,8 @@ import com.doubleowner.revibe.domain.chat.entity.UserChat;
 import com.doubleowner.revibe.domain.coupon.entity.IssuedCoupon;
 import com.doubleowner.revibe.domain.user.dto.request.UserProfileUpdateRequestDto;
 import com.doubleowner.revibe.global.common.BaseTimeEntity;
+import com.doubleowner.revibe.global.exception.CommonException;
+import com.doubleowner.revibe.global.exception.errorCode.ErrorCode;
 import jakarta.persistence.*;
 import lombok.Getter;
 
@@ -103,8 +105,7 @@ public class User extends BaseTimeEntity {
 
     public void minusPoint(int point) {
         if (this.point - point < 0) {
-            this.point = 0;
-            return;
+            throw new CommonException(ErrorCode.NOT_FOUND_VALUE, "포인트 부족");
         }
         this.point -= point;
     }
