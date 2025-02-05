@@ -12,11 +12,10 @@ import com.doubleowner.revibe.domain.user.repository.UserRepository;
 import com.doubleowner.revibe.global.common.service.ImageService;
 import com.doubleowner.revibe.global.config.auth.UserDetailsImpl;
 import com.doubleowner.revibe.global.config.dto.JwtAuthResponse;
-import com.doubleowner.revibe.global.exception.CommonException;
+import com.doubleowner.revibe.global.exception.CustomException;
 import com.doubleowner.revibe.global.exception.errorCode.ErrorCode;
 import com.doubleowner.revibe.global.util.AuthenticationScheme;
 import com.doubleowner.revibe.global.util.JwtProvider;
-import com.doubleowner.revibe.global.util.S3Uploader;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -27,8 +26,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.IOException;
 import java.util.Map;
+
+import static com.doubleowner.revibe.global.exception.errorCode.ErrorCode.NOT_FOUND_VALUE;
 
 @Service
 @RequiredArgsConstructor
@@ -49,7 +49,7 @@ public class UserService {
 
         boolean duplicated = this.userRepository.findByEmail(requestDto.getEmail()).isPresent();
         if (duplicated) {
-            throw new CommonException(ErrorCode.ALREADY_EXIST, "중복된 이메일 입니다.");
+            throw new CustomException(ErrorCode.ALREADY_EXIST);
         }
 
         String profileImage = null;
@@ -89,7 +89,7 @@ public class UserService {
     public JwtAuthResponse login(UserLoginRequestDto requestDto) {
 
         User user = userRepository.findByEmail(requestDto.getEmail())
-                .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_VALUE,"사용자를 찾을 수 없습니다."));
+                .orElseThrow(() -> new CustomException(NOT_FOUND_VALUE));
 
         Authentication authentication = this.authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
@@ -113,10 +113,10 @@ public class UserService {
     public void deleteUser(String username, UserDeleteRequestDto requestDto) {
 
         User findUser = userRepository.findByEmail(username)
-                .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_VALUE,"사용자를 찾을 수 없습니다."));
+                .orElseThrow(() -> new CustomException(NOT_FOUND_VALUE));
 
         if (!passwordEncoder.matches(requestDto.getPassword(), findUser.getPassword())) {
-            throw new CommonException(ErrorCode.ILLEGAL_ARGUMENT, "패스워드가 올바르지 않습니다.");
+            throw new CustomException(ErrorCode.ILLEGAL_ARGUMENT);
         }
 
         String profileImage = findUser.getProfileImage();
@@ -134,10 +134,10 @@ public class UserService {
                                                 UserDetailsImpl userDetails) {
 
         User findUser = userRepository.findByEmail(userDetails.getUsername())
-                .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_VALUE,"사용자를 찾을 수 없습니다."));
+                .orElseThrow(() -> new CustomException(NOT_FOUND_VALUE));
 
         if (!passwordEncoder.matches(requestDto.getPassword(), findUser.getPassword())) {
-            throw new CommonException(ErrorCode.ILLEGAL_ARGUMENT, "패스워드가 올바르지 않습니다.");
+            throw new CustomException(ErrorCode.ILLEGAL_ARGUMENT);
         }
 
         String profileImage = findUser.getProfileImage();
@@ -174,7 +174,7 @@ public class UserService {
     public UserProfileResponseDto getProfile(UserDetailsImpl userDetails) {
 
         User findUser = userRepository.findByEmail(userDetails.getUsername())
-                .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_VALUE,"사용자를 찾을 수 없습니다."));
+                .orElseThrow(() -> new CustomException(NOT_FOUND_VALUE));
 
         return new UserProfileResponseDto(
                 findUser.getId(),

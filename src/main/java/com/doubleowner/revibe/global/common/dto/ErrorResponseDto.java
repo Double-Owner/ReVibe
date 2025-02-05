@@ -1,6 +1,7 @@
 package com.doubleowner.revibe.global.common.dto;
 
-import com.doubleowner.revibe.global.exception.ParentException;
+import com.doubleowner.revibe.global.exception.CustomException;
+import com.doubleowner.revibe.global.exception.errorCode.ErrorCode;
 import lombok.Builder;
 import lombok.Getter;
 import org.springframework.http.ResponseEntity;
@@ -10,15 +11,15 @@ import java.time.LocalDateTime;
 @Getter
 @Builder
 public class ErrorResponseDto {
-    private final LocalDateTime timestamp = LocalDateTime.now();
-    private final int status;
-    private final String error;
-    private final String code;
+    private final ErrorCode error;
     private final String message;
 
-    public static ResponseEntity<ErrorResponseDto> toResponseEntity(ParentException exception) {
+    public static ResponseEntity<ErrorResponseDto> toResponseEntity(CustomException exception) {
         return ResponseEntity
-                .status(exception.getHttpStatus())
-                .body(exception.toErrorResponseDto());
+                .status(exception.getErrorCode().getHttpStatus())
+                .body(ErrorResponseDto.builder()
+                        .error(exception.getErrorCode())
+                        .message(exception.getMessage())
+                        .build());
     }
 }

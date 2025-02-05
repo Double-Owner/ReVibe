@@ -2,13 +2,15 @@ package com.doubleowner.revibe.domain.coupon.entity;
 
 import com.doubleowner.revibe.domain.coupon.dto.request.CouponRequestDto;
 import com.doubleowner.revibe.global.common.BaseTimeEntity;
-import com.doubleowner.revibe.global.exception.CommonException;
+import com.doubleowner.revibe.global.exception.CustomException;
 import com.doubleowner.revibe.global.exception.errorCode.ErrorCode;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
+
+import static com.doubleowner.revibe.global.exception.errorCode.ErrorCode.GENERATE_MORE_THAN_MAX_COUNT;
 
 @Entity
 @Getter
@@ -51,7 +53,7 @@ public class Coupon extends BaseTimeEntity {
         if(this.totalQuantity > 0) {
             this.totalQuantity--;
         } else {
-            throw new CommonException(ErrorCode.GENERATE_MORE_THAN_MAX_COUNT);
+            throw new CustomException(GENERATE_MORE_THAN_MAX_COUNT);
         }
     }
 }

@@ -8,7 +8,7 @@ import com.doubleowner.revibe.domain.coupon.repository.CouponRepository;
 import com.doubleowner.revibe.domain.coupon.repository.IssuedCouponRepository;
 import com.doubleowner.revibe.domain.user.entity.User;
 import com.doubleowner.revibe.global.aop.DistributedLock;
-import com.doubleowner.revibe.global.exception.CommonException;
+import com.doubleowner.revibe.global.exception.CustomException;
 import com.doubleowner.revibe.global.exception.errorCode.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -18,6 +18,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static com.doubleowner.revibe.global.exception.errorCode.ErrorCode.*;
 
 @Service
 @RequiredArgsConstructor
@@ -31,10 +33,10 @@ public class IssuedCouponService {
 
         // 쿠폰 조회
         Coupon findCoupon = couponRepository.findById(id)
-                .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_COUPON));
+                .orElseThrow(() -> new CustomException(NOT_FOUND_VALUE));
 
         if (issuedCouponRepository.existsByCouponIdAndUserId(findCoupon.getId(),user.getId())) {
-            throw new CommonException(ErrorCode.ALREADY_ISSUED_COUPON);
+            throw new CustomException(ALREADY_ISSUED_COUPON);
         }
 
         // 쿠폰 발급 저장
@@ -72,7 +74,7 @@ public class IssuedCouponService {
     public void usedCoupon(Long id, User user) {
 
         IssuedCoupon issuedCoupon = issuedCouponRepository.findById(id)
-                .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_COUPON));
+                .orElseThrow(() -> new CustomException(NOT_FOUND_VALUE));
 
         checkCouponValidity(user, issuedCoupon);
 
@@ -85,11 +87,11 @@ public class IssuedCouponService {
 //    @Transactional
     public void checkCouponValidity(User user, IssuedCoupon issuedCoupon) {
         if (!issuedCoupon.getUser().getId().equals(user.getId())) {
-            throw new CommonException(ErrorCode.INVALID_COUPON_CODE);
+            throw new CustomException(ErrorCode.INVALID_COUPON_CODE);
         }
 
         if (issuedCoupon.getStatus().equals(CouponStatus.USED)) {
-            throw new CommonException(ErrorCode.ALREADY_USED_COUPON);
+            throw new CustomException(ErrorCode.ALREADY_USED_COUPON);
         }
     }
 }

@@ -11,7 +11,7 @@ import com.doubleowner.revibe.domain.review.repository.ReviewRepository;
 import com.doubleowner.revibe.domain.user.entity.User;
 import com.doubleowner.revibe.global.common.service.ImageService;
 import com.doubleowner.revibe.global.config.auth.UserDetailsImpl;
-import com.doubleowner.revibe.global.exception.CommonException;
+import com.doubleowner.revibe.global.exception.CustomException;
 import com.doubleowner.revibe.global.exception.errorCode.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -22,6 +22,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+
+import static com.doubleowner.revibe.global.exception.errorCode.ErrorCode.NOT_FOUND_VALUE;
 
 
 @Service
@@ -37,7 +39,7 @@ public class ReviewService {
     public ReviewResponseDto write(ReviewRequestDto reviewRequestDto, User user) {
 
         Payment payment = paymentRepository.findByPaymentId(reviewRequestDto.getPaymentId(), user.getEmail())
-                .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_VALUE, "내역을 찾을 수 없습니다"));
+                .orElseThrow(() -> new CustomException(NOT_FOUND_VALUE));
 
         String image = null;
 

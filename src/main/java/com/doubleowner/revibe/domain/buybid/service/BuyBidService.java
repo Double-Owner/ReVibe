@@ -10,11 +10,10 @@ import com.doubleowner.revibe.domain.option.repository.OptionRepository;
 import com.doubleowner.revibe.domain.sellbid.entity.SellBid;
 import com.doubleowner.revibe.domain.sellbid.repository.SellBidRepository;
 import com.doubleowner.revibe.domain.user.entity.User;
-import com.doubleowner.revibe.global.exception.CommonException;
+import com.doubleowner.revibe.global.exception.CustomException;
 import com.doubleowner.revibe.global.exception.errorCode.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -25,6 +24,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Set;
+
+import static com.doubleowner.revibe.global.exception.errorCode.ErrorCode.*;
 
 @Slf4j
 @Service
@@ -41,7 +42,7 @@ public class BuyBidService {
     @Transactional
     public BuyBidResponseDto createBuyBid(User loginUser, BuyBidRequestDto requestBody) {
         Option option = optionRepository.findById(requestBody.getOptionId())
-                .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_VALUE, "해당 옵션을 찾을 수 없습니다."));
+                .orElseThrow(() -> new CustomException(NOT_FOUND_VALUE));
 
 
         //BuyBid 객체 생성 및 DB에 등록
@@ -68,7 +69,7 @@ public class BuyBidService {
                 log.info("구매 입찰 등록됨");
             } else if (valuesWithLowestScore != null && lowestScore < buyBid.getPrice()) {
                 buyBidRepository.deleteById(buyBid.getId());
-                throw new CommonException(ErrorCode.BAD_REQUEST, "구매 입찰가는 즉시 판매가보다 낮아야합니다.");
+                throw new CustomException(INVALID_BID_PRICE);
             }
             // 즉시 판매가와 일치할 경우
             else if (valuesWithLowestScore != null && !valuesWithLowestScore.isEmpty()) {
@@ -79,7 +80,7 @@ public class BuyBidService {
 
                 //유저가 자신의 물건을 사려고할 시
                 if (sellBid.getUser().getId().equals(buyBid.getUser().getId())) {
-                    throw new CommonException(ErrorCode.BAD_REQUEST, "자신의 물건은 구매할 수 없습니다.");
+                    throw new CustomException(CANNOT_PURCHASE_OWN_ITEM);
                 }
 
                 //체결 생성
@@ -101,7 +102,7 @@ public class BuyBidService {
     @Transactional
     public void deleteBuyBid(Long buyBidId) {
         BuyBid buyBid = buyBidRepository.findById(buyBidId)
-                .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_VALUE, "해당 구매입찰을 찾을 수 없습니다."));
+                .orElseThrow(() -> new CustomException(NOT_FOUND_VALUE));
         buyBid.delete();
     }
 

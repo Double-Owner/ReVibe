@@ -2,7 +2,7 @@ package com.doubleowner.revibe.global.util;
 
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.ObjectMetadata;
-import com.doubleowner.revibe.global.exception.CommonException;
+import com.doubleowner.revibe.global.exception.CustomException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -55,7 +55,7 @@ public class S3Uploader {
         boolean isAllowed = Arrays.asList(PERMITTED_FILE_EXTENSIONS).contains(extension);
 
         if (!isAllowed) {
-            throw new CommonException(FAILED_UPLOAD_IMAGE, "올바른 확장자가 아닙니다");
+            throw new CustomException(FAILED_UPLOAD_IMAGE);
         }
     }
 }

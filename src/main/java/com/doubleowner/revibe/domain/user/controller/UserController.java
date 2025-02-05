@@ -10,7 +10,7 @@ import com.doubleowner.revibe.domain.user.service.UserService;
 import com.doubleowner.revibe.global.common.dto.CommonResponseBody;
 import com.doubleowner.revibe.global.config.auth.UserDetailsImpl;
 import com.doubleowner.revibe.global.config.dto.JwtAuthResponse;
-import com.doubleowner.revibe.global.exception.CommonException;
+import com.doubleowner.revibe.global.exception.CustomException;
 import com.doubleowner.revibe.global.exception.errorCode.ErrorCode;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -22,6 +22,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.web.bind.annotation.*;
+
+import static com.doubleowner.revibe.global.exception.errorCode.ErrorCode.FORBIDDEN_ACCESS;
 
 @RestController
 @RequiredArgsConstructor
@@ -71,7 +73,7 @@ public class UserController {
         userService.deleteUser(userDetails.getUsername(),requestDto);
 
         if (authentication == null || !authentication.isAuthenticated()) {
-            throw new CommonException(ErrorCode.FORBIDDEN_ACCESS, "회원삭제 권한이 없습니다.");
+            throw new CustomException(FORBIDDEN_ACCESS);
         }
         new SecurityContextLogoutHandler().logout(httpServletRequest, httpServletResponse, null);
 

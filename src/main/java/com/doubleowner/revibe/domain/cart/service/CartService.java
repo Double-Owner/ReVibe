@@ -7,13 +7,16 @@ import com.doubleowner.revibe.domain.cart.repository.CartRepository;
 import com.doubleowner.revibe.domain.option.entity.Option;
 import com.doubleowner.revibe.domain.option.repository.OptionRepository;
 import com.doubleowner.revibe.domain.user.entity.User;
-import com.doubleowner.revibe.global.exception.CommonException;
+import com.doubleowner.revibe.global.exception.CustomException;
 import com.doubleowner.revibe.global.exception.errorCode.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+
+import static com.doubleowner.revibe.global.exception.errorCode.ErrorCode.ALREADY_EXIST;
+import static com.doubleowner.revibe.global.exception.errorCode.ErrorCode.NOT_FOUND_VALUE;
 
 @Service
 @RequiredArgsConstructor
@@ -30,7 +33,7 @@ public class CartService {
 
         // 이미 장바구니에 해당상품이 존재 할 경우 예외처리
         if(cartRepository.existsByUserIdAndOptionId(loginUser.getId(),requestDto.getOptionId())){
-            throw new CommonException(ErrorCode.ALREADY_EXIST,"이미 장바구니에 등록한 상품입니다.");
+            throw new CustomException(ALREADY_EXIST);
         }
 
         Cart cart = new Cart(loginUser, option);
@@ -53,7 +56,7 @@ public class CartService {
     public void deleteCart(User loginUser, Long cartId) {
         Cart cart = cartRepository.findByIdAndUser(cartId, loginUser);
         if(cart == null){
-            throw new CommonException(ErrorCode.NOT_FOUND_VALUE,"해당 장바구니 상품을 찾을 수 없습니다.");
+            throw new CustomException(NOT_FOUND_VALUE);
         }
         cartRepository.delete(cart);
     }

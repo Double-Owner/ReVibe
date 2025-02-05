@@ -1,7 +1,7 @@
 package com.doubleowner.revibe.domain.review.repository;
 
 import com.doubleowner.revibe.domain.review.entity.Review;
-import com.doubleowner.revibe.global.exception.CommonException;
+import com.doubleowner.revibe.global.exception.CustomException;
 import com.doubleowner.revibe.global.exception.errorCode.ErrorCode;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -13,6 +13,8 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
+import static com.doubleowner.revibe.global.exception.errorCode.ErrorCode.NOT_FOUND_VALUE;
+
 @Repository
 public interface ReviewRepository extends JpaRepository<Review, Long> {
 
@@ -20,7 +22,7 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
 
     default Review findMyReview(Long id, Long userId) {
         return findReviewByIdAndUserId(id, userId)
-                .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_VALUE, "리뷰를 찾을 수 없습니다."));
+                .orElseThrow(() -> new CustomException(NOT_FOUND_VALUE));
     }
 
     @EntityGraph(attributePaths = {"user", "item", "payment"})

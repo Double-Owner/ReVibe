@@ -40,7 +40,7 @@ public class AccountController {
 
     @PatchMapping
     public ResponseEntity<CommonResponseBody<AccountResponseDto>> updateAccount(
-             @RequestBody AccountRequestDto dto,
+            @RequestBody AccountRequestDto dto,
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
         AccountResponseDto accountResponseDto = accountService.updateAccount(userDetails.getUser(), dto);
