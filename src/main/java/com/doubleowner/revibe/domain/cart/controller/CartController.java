@@ -1,6 +1,5 @@
 package com.doubleowner.revibe.domain.cart.controller;
 
-import com.doubleowner.revibe.domain.cart.dto.request.CartRequestDto;
 import com.doubleowner.revibe.domain.cart.dto.response.CartResponseDto;
 import com.doubleowner.revibe.domain.cart.service.CartService;
 import com.doubleowner.revibe.domain.user.entity.User;
@@ -24,13 +23,13 @@ public class CartController {
     // 장바구니 담기
     @PostMapping
     public ResponseEntity<CommonResponseBody<CartResponseDto>> addCart(
-            @RequestBody CartRequestDto requestDto,
+            @RequestParam Long optionId,
             @AuthenticationPrincipal UserDetailsImpl userDetails)
     {
         User loginUser = userDetails.getUser();
-        CartResponseDto responseDto = cartService.addCart(loginUser, requestDto);
+        CartResponseDto responseDto = cartService.addCart(loginUser, optionId);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body((new CommonResponseBody<CartResponseDto>("상품을 장바구니에 등록했습니다.",responseDto)));
+        return ResponseEntity.status(HttpStatus.CREATED).body((new CommonResponseBody<>("상품을 장바구니에 등록했습니다.",responseDto)));
     }
     // 장바구니 조회
     @GetMapping
@@ -44,15 +43,15 @@ public class CartController {
     }
 
     // 장바구니 삭제
-    @DeleteMapping("/{cartId}")
+    @DeleteMapping
     public ResponseEntity<CommonResponseBody> deleteCart(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
-            @PathVariable Long cartId)
+            @RequestParam Long optionId)
     {
         User loginUser = userDetails.getUser();
-        cartService.deleteCart(loginUser,cartId);
+        cartService.deleteCart(loginUser,optionId);
 
-        return ResponseEntity.status(HttpStatus.OK).body(new CommonResponseBody("장바구니에서 상품을 제거했습니다."));
+        return ResponseEntity.status(HttpStatus.OK).body(new CommonResponseBody<>("장바구니에서 상품을 제거했습니다."));
     }
 }
 
