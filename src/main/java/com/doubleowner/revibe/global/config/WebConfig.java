@@ -45,6 +45,9 @@ public class WebConfig {
                         .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
                         .dispatcherTypeMatchers(DispatcherType.FORWARD, DispatcherType.INCLUDE, DispatcherType.ERROR).permitAll()
                         .requestMatchers(ADMIN_ONLY_URLS).hasRole(ROLE_ADMIN.getName())
+                        .requestMatchers("/ws/**").permitAll()
+                        .requestMatchers("/sub/**").permitAll()
+                        .requestMatchers("/pub/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .exceptionHandling(handler -> handler

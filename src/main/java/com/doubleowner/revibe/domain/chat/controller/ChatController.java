@@ -1,5 +1,6 @@
 package com.doubleowner.revibe.domain.chat.controller;
 
+import com.doubleowner.revibe.domain.chat.dto.ChatMessageRequestDto;
 import com.doubleowner.revibe.domain.chat.dto.ChatMessageResponseDto;
 import com.doubleowner.revibe.domain.chat.dto.ChatRoomResponseDto;
 import com.doubleowner.revibe.domain.chat.dto.InviteUserDto;
@@ -10,7 +11,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -37,8 +37,8 @@ public class ChatController {
     }
 
     @MessageMapping("/chat/sendMessage/{roomId}")
-    public void sendMessage(@DestinationVariable Long roomId, @Payload String message) {
-        ChatMessageResponseDto send = chatService.send(roomId, message);
+    public void sendMessage(@DestinationVariable Long roomId, ChatMessageRequestDto chatMessageRequestDto) {
+        ChatMessageResponseDto send = chatService.send(roomId, chatMessageRequestDto.getMessage());
         messagingTemplate.convertAndSend("/sub/chat/" + roomId, send);
     }
 
