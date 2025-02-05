@@ -61,13 +61,13 @@ class IssuedCouponServiceTest {
         for (int i = 1; i <= threadCount; i++) {
             int userId = i;
             eventExecutor.submit(() -> {
-                    issuedCouponService.issuedCoupon(15L, userRepository.findById((long) userId).get());
+                    issuedCouponService.issuedCoupon(16L, userRepository.findById((long) userId).get());
                     countDownLatch.countDown();
             });
         }
 
         countDownLatch.await();
-        int totalQuantity = couponRepository.findById(15L).get().getTotalQuantity();
+        int totalQuantity = couponRepository.findById(16L).get().getTotalQuantity();
 
         assertEquals(" == 잔여 쿠폰 개수 == ",0, totalQuantity);
 

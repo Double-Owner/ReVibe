@@ -26,4 +26,5 @@ public class UserSignupRequestDto {
 
     @NotBlank(message = "권한 설정은 필수 값입니다")
     private final String role;
+
 }

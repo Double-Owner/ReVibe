@@ -13,6 +13,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,6 +28,7 @@ public class ItemController {
     private final ReviewService reviewService;
 
     // 상품 등록
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity<CommonResponseBody<ItemResponseDto>> createItem(
             @Valid @ModelAttribute ItemRequestDto requestDto,
@@ -38,6 +40,7 @@ public class ItemController {
     }
 
     // 상품 수정
+    @PreAuthorize("hasRole('ADMIN')")
     @PatchMapping("/{itemId}")
     public ResponseEntity<CommonResponseBody<ItemResponseDto>> updateItem(
             @Valid @ModelAttribute ItemUpdateRequestDto requestDto,
