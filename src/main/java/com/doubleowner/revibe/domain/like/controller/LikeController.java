@@ -20,10 +20,10 @@ public class LikeController {
 
     private final LikeService likeService;
 
-    // 관심상품 등록.해제
-    @PostMapping("/items/{itemId}/likes")
+    // 좋아요(관심상품 등록.해제)
+    @PostMapping("/likes")
     public ResponseEntity<CommonResponseBody<?>> doLike(
-            @PathVariable Long itemId,
+            @RequestParam(value = "itemId") Long itemId,
             @AuthenticationPrincipal UserDetailsImpl userDetails
             )
     {
@@ -34,7 +34,7 @@ public class LikeController {
         return ResponseEntity.status(HttpStatus.OK).body(new CommonResponseBody<>("해당상품을 관심상품에서 해제했습니다."));
     }
 
-    // 관심상품 목록 조회
+    // 좋아요(관심상품) 목록 조회
     @GetMapping("/likes")
     public ResponseEntity<CommonResponseBody<List<LikeResponseDto>>> getLikes(
             @AuthenticationPrincipal UserDetailsImpl userDetails)

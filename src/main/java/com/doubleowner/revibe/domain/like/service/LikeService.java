@@ -75,7 +75,7 @@ public class LikeService {
                 .filter(key -> Boolean.TRUE.equals(redisTemplate.opsForSet().isMember(key, loginUser.getId().toString())))
                 .map(key -> {
                     Long itemId = Long.parseLong(key.replace(Like_COUNT_KEY_PREFIX, ""));
-                    return new LikeResponseDto(itemId); // 🚀 가벼운 DTO 변환
+                    return new LikeResponseDto(itemId);
                 })
                 .toList();
 
