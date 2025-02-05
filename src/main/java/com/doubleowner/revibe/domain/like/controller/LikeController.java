@@ -1,8 +1,8 @@
-package com.doubleowner.revibe.domain.wishlist.controller;
+package com.doubleowner.revibe.domain.like.controller;
 
 import com.doubleowner.revibe.domain.user.entity.User;
-import com.doubleowner.revibe.domain.wishlist.dto.WishlistResponseDto;
-import com.doubleowner.revibe.domain.wishlist.service.WishlistService;
+import com.doubleowner.revibe.domain.like.dto.LikeResponseDto;
+import com.doubleowner.revibe.domain.like.service.LikeService;
 import com.doubleowner.revibe.global.common.dto.CommonResponseBody;
 import com.doubleowner.revibe.global.config.auth.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
@@ -16,30 +16,30 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api")
-public class WishlistController {
+public class LikeController {
 
-    private final WishlistService wishlistService;
+    private final LikeService likeService;
 
     // 관심상품 등록.해제
-    @PostMapping("/items/{itemId}/wishlists")
-    public ResponseEntity<CommonResponseBody<?>> doWishlist(
+    @PostMapping("/items/{itemId}/likes")
+    public ResponseEntity<CommonResponseBody<?>> doLike(
             @PathVariable Long itemId,
             @AuthenticationPrincipal UserDetailsImpl userDetails
             )
     {
         User loginUser = userDetails.getUser();
-        if(wishlistService.doWishlist(loginUser,itemId)){
+        if(likeService.doLike(loginUser,itemId)){
             return ResponseEntity.status(HttpStatus.OK).body(new CommonResponseBody<>("해당 상품을 관심상품으로 등록했습니다."));
         }
         return ResponseEntity.status(HttpStatus.OK).body(new CommonResponseBody<>("해당상품을 관심상품에서 해제했습니다."));
     }
 
     // 관심상품 목록 조회
-    @GetMapping("/wishlists")
-    public ResponseEntity<CommonResponseBody<List<WishlistResponseDto>>> getWishlist(
+    @GetMapping("/likes")
+    public ResponseEntity<CommonResponseBody<List<LikeResponseDto>>> getLikes(
             @AuthenticationPrincipal UserDetailsImpl userDetails)
     {
         User loginUser = userDetails.getUser();
-        return ResponseEntity.status(HttpStatus.OK).body(new CommonResponseBody<>("관심상품 목록",wishlistService.findWishlists(loginUser)));
+        return ResponseEntity.status(HttpStatus.OK).body(new CommonResponseBody<>("관심상품 목록", likeService.findLikes(loginUser)));
     }
 }
