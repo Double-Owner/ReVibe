@@ -6,12 +6,14 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @Getter
 public class ChatMessageResponseDto {
     private Long id;
+    private String sender;
     private String message;
     private LocalDateTime createdAt;
 }

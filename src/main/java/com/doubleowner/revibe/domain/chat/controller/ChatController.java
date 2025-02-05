@@ -38,14 +38,14 @@ public class ChatController {
 
     @MessageMapping("/chat/sendMessage/{roomId}")
     public void sendMessage(@DestinationVariable Long roomId, ChatMessageRequestDto chatMessageRequestDto) {
-        ChatMessageResponseDto send = chatService.send(roomId, chatMessageRequestDto.getMessage());
+        ChatMessageResponseDto send = chatService.send(roomId, chatMessageRequestDto.getSender(), chatMessageRequestDto.getMessage());
         messagingTemplate.convertAndSend("/sub/chat/" + roomId, send);
     }
 
     @GetMapping("/chatrooms/{roomId}/messages")
     public ResponseEntity<List<ChatMessageResponseDto>> getMessage(@AuthenticationPrincipal UserDetailsImpl userDetails, @PathVariable Long roomId, @RequestParam(value = "page", required = false, defaultValue = "0") int page,
                                                                    @RequestParam(value = "size", required = false, defaultValue = "3") int size) {
-        List<ChatMessageResponseDto> messages = chatService.getMessages(userDetails.getUser(), roomId, page, size);
+        List<ChatMessageResponseDto> messages = chatService.getMessages(roomId, page, size);
         return new ResponseEntity<>(messages, HttpStatus.OK);
     }
 

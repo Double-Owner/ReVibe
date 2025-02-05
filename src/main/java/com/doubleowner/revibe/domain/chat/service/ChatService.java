@@ -36,7 +36,6 @@ public class ChatService {
         ChatRoom chatRoom = ChatRoom.builder().title(title).build();
         ChatRoom savedChatRoom = chatRoomRepository.save(chatRoom);
 
-
         UserChat userChat = UserChat.builder()
                 .chatRoom(chatRoom)
                 .user(user)
@@ -56,11 +55,13 @@ public class ChatService {
         userChatRepository.save(build);
     }
 
-    public ChatMessageResponseDto send(Long id, String message) {
+    public ChatMessageResponseDto send(Long id, String sender, String message) {
+        User findUser = userRepository.findByEmailOrElseThrow(sender);
         ChatRoom chatRoom = chatRoomRepository.findById(id).orElseThrow(() -> new CustomException(NOT_FOUND_VALUE));
         ChatMessage chatMessage = ChatMessage.builder()
                 .chatRoom(chatRoom)
                 .message(message)
+                .sender(findUser.getEmail())
                 .build();
         ChatMessage save = chatMessageRepository.save(chatMessage);
         return ChatMessage.toDto(save);
@@ -70,15 +71,13 @@ public class ChatService {
     public List<ChatRoomResponseDto> getChatRooms(User user, int page, int size) {
         PageRequest pageRequest = PageRequest.of(page, size);
         Slice<ChatRoom> chatRooms = userChatRepository.findChatRoomByUserId(user.getId(), pageRequest);
-        List<ChatRoomResponseDto> list = chatRooms.stream().map(ChatRoom::toDto).toList();
-        return list;
+        return chatRooms.stream().map(ChatRoom::toDto).toList();
     }
 
     @Transactional(readOnly = true)
-    public List<ChatMessageResponseDto> getMessages(User user, Long roomId, int page, int size) {
+    public List<ChatMessageResponseDto> getMessages(Long roomId, int page, int size) {
         PageRequest pageRequest = PageRequest.of(page, size);
-        List<ChatMessageResponseDto> chatMessageResponseDtos = chatMessageRepository.findAllById(roomId, pageRequest).stream().map(ChatMessage::toDto).toList();
-        return chatMessageResponseDtos;
+        return chatMessageRepository.findAllById(roomId, pageRequest).stream().map(ChatMessage::toDto).toList();
 
     }
 }
