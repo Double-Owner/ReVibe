@@ -1,64 +1,71 @@
 package com.doubleowner.revibe.domain.cart.service;
 
-import com.doubleowner.revibe.domain.cart.dto.request.CartRequestDto;
 import com.doubleowner.revibe.domain.cart.dto.response.CartResponseDto;
-import com.doubleowner.revibe.domain.cart.entity.Cart;
-import com.doubleowner.revibe.domain.cart.repository.CartRepository;
+
 import com.doubleowner.revibe.domain.option.entity.Option;
 import com.doubleowner.revibe.domain.option.repository.OptionRepository;
 import com.doubleowner.revibe.domain.user.entity.User;
+
 import com.doubleowner.revibe.global.exception.CustomException;
 import com.doubleowner.revibe.global.exception.errorCode.ErrorCode;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-
-import static com.doubleowner.revibe.global.exception.errorCode.ErrorCode.ALREADY_EXIST;
-import static com.doubleowner.revibe.global.exception.errorCode.ErrorCode.NOT_FOUND_VALUE;
+import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 @Service
 @RequiredArgsConstructor
 public class CartService {
 
-    private final CartRepository cartRepository;
-
     private final OptionRepository optionRepository;
+    private final RedisTemplate<String, String> redisTemplate;
+    private static final String CART_PREFIX = "cart:";
 
     // 장바구니 담기
-    public CartResponseDto addCart(User loginUser,CartRequestDto requestDto) {
+    public CartResponseDto addCart(User loginUser,Long optionId) {
+        String key = CART_PREFIX + loginUser.getId();
 
-        Option option = optionRepository.findByIdOrElseThrow(requestDto.getOptionId());
-
-        // 이미 장바구니에 해당상품이 존재 할 경우 예외처리
-        if(cartRepository.existsByUserIdAndOptionId(loginUser.getId(),requestDto.getOptionId())){
-            throw new CustomException(ALREADY_EXIST);
+        if (Boolean.TRUE.equals(redisTemplate.opsForSet().isMember(key, optionId.toString()))){
+            throw new CustomException(ErrorCode.ALREADY_EXIST);
         }
 
-        Cart cart = new Cart(loginUser, option);
+        Option option = optionRepository.findByIdOrElseThrow(optionId);
 
-        cartRepository.save(cart);
+        // Redis 저장 (기본 TTL 설정 가능)
+        redisTemplate.opsForSet().add(key, option.getId().toString());
+        redisTemplate.expire(key, 7, TimeUnit.DAYS); // 7일 동안 유지
 
-        return CartResponseDto.toDto(cart);
+        return CartResponseDto.toDto(option);
     }
 
     // 내 장바구니 조회
     public List<CartResponseDto> getMyCarts(User loginUser) {
+        String key = CART_PREFIX + loginUser.getId();
 
-        List<Cart> carts = cartRepository.findAllByUser(loginUser);
+        // Redis에서 저장된 Option ID 목록 가져오기
+        Set<String> optionIds = redisTemplate.opsForSet().members(key);
 
-        return carts.stream().map(CartResponseDto::toDto).toList();
+        // Option ID를 실제 Option 엔티티로 변환
+        List<Option> options = optionRepository.findAllById(
+                optionIds.stream().map(Long::valueOf).toList()
+        );
+
+        return options.stream().map(CartResponseDto::toDto).toList();
     }
 
     // 장바구니 상품 삭제
     @Transactional
-    public void deleteCart(User loginUser, Long cartId) {
-        Cart cart = cartRepository.findByIdAndUser(cartId, loginUser);
-        if(cart == null){
-            throw new CustomException(NOT_FOUND_VALUE);
+    public void deleteCart(User loginUser, Long optionId) {
+        String key = CART_PREFIX + loginUser.getId();
+        if (Boolean.FALSE.equals(redisTemplate.opsForSet().isMember(key, optionId.toString()))){
+            throw new CustomException(ErrorCode.NOT_FOUND_VALUE);
         }
-        cartRepository.delete(cart);
+        redisTemplate.opsForSet().remove(key, optionId.toString());
+
     }
 
 }
