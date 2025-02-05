@@ -21,6 +21,8 @@ public class ChatMessage {
     @ManyToOne
     private ChatRoom chatRoom;
 
+    private String sender;
+
     private String message;
 
     @CreationTimestamp
@@ -29,6 +31,7 @@ public class ChatMessage {
     public static ChatMessageResponseDto toDto(ChatMessage chatMessage) {
         return ChatMessageResponseDto.builder()
                 .id(chatMessage.id)
+                .sender(chatMessage.sender)
                 .message(chatMessage.message)
                 .createdAt(chatMessage.createdAt)
                 .build();
