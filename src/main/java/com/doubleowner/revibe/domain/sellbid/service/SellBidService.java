@@ -11,8 +11,7 @@ import com.doubleowner.revibe.domain.sellbid.entity.SellBid;
 import com.doubleowner.revibe.domain.sellbid.repository.SellBidRepository;
 import com.doubleowner.revibe.domain.user.entity.User;
 import com.doubleowner.revibe.global.aop.DistributedLock;
-import com.doubleowner.revibe.global.exception.CommonException;
-import com.doubleowner.revibe.global.exception.errorCode.ErrorCode;
+import com.doubleowner.revibe.global.exception.CustomException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
@@ -25,6 +24,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Set;
+
+import static com.doubleowner.revibe.global.exception.errorCode.ErrorCode.*;
 
 @Slf4j
 @Service
@@ -43,7 +44,7 @@ public class SellBidService {
     @Transactional
     public SellBidResponseDto createSellBid(User loginUser, SellBidRequestDto requestDto) {
         Option option = optionRepository.findById(requestDto.getOptionId())
-                .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_VALUE, " 해당 옵션을 찾을 수 없습니다."));
+                .orElseThrow(() -> new CustomException(NOT_FOUND_VALUE));
 
         //판매입찰 객체 및 db 등록
         SellBid sellBid = requestDto.toEntity(option, loginUser);
@@ -72,7 +73,7 @@ public class SellBidService {
                 log.info("판매 입찰 등록됨");
             } //즉시구매가와 일치하지 않고 판매가가 더 낮을 때 -> 예외 처리
             else if (valuesWithHighestScore != null && highestScore > sellBid.getPrice()) {
-                throw new CommonException(ErrorCode.BAD_REQUEST, "판매 입찰가는 즉시 구매가보다 높아야합니다.");
+                throw new CustomException(INVALID_SELL_PRICE);
             }
             // 즉시 판매가와 일치할 경우
             else if (valuesWithHighestScore != null && !valuesWithHighestScore.isEmpty()) {
@@ -104,9 +105,9 @@ public class SellBidService {
     @Transactional
     public void deleteSellBid(User loginUser, Long sellBidId) {
         SellBid sellBid = sellBidRepository.findById(sellBidId)
-                .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_VALUE, ("해당 판매 요청을 찾을 수 없습니다.")));
+                .orElseThrow(() -> new CustomException(NOT_FOUND_VALUE));
         if (sellBid.getUser().equals(loginUser)) {
-            throw new CommonException(ErrorCode.ILLEGAL_ARGUMENT, "사용자가 올바르지 않습니다.");
+            throw new CustomException(ILLEGAL_ARGUMENT);
         }
         sellBid.delete();
     }
@@ -122,7 +123,7 @@ public class SellBidService {
 
     @Transactional
     @DistributedLock(key = "#option.id")
-    public void increaseOptionStocks(Option option){
+    public void increaseOptionStocks(Option option) {
         option.increaseStrock();
     }
 }

@@ -9,7 +9,7 @@ import com.doubleowner.revibe.domain.item.entity.Item;
 import com.doubleowner.revibe.domain.item.repository.ItemRepository;
 import com.doubleowner.revibe.domain.user.entity.User;
 import com.doubleowner.revibe.global.common.service.ImageService;
-import com.doubleowner.revibe.global.exception.CommonException;
+import com.doubleowner.revibe.global.exception.CustomException;
 import com.doubleowner.revibe.global.exception.errorCode.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.Cacheable;
@@ -21,6 +21,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+
+import static com.doubleowner.revibe.global.exception.errorCode.ErrorCode.ALREADY_EXIST;
+import static com.doubleowner.revibe.global.exception.errorCode.ErrorCode.NOT_FOUND_VALUE;
 
 
 @Service
@@ -39,12 +42,12 @@ public class ItemService {
         // 브랜드 찾기
         Brand brand = brandRepository.findByName(requestDto.getBrandName());
         if (brand == null) {
-            throw new CommonException(ErrorCode.NOT_FOUND_VALUE, "해당 브랜드를 찾을 수 없습니다.");
+            throw new CustomException(NOT_FOUND_VALUE);
         }
 
         // 동일한 상품명이 이미 존재할 경우 예외처리
         if (itemRepository.existsByName(requestDto.getName())) {
-            throw new CommonException(ErrorCode.ALREADY_EXIST, "이미 존재하는 상품명 입니다.");
+            throw new CustomException(ALREADY_EXIST);
         }
 
         String image = null;

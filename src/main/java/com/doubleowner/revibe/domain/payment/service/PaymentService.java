@@ -14,7 +14,7 @@ import com.doubleowner.revibe.domain.payment.entity.Payment;
 import com.doubleowner.revibe.domain.payment.repository.PaymentRepository;
 import com.doubleowner.revibe.domain.user.entity.User;
 import com.doubleowner.revibe.domain.user.repository.UserRepository;
-import com.doubleowner.revibe.global.exception.CommonException;
+import com.doubleowner.revibe.global.exception.CustomException;
 import com.doubleowner.revibe.global.exception.errorCode.ErrorCode;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -31,6 +31,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.*;
+
+import static com.doubleowner.revibe.global.exception.errorCode.ErrorCode.*;
 
 @Service
 @RequiredArgsConstructor
@@ -49,7 +51,7 @@ public class PaymentService {
     @Transactional
     public PaymentResponseDto payCard(User user, CardPaymentRequestDto cardPaymentRequestDto) {
         User findUser = userRepository.findByEmailOrElseThrow(user.getEmail());
-        Execution execution = executionRepository.findExecutionById(cardPaymentRequestDto.getExecutionId(), findUser.getEmail()).orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_VALUE));
+        Execution execution = executionRepository.findExecutionById(cardPaymentRequestDto.getExecutionId(), findUser.getEmail()).orElseThrow(() -> new CustomException(NOT_FOUND_VALUE));
 
         Long price = execution.getBuyBid().getPrice();
         if (cardPaymentRequestDto.getUsePoint() != 0) {
@@ -58,7 +60,7 @@ public class PaymentService {
 
         }
         if (cardPaymentRequestDto.getUseCouponId().longValue() != 0) {
-            IssuedCoupon useCoupon = issuedCouponRepository.findByIdAndUser(cardPaymentRequestDto.getUseCouponId(), findUser).orElseThrow(() -> new CommonException(ErrorCode.INVALID_COUPON_CODE));
+            IssuedCoupon useCoupon = issuedCouponRepository.findByIdAndUser(cardPaymentRequestDto.getUseCouponId(), findUser).orElseThrow(() -> new CustomException(INVALID_COUPON_CODE));
             price -= useCoupon.getCoupon().getPrice();
             useCoupon.usedCoupon();
 
@@ -160,17 +162,17 @@ public class PaymentService {
         try {
             responseEntity = template.exchange(urlString, HttpMethod.POST, requestEntity, String.class);
         } catch (Exception e) {
-            throw new CommonException(ErrorCode.BAD_REQUEST, "결제 요청 중 오류가 발생했습니다: " + e.getMessage());
+            throw new CustomException(PAYMENT_PROCESS_FAILED);
         }
 
         if (responseEntity.getStatusCode() != HttpStatus.OK) {
-            throw new CommonException(ErrorCode.BAD_REQUEST, "결제 요청 실패: " + responseEntity.getBody());
+            throw new CustomException(PAYMENT_PROCESS_FAILED);
         }
 
         try {
             return (JSONObject) new JSONParser().parse(responseEntity.getBody());
         } catch (ParseException e) {
-            throw new CommonException(ErrorCode.BAD_REQUEST, "결제 응답 파싱 실패: " + e.getMessage());
+            throw new CustomException(PAYMENT_PROCESS_FAILED);
         }
     }
 

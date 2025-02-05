@@ -1,8 +1,10 @@
 package com.doubleowner.revibe.domain.item.entity;
 
-import com.doubleowner.revibe.global.exception.CommonException;
+import com.doubleowner.revibe.global.exception.CustomException;
 import com.doubleowner.revibe.global.exception.errorCode.ErrorCode;
 import lombok.RequiredArgsConstructor;
+
+import static com.doubleowner.revibe.global.exception.errorCode.ErrorCode.ILLEGAL_ARGUMENT;
 
 @RequiredArgsConstructor
 public enum Category {
@@ -22,6 +24,6 @@ public enum Category {
                 return category;
             }
         }
-        throw new CommonException(ErrorCode.ILLEGAL_ARGUMENT,"잘못된 카테고리 이름입니다.");
+        throw new CustomException(ILLEGAL_ARGUMENT);
     }
 }

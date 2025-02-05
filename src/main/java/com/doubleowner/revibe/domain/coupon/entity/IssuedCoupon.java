@@ -2,7 +2,7 @@ package com.doubleowner.revibe.domain.coupon.entity;
 
 import com.doubleowner.revibe.domain.coupon.dto.response.IssuedCouponResponseDto;
 import com.doubleowner.revibe.domain.user.entity.User;
-import com.doubleowner.revibe.global.exception.CommonException;
+import com.doubleowner.revibe.global.exception.CustomException;
 import com.doubleowner.revibe.global.exception.errorCode.ErrorCode;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -12,6 +12,8 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
+
+import static com.doubleowner.revibe.global.exception.errorCode.ErrorCode.ALREADY_USED_COUPON;
 
 @Entity
 @Getter
@@ -45,7 +47,7 @@ public class IssuedCoupon {
 
     public void usedCoupon() {
         if (this.status == CouponStatus.USED) {
-            throw new CommonException(ErrorCode.ALREADY_USED_COUPON);
+            throw new CustomException(ALREADY_USED_COUPON);
         }
         this.status = CouponStatus.USED;
         this.usedAt = LocalDateTime.now();

@@ -1,8 +1,10 @@
 package com.doubleowner.revibe.domain.option.entity;
 
-import com.doubleowner.revibe.global.exception.CommonException;
+import com.doubleowner.revibe.global.exception.CustomException;
 import com.doubleowner.revibe.global.exception.errorCode.ErrorCode;
 import lombok.RequiredArgsConstructor;
+
+import static com.doubleowner.revibe.global.exception.errorCode.ErrorCode.ILLEGAL_ARGUMENT;
 
 @RequiredArgsConstructor
 public enum Size {
@@ -21,7 +23,7 @@ public enum Size {
             }
         }
 
-        throw new CommonException(ErrorCode.ILLEGAL_ARGUMENT,"잘못된 사이즈 입력 입니다.");
+        throw new CustomException(ILLEGAL_ARGUMENT);
     }
 
     public static int toValue(Size size) {

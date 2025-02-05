@@ -1,12 +1,14 @@
 package com.doubleowner.revibe.domain.user.entity;
 
-import com.doubleowner.revibe.global.exception.CommonException;
+import com.doubleowner.revibe.global.exception.CustomException;
 import com.doubleowner.revibe.global.exception.errorCode.ErrorCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import java.util.List;
+
+import static com.doubleowner.revibe.global.exception.errorCode.ErrorCode.UNAUTHORIZED_ACCESS;
 
 @Getter
 @RequiredArgsConstructor
@@ -23,7 +25,7 @@ public enum Role {
                 return role;
             }
         }
-        throw new CommonException(ErrorCode.ILLEGAL_ARGUMENT, "해당하는 이름의 권한을 찾을 수 없습니다: " + roleName);
+        throw new CustomException(UNAUTHORIZED_ACCESS);
     }
 
     public List<SimpleGrantedAuthority> getAuthorities() {

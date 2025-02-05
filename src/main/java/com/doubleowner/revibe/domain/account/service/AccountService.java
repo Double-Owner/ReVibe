@@ -6,12 +6,13 @@ import com.doubleowner.revibe.domain.account.entity.Account;
 import com.doubleowner.revibe.domain.account.repository.AccountRepository;
 import com.doubleowner.revibe.domain.user.entity.User;
 import com.doubleowner.revibe.domain.user.repository.UserRepository;
-import com.doubleowner.revibe.global.exception.CommonException;
-import com.doubleowner.revibe.global.exception.errorCode.ErrorCode;
+import com.doubleowner.revibe.global.exception.CustomException;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.annotations.DynamicUpdate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import static com.doubleowner.revibe.global.exception.errorCode.ErrorCode.*;
 
 @Service
 @RequiredArgsConstructor
@@ -22,9 +23,9 @@ public class AccountService {
     private final UserRepository userRepository;
 
     @Transactional
-    public AccountResponseDto create(User user,AccountRequestDto dto) {
-        if(user.getAccount() != null){
-            throw new CommonException(ErrorCode.ALREADY_EXIST,"계좌가 이미 등록되어 있습니다.");
+    public AccountResponseDto create(User user, AccountRequestDto dto) {
+        if (user.getAccount() != null) {
+            throw new CustomException(INVALID_ACCOUNT);
         }
 
         Account account = Account.builder()
@@ -34,7 +35,7 @@ public class AccountService {
 
         Account savedAccount = accountRepository.save(account);
 
-        userRepository.updateUserByAccount(user,savedAccount);
+        userRepository.updateUserByAccount(user, savedAccount);
 
         return AccountResponseDto.toDto(savedAccount);
     }
@@ -42,8 +43,8 @@ public class AccountService {
     @Transactional
     public AccountResponseDto findAccount(User user) {
 
-        if(user.getAccount() == null){
-            throw new CommonException(ErrorCode.NOT_FOUND_VALUE,"로그인 중인 사용자의 계좌가 없습니다.");
+        if (user.getAccount() == null) {
+            throw new CustomException(NOT_FOUND_ACCOUNT);
         }
         return AccountResponseDto.toDto(user.getAccount());
     }
@@ -51,8 +52,8 @@ public class AccountService {
     @Transactional
     public AccountResponseDto updateAccount(User user, AccountRequestDto requestDto) {
 
-        if(user.getAccount() == null){
-            throw new CommonException(ErrorCode.NOT_FOUND_VALUE,"사용자의 계좌가 없습니다.");
+        if (user.getAccount() == null) {
+            throw new CustomException(NOT_FOUND_ACCOUNT);
         }
 
         user.getAccount().update(requestDto);
@@ -62,10 +63,10 @@ public class AccountService {
 
     @Transactional
     public void deleteAccount(User user) {
-        if(user.getAccount() == null){
-            throw new CommonException(ErrorCode.NOT_FOUND_VALUE,"사용자의 계좌가 없습니다.");
+        if (user.getAccount() == null) {
+            throw new CustomException(NOT_FOUND_ACCOUNT);
         }
-        userRepository.updateUserByAccount(user,null);
+        userRepository.updateUserByAccount(user, null);
         accountRepository.delete(user.getAccount());
 
     }

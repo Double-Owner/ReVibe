@@ -5,7 +5,7 @@ import com.doubleowner.revibe.domain.coupon.dto.response.CouponResponseDto;
 import com.doubleowner.revibe.domain.coupon.entity.Coupon;
 import com.doubleowner.revibe.domain.coupon.repository.CouponRepository;
 import com.doubleowner.revibe.domain.user.entity.User;
-import com.doubleowner.revibe.global.exception.CommonException;
+import com.doubleowner.revibe.global.exception.CustomException;
 import com.doubleowner.revibe.global.exception.errorCode.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -14,6 +14,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+
+import static com.doubleowner.revibe.global.exception.errorCode.ErrorCode.NOT_FOUND_VALUE;
 
 @Service
 @RequiredArgsConstructor
@@ -49,7 +51,7 @@ public class CouponService {
     public CouponResponseDto updateCoupon(User user,Long id, CouponRequestDto dto) {
 
         Coupon coupon = couponRepository.findById(id)
-                .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_COUPON));
+                .orElseThrow(() -> new CustomException(NOT_FOUND_VALUE));
 
         coupon.updateCoupon(dto);
         return toDto(coupon);
@@ -60,7 +62,7 @@ public class CouponService {
     public void deleteCoupon(User user, Long id) {
 
         Coupon coupon = couponRepository.findById(id)
-                        .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_COUPON));
+                        .orElseThrow(() -> new CustomException(NOT_FOUND_VALUE));
 
         couponRepository.deleteById(coupon.getId());
     }

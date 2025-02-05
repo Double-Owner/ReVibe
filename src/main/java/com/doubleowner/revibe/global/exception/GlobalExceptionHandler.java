@@ -9,10 +9,12 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import static com.doubleowner.revibe.global.exception.errorCode.ErrorCode.ILLEGAL_ARGUMENT;
+
 @RestControllerAdvice
 public class GlobalExceptionHandler {
-    @ExceptionHandler(value = {CommonException.class})
-    public ResponseEntity<ErrorResponseDto> handleCommonException(CommonException exception) {
+    @ExceptionHandler(value = {CustomException.class})
+    public ResponseEntity<ErrorResponseDto> handleCommonException(CustomException exception) {
         return ErrorResponseDto.toResponseEntity(exception);
     }
 
@@ -27,8 +29,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponseDto> handleValidException(MethodArgumentNotValidException e) {
 
         ErrorResponseDto message = ErrorResponseDto.builder()
-                .error(e.getStatusCode().toString())
-                .code("Failed Validation") // todo 하드코딩된 code 수정
+                .error(ILLEGAL_ARGUMENT) // todo 하드코딩된 code 수정
                 .message(e.getBindingResult().getFieldError().getDefaultMessage())
                 .build();
         return new ResponseEntity<>(message, e.getStatusCode());
