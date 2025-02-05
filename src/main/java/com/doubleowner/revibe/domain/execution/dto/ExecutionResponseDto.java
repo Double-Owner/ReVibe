@@ -1,5 +1,6 @@
 package com.doubleowner.revibe.domain.execution.dto;
 
+import com.doubleowner.revibe.domain.execution.entity.Execution;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -15,4 +16,11 @@ public class ExecutionResponseDto {
     private Long sellBidId;
     private Long buyBidId;
 
+    public static ExecutionResponseDto toDto(Execution execution) {
+        return ExecutionResponseDto.builder()
+                .id(execution.getId())
+                .sellBidId(execution.getSell().getId())
+                .buyBidId(execution.getBuyBid().getId())
+                .build();
+    }
 }

@@ -12,10 +12,17 @@ import com.doubleowner.revibe.domain.sellbid.entity.SellBid;
 import com.doubleowner.revibe.domain.sellbid.repository.SellBidRepository;
 import com.doubleowner.revibe.domain.user.entity.Role;
 import com.doubleowner.revibe.domain.user.entity.User;
+import com.doubleowner.revibe.global.common.dto.CommonResponseBody;
+import com.doubleowner.revibe.global.config.auth.UserDetailsImpl;
 import com.doubleowner.revibe.global.exception.CommonException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Objects;
 
 import static com.doubleowner.revibe.global.exception.errorCode.ErrorCode.FORBIDDEN_ACCESS;
@@ -29,6 +36,7 @@ public class ExecutionService {
     private final BuyBidRepository buyBidRepository;
     private final ExecutionRepository executionRepository;
 
+    @Transactional
     public ExecutionResponseDto createExecution(Long sellBidId, Long buyBidId) {
         // 1. SellBid와 BuyBid 조회 ->
         SellBid sellBid = sellBidRepository.findById(sellBidId).orElseThrow(() -> new CommonException(NOT_FOUND_VALUE));
@@ -44,14 +52,13 @@ public class ExecutionService {
         // 3. Execution 저장
         executionRepository.save(execution);
 
-        return toDto(execution);
+        return ExecutionResponseDto.toDto(execution);
     }
 
-    private ExecutionResponseDto toDto(Execution execution) {
-        return ExecutionResponseDto.builder()
-                .id(execution.getId())
-                .sellBidId(execution.getSell().getId())
-                .buyBidId(execution.getBuyBid().getId())
-                .build();
+    public List<ExecutionResponseDto> findExecution(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Slice<Execution> executions = executionRepository.findAllToSlice(pageable);
+
+        return executions.map(ExecutionResponseDto::toDto).toList();
     }
 }
