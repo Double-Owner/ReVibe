@@ -8,9 +8,13 @@ import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
+import org.springframework.expression.Expression;
+import org.springframework.expression.spel.standard.SpelExpressionParser;
+import org.springframework.expression.spel.support.StandardEvaluationContext;
 import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
 import java.util.concurrent.TimeUnit;
 
 @Aspect
@@ -23,18 +27,22 @@ public class LockAspect {
 
     private final RedissonClient redissonClient;
 
-    @Around("@annotation(com.doubleowner.revibe.global.aop.DistributedLock) && args(id, ..)")
-    public Object lock(ProceedingJoinPoint joinPoint, Long id) throws Throwable {
+    private final SpelExpressionParser parser = new SpelExpressionParser();
+    private final StandardEvaluationContext context = new StandardEvaluationContext();
+
+    @Around("@annotation(com.doubleowner.revibe.global.aop.DistributedLock)")
+    public Object lock(ProceedingJoinPoint joinPoint) throws Throwable {
         MethodSignature signature = (MethodSignature) joinPoint.getSignature();
         Method method = signature.getMethod();
 
         DistributedLock distributedLock = method.getAnnotation(DistributedLock.class);
+        Object[] args = joinPoint.getArgs();
 
-//        String key = REDISSON_LOCK_PREFIX + method.getName() + ":" + id;
-        String key = distributedLock.key().isEmpty() ? method.getName() : distributedLock.key();
-        String LockKey = REDISSON_LOCK_PREFIX + key;
+        String keyExpression = distributedLock.key();
+        String lockKey = REDISSON_LOCK_PREFIX + parseKey(keyExpression, method, args);
 
-        RLock couponLock = redissonClient.getLock(LockKey);
+
+        RLock couponLock = redissonClient.getLock(lockKey);
 
         boolean lock = false;
         try {
@@ -50,10 +58,21 @@ public class LockAspect {
             if (lock && couponLock.isHeldByCurrentThread()) {
                 try {
                     couponLock.unlock();
-                } catch (IllegalMonitorStateException e){
+                } catch (IllegalMonitorStateException e) {
                     log.info(e.getMessage());
                 }
             }
         }
     }
+
+    private String parseKey(String keyExpression, Method method, Object[] args) {
+        Parameter[] parameters = method.getParameters();
+        for (int i = 0; i < parameters.length; i++) {
+            context.setVariable(parameters[i].getName(), args[i]);
+        }
+
+        Expression expression = parser.parseExpression(keyExpression);
+        return expression.getValue(context, String.class);
+    }
 }
+
