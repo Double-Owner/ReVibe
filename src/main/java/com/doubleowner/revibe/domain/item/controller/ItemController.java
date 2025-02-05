@@ -28,7 +28,6 @@ public class ItemController {
     private final ReviewService reviewService;
 
     // 상품 등록
-    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity<CommonResponseBody<ItemResponseDto>> createItem(
             @Valid @ModelAttribute ItemRequestDto requestDto,
@@ -40,7 +39,6 @@ public class ItemController {
     }
 
     // 상품 수정
-    @PreAuthorize("hasRole('ADMIN')")
     @PatchMapping("/{itemId}")
     public ResponseEntity<CommonResponseBody<ItemResponseDto>> updateItem(
             @Valid @ModelAttribute ItemUpdateRequestDto requestDto,
