@@ -56,7 +56,7 @@ jobs:
             sudo docker pull ${{ vars.DOCKERHUB_USERNAME }}/${{ vars.DOCKER_IMAGE_TAG_NAME }}:latest
             sudo docker run -d -p 8080:8080 \
             -e SPRING_DATASOURCE_URL=${{secrets.DB_URL}} \
-            -e SPRING_DATASOURCE_USER=${{secrets.DB_USERNAME}} \
+            -e SPRING_DATASOURCE_USERNAME=${{secrets.DB_USERNAME}} \
             -e SPRING_DATASOURCE_PASSWORD=${{secrets.DB_PASSWORD}} \
             -e TOSS_CLIENT_KEY=${{secrets.TOSS_CLIENT_KEY}} \ 
             -e TOSS_SECRET_KEY=${{secrets.TOSS_SECRET_KEY}} \
