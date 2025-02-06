@@ -38,11 +38,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Set up application
+      - name: Generate application.yml
         run: |
-          mkdir -p ./src/main/resources
-          cd ./src/main/resources
-          touch ./application.yml
+          mkdir -p src/main/resources
+          echo "${{ secrets.APPLICATION_YML }}" > src/main/resources/application.yml
 
       - name: Deploy to EC2
         uses: appleboy/ssh-action@v1.2.0
