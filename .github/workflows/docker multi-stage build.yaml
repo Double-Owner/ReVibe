@@ -63,5 +63,6 @@ jobs:
             echo "${{ secrets.APPLICATION_YML }}" > /home/ubuntu/application.yml
 
             sudo docker run -d -p 8080:8080 \
+              -e JWT_SECRET="7JWI64WV7ZWY7IS47JqUIOyngOq4iCDrhIjrrLQg7KG466Ck7JqUIOyCtOugpOyjvOyEuOyalA==" \
               -v $(pwd)/application.yml:/app/src/main/resources/application.yml \
               ${{ vars.DOCKERHUB_USERNAME }}/${{ vars.DOCKER_IMAGE_TAG_NAME }}:latest
