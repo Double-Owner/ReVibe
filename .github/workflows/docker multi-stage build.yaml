@@ -65,4 +65,4 @@ jobs:
               -e S3_SECRET_KEY=${{secrets.AWS_SECRET_ACCESS_KEY}} \
               -e S3_BUCKET_NAME=${{secrets.S3_BUCKET_NAME}} \
               -e JWT_SECRET_KEY=${{secrets.JWT_TOKEN}} \
-            ${{ vars.DOCKERHUB_USERNAME }}/${{ vars.DOCKER_IMAGE_TAG_NAME }}:latest
+              ${{ vars.DOCKERHUB_USERNAME }}/${{ vars.DOCKER_IMAGE_TAG_NAME }}:latest
