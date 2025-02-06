@@ -10,7 +10,7 @@ RUN gradle clean build --no-daemon --parallel -x test
 FROM openjdk:17-jdk-slim
 
 COPY --from=builder /apps/build/libs/app.jar /app/app.jar
-COPY --from=builder /apps/build/resources/main/application.yml /app/application.yml
+COPY --from=builder /apps/src/main/resources/application.yml /app/application.yml
 ENV SPRING_CONFIG_LOCATION=/app/application.yml
 
 EXPOSE 8080
