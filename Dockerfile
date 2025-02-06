@@ -18,7 +18,7 @@ FROM openjdk:17-jdk-slim
 COPY --from=builder /apps/build/libs/*.jar app.jar
 
 # application.yml 복사 (Spring Boot가 찾을 수 있는 위치로)
-COPY src/main/resources/application.yml /config/application.yml
+COPY /app/src/main/resources/application.yml /config/application.yml
 
 # 포트 노출
 EXPOSE 8080
