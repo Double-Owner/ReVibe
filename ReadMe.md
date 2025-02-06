@@ -121,7 +121,7 @@
   - 해결 방안 : 로컬에서 실행할 때 .env 안에 있는 모든 값들이 -e key=value로 존재해야하지만 docker container를 생성하고 실행할 수 있었음
 
 # **📜 기술적인 의사결정**
-[바로가기]("https://github.com/Double-Owner/ReVibe/wiki/%EA%B8%B0%EC%88%A0%EC%A0%81-%EC%9D%98%EC%82%AC%EA%B2%B0%EC%A0%95")
+[바로가기](https://github.com/Double-Owner/ReVibe/wiki/%EA%B8%B0%EC%88%A0%EC%A0%81-%EC%9D%98%EC%82%AC%EA%B2%B0%EC%A0%95)
 
 # **📜 서비스 플로우**
 ![Image](https://github.com/user-attachments/assets/2a88380b-632a-40bd-9d0e-650648c5c302)
