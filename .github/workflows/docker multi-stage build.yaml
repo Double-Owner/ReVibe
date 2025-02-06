@@ -1,6 +1,5 @@
 name: docker-multi-stage build
 
-# 워크플로우 실행 조건
 on:
   pull_request:
     branches:
@@ -9,7 +8,6 @@ on:
     branches:
       - featureGitAction-cicd-구현
 
-# 워크플로우 작업 정의
 jobs:
   docker-build-and-push:
     name: Build and Test
@@ -38,7 +36,7 @@ jobs:
   deploy-to-ec2:
     needs: docker-build-and-push
     runs-on: ubuntu-latest
-    # https://github.com/marketplace/actions/ssh-remote-commands
+
     steps:
       - name: Deploy to EC2
         uses: appleboy/ssh-action@v1.2.0
@@ -56,6 +54,7 @@ jobs:
             sudo docker system prune -a -f
 
             sudo docker pull ${{ vars.DOCKERHUB_USERNAME }}/${{ vars.DOCKER_IMAGE_TAG_NAME }}:latest
+
             sudo docker run -d -p 8080:8080 \
               -e SPRING_DATASOURCE_USERNAME=${{ secrets.DB_USERNAME }} \
               -e SPRING_DATASOURCE_PASSWORD=${{ secrets.DB_PASSWORD }} \
@@ -65,5 +64,5 @@ jobs:
               -e S3_ACCESS_KEY=${{ secrets.AWS_ACCESS_KEY }} \
               -e S3_SECRET_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }} \
               -e S3_BUCKET_NAME=${{ secrets.S3_BUCKET_NAME }} \
-              -e JWT_SECRET_KEY=${{ secrets.JWT_TOKEN }}   
+              -e JWT_SECRET_KEY=${{ secrets.JWT_TOKEN }} \
               ${{ vars.DOCKERHUB_USERNAME }}/${{ vars.DOCKER_IMAGE_TAG_NAME }}:latest
