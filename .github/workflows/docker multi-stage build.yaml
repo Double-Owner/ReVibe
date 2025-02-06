@@ -49,13 +49,13 @@ jobs:
           script: |
             CONTAINER_ID=$(sudo docker ps -q --filter "publish=8080-8080")
             if [ ! -z "$CONTAINER_ID" ]; then
-            sudo docker stop $CONTAINER_ID
-            sudo docker rm $CONTAINER_ID
-            echo ${{secrets.DB_URL}}
-            echo ${{secrets.DB_USERNAME}}
-            echo ${{secrets.DB_PASSWORD}}
-            echo ${{secrets.TOSS_CLIENT_KEY}}
-            echo ${{secrets.TOSS_SECRET_KEY}}
+              sudo docker stop $CONTAINER_ID
+              sudo docker rm $CONTAINER_ID
+              echo "SPRING_DATASOURCE_USERNAME=${{secrets.DB_USERNAME}}"
+              echo "SPRING_DATASOURCE_PASSWORD=${{secrets.DB_PASSWORD}}"
+              echo "SPRING_DATASOURCE_URL=${{secrets.DB_URL}}"
+              echo "TOSS_CLIENT_KEY=${{secrets.TOSS_CLIENT_KEY}}"
+              echo "TOSS_SECRET_KEY=${{secrets.TOSS_SECRET_KEY}}"
             fi
             
             sudo docker system prune -a -f
