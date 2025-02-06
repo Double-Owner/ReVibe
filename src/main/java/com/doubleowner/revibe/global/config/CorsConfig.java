@@ -13,7 +13,7 @@ public class CorsConfig {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**")
-                        .allowedOrigins("http://localhost:5173", "https://your-s3-bucket-url.s3.amazonaws.com", "http://localhost:5174", "http://localhost:63342")
+                        .allowedOrigins("http://localhost:5173","http://3.37.19.55:8080",  "https://your-s3-bucket-url.s3.amazonaws.com", "http://localhost:5174", "http://localhost:63342")
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "PATCH")
                         .allowedHeaders("*")
                         .allowCredentials(true);
