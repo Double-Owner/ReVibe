@@ -19,6 +19,8 @@ jobs:
         - name: Generate application.yml
           run: |
             mkdir -p src/main/resources
+            cd ./src/main/resources
+            touch ./application.yml
             echo "${{ secrets.APPLICATION_YML }}" > src/main/resources/application.yml
   
 
