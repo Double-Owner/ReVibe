@@ -60,8 +60,8 @@ jobs:
             sudo docker system prune -a -f
             sudo docker pull ${{ vars.DOCKERHUB_USERNAME }}/${{ vars.DOCKER_IMAGE_TAG_NAME }}:latest
 
-            echo "${{ secrets.APPLICATION_YML }}" > application.yml
+            echo "${{ secrets.APPLICATION_YML }}" > /home/ubuntu/application.yml
 
             sudo docker run -d -p 8080:8080 \
-              -v $(pwd)/application.yml:/app/src/main/resources/application.yml \
+              -v /home/ubuntu/application.yml:/app/src/main/resources/application.yml \
               ${{ vars.DOCKERHUB_USERNAME }}/${{ vars.DOCKER_IMAGE_TAG_NAME }}:latest
