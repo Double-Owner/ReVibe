@@ -36,7 +36,7 @@ jobs:
 #          tags: ${{ vars.DOCKERHUB_USERNAME }}/${{ vars.DOCKER_IMAGE_TAG_NAME}}:latest
     # Docker Image 빌드
     - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag ${{ vars.DOCKERHUB_USERNAME }}/${{ vars.DOCKER_IMAGE_TAG_NAME }}:latest
+      run: docker build . --tag ${{ vars.DOCKERHUB_USERNAME }}/${{ vars.DOCKER_IMAGE_TAG_NAME }}:latest
 
     # Docker 로큰
     - name: Login to Docker Hub using Access Token
