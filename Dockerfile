@@ -7,7 +7,7 @@ WORKDIR /apps
 COPY . /apps
 RUN gradle clean build --no-daemon --parallel -x test
 
-FROM openjdk:17-slim
+FROM openjdk:17-jdk-slim
 
 COPY --from=builder /apps/build/libs/app.jar  app.jar
 
