@@ -57,7 +57,8 @@ jobs:
               echo "TOSS_CLIENT_KEY=${{ secrets.TOSS_CLIENT_KEY }}"
               echo "TOSS_SECRET_KEY=${{ secrets.TOSS_SECRET_KEY }}"
             fi
-            
+            set -x
+
             sudo docker system prune -a -f
 
             sudo docker pull ${{ vars.DOCKERHUB_USERNAME }}/${{ vars.DOCKER_IMAGE_TAG_NAME }}:latest
