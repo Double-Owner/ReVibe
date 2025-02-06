@@ -38,12 +38,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: set application
+      - name: Set up application
         run: |
           mkdir -p ./src/main/resources
           cd ./src/main/resources
           touch ./application.yml
-          echo "${{ secrets.APPLICATION_YML }}" > ./application.yml
 
       - name: Deploy to EC2
         uses: appleboy/ssh-action@v1.2.0
@@ -59,8 +58,10 @@ jobs:
             fi
 
             sudo docker system prune -a -f
-
             sudo docker pull ${{ vars.DOCKERHUB_USERNAME }}/${{ vars.DOCKER_IMAGE_TAG_NAME }}:latest
 
+            echo "${{ secrets.APPLICATION_YML }}" > application.yml
+
             sudo docker run -d -p 8080:8080 \
+              -v $(pwd)/application.yml:/app/src/main/resources/application.yml \
               ${{ vars.DOCKERHUB_USERNAME }}/${{ vars.DOCKER_IMAGE_TAG_NAME }}:latest
