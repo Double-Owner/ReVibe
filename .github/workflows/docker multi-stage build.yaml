@@ -55,7 +55,8 @@ jobs:
             
             sudo docker pull ${{ vars.DOCKERHUB_USERNAME }}/${{ vars.DOCKER_IMAGE_TAG_NAME }}:latest
             sudo docker run -d -p 8080:8080 \
-            -e DB_USERNAME=${{secrets.DB_USERNAME}} \
-            -e DB_PASSWORD=${{secrets.DB_PASSWORD}} \
-            -e DB_URL=${{secrets.DB_URL}} \
+            -e SPRING_DATASOURCE_URL=${{secrets.DB_URL}} \
+            -e SPRING_DATASOURCE_USER=${{secrets.DB_USERNAME}} \
+            -e SPRING_DATASOURCE_PASSWORD=${{secrets.DB_PASSWORD}} \
+            -e JWT_SECRET_KEY=${{secrets.JWT_TOKEN}} \
             ${{ vars.DOCKERHUB_USERNAME }}/${{ vars.DOCKER_IMAGE_TAG_NAME }}:latest
