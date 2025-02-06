@@ -10,7 +10,6 @@ RUN gradle clean build --no-daemon --parallel -x test
 FROM openjdk:17-jdk-slim
 
 COPY --from=builder /apps/build/libs/app.jar  app.jar
-COPY src/main/resources/application.yml /app/src/main/resources/application.yml
 
 EXPOSE 8080
 
