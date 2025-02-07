@@ -14,6 +14,6 @@ public interface SellBidRepository extends JpaRepository<SellBid, Long> {
     @Query("select sb from SellBid sb where sb.user.id=:userId")
     Slice<SellBid> findByUserId(@Param("userId") Long userId, Pageable pageable);
 
-    @Query("select sb from SellBid sb where sb.options.id=:optionId")
+    @Query("select sb from SellBid sb where sb.options.id=:optionId and sb.status='ONPROGRESS'")
     Slice<SellBid> findByOptionId(@Param("optionId")Long optionId,Pageable pageable);
 }

@@ -18,6 +18,6 @@ public interface BuyBidRepository extends JpaRepository<BuyBid, Long> {
     @Query("select bb from BuyBid bb where bb.user.id=:userId")
     Slice<BuyBid> findByUserId(@Param("userId") Long userId, Pageable pageable);
 
-    @Query("select bb from BuyBid bb where bb.option.id=:optionId")
+    @Query("select bb from BuyBid bb where bb.option.id=:optionId and bb.buyStatus='ONPROGRESS'")
     Slice<BuyBid> findByOptionId(@Param("optionId")Long optionId, Pageable pageable);
 }
