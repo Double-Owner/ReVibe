@@ -45,9 +45,9 @@ public enum ErrorCode {
 
     GENERATE_MORE_THAN_MAX_COUNT(HttpStatus.FORBIDDEN, "쿠폰이 소진되었습니다."),
 
-    INVALID_BID_PRICE(HttpStatus.BAD_REQUEST, "구매 입찰가는 즉시 판매가보다 낮아야 합니다."),
+    INVALID_BID_PRICE(HttpStatus.BAD_REQUEST, "구매 입찰가는 즉시 판매가보다 낮거나 같아야 합니다."),
 
-    INVALID_SELL_PRICE(HttpStatus.BAD_REQUEST, "판매 입찰가는 즉시 구매가보다 낮아야 합니다."),
+    INVALID_SELL_PRICE(HttpStatus.BAD_REQUEST, "판매 입찰가는 즉시 구매가보다 높거나 같아야 합니다."),
 
     // 자신이 등록한 물건을 구매할 수 없음
     CANNOT_PURCHASE_OWN_ITEM(HttpStatus.BAD_REQUEST, "자신의 물건은 구매할 수 없습니다."),
