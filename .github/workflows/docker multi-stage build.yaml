@@ -65,4 +65,9 @@ jobs:
               -e S3_SECRET_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }} \
               -e S3_BUCKET_NAME=${{ secrets.S3_BUCKET_NAME }} \
               -e JWT_SECRET_KEY=${{ secrets.JWT_TOKEN }} \
+              -e REDIS_HOST=${{ secrets.REDIS_HOST }} \
+              -e KAKAO_ID=${{ secrets.KAKAO_ID }} \
+              -e KAKAO_SECRET_KEY=${{ secrets.KAKAO_SECRET_KEY }} \
+              -e KAKAO_REDIRECT_URL=${{ secrets.KAKAO_REDIRECT_URL }} \
+              -e TOSS_WIDGET_KEY=${{ secrets.TOSS_WIDGET_KEY }} \
               ${{ vars.DOCKERHUB_USERNAME }}/${{ vars.DOCKER_IMAGE_TAG_NAME }}:latest
