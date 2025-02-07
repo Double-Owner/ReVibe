@@ -29,6 +29,10 @@ dependencies {
     // spring-security
     implementation 'org.springframework.boot:spring-boot-starter-security'
 
+    // OAuth 2.0 client
+    implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+    implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
+
     // JWT
     compileOnly 'io.jsonwebtoken:jjwt-api:0.12.3'
     runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.12.3'
@@ -36,6 +40,11 @@ dependencies {
 
     // Password hashing
     implementation 'at.favre.lib:bcrypt:0.10.2'
+    // QueryDSL
+    implementation "com.querydsl:querydsl-jpa:5.0.0:jakarta"
+    annotationProcessor "com.querydsl:querydsl-apt:5.0.0:jakarta"
+    annotationProcessor "jakarta.annotation:jakarta.annotation-api"
+    annotationProcessor "jakarta.persistence:jakarta.persistence-api"
 
     implementation 'org.springframework.boot:spring-boot-starter-web'
     compileOnly 'org.projectlombok:lombok'
@@ -44,8 +53,26 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'com.googlecode.json-simple:json-simple:1.1.1'
+    implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
+
+    //redis
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+    implementation 'org.apache.commons:commons-pool2'
+
+    //websocket
+    implementation 'org.springframework.boot:spring-boot-starter-websocket'
+
+    //레디슨
+    implementation 'org.redisson:redisson-spring-boot-starter:3.23.3'
+    implementation 'org.springframework.boot:spring-boot-starter-aop'
 }
 
-tasks.named('test') {
+test {
     useJUnitPlatform()
+}
+
+bootJar {
+    archiveFileName = 'app.jar'
 }

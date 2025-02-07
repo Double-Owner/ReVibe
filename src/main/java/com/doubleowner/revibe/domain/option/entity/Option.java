@@ -3,11 +3,12 @@ package com.doubleowner.revibe.domain.option.entity;
 import com.doubleowner.revibe.domain.item.entity.Item;
 import jakarta.persistence.*;
 import lombok.Getter;
-
-import java.util.List;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
+@Table(name = "OPTIONS")
+@NoArgsConstructor
 public class Option {
 
     @Id
@@ -21,6 +22,20 @@ public class Option {
     @Column(nullable = false)
     private Long stock;
 
-    @OneToMany
-    private List<Item> items;
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Item item;
+
+    public Option(Size size, Item item) {
+        this.size = size;
+        this.stock = 0L;
+        this.item = item;
+    }
+
+    public void increaseStrock() {
+        this.stock ++;
+    }
+
+    public void decreaseStrock() {
+        this.stock--;
+    }
 }
