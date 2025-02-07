@@ -112,7 +112,7 @@ public class SellBidService {
         sellBid.delete();
     }
 
-    // 판매 입찰 조회
+    // 사용자의 판매 입찰 조회
     @Transactional(readOnly = true)
     public List<SellBidResponseDto> findAllBuyBid(User loginUser, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
@@ -125,5 +125,12 @@ public class SellBidService {
     @DistributedLock(key = "#option.id")
     public void increaseOptionStocks(Option option) {
         option.increaseStrock();
+    }
+
+    public List<SellBidResponseDto> findBuyBidByOptionId(Long optionId, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Slice<SellBid> sellBids = sellBidRepository.findByOptionId(optionId, pageable);
+
+        return sellBids.map(SellBidResponseDto::toDto).toList();
     }
 }

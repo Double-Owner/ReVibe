@@ -13,4 +13,7 @@ import org.springframework.stereotype.Repository;
 public interface SellBidRepository extends JpaRepository<SellBid, Long> {
     @Query("select sb from SellBid sb where sb.user.id=:userId")
     Slice<SellBid> findByUserId(@Param("userId") Long userId, Pageable pageable);
+
+    @Query("select sb from SellBid sb where sb.options.id=:optionId")
+    Slice<SellBid> findByOptionId(@Param("optionId")Long optionId,Pageable pageable);
 }

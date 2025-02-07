@@ -53,6 +53,17 @@ public class BuyBidController {
         return new CommonResponseBody<>("사용자 구매 입찰 내역입니다.",buyBidResponseDtos );
     }
 
+    @GetMapping("/{optionId}")
+    public CommonResponseBody<List<BuyBidResponseDto>> findBuyBidByOptionId(
+            @PathVariable Long optionId,
+            @RequestParam(value = "page", required = false, defaultValue = "0") int page,
+            @RequestParam(value = "size", required = false, defaultValue = "3") int size
+    ) {
+        List<BuyBidResponseDto> buyBidResponseDtos = bidService.findBuyBidByOptionId(optionId, page, size);
+        return new CommonResponseBody<>("옵션에 대한 구매 입찰 내역입니다.",buyBidResponseDtos );
+    }
+
+
     /**
      *1 구매 입찰 취소
      * @param buyBidId - 구매입찰 취소를 위한 요청 정보

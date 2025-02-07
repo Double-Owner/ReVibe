@@ -109,11 +109,16 @@ public class BuyBidService {
     // 구매 입찰 조회
     @Transactional(readOnly = true)
     public List<BuyBidResponseDto> findAllBuyBid(User loginUser, int page, int size) {
-        redisTemplate.opsForZSet().removeRange("sell" + 3, 0, Long.MAX_VALUE);
-        redisTemplate.opsForZSet().removeRange("buy" + 3, 0, Long.MAX_VALUE);
 
         Pageable pageable = PageRequest.of(page, size);
         Slice<BuyBid> buyBids = buyBidRepository.findByUserId(loginUser.getId(), pageable);
+
+        return buyBids.map(BuyBidResponseDto::toDto).toList();
+    }
+
+    public List<BuyBidResponseDto> findBuyBidByOptionId(Long optionId, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Slice<BuyBid> buyBids = buyBidRepository.findByOptionId(optionId, pageable);
 
         return buyBids.map(BuyBidResponseDto::toDto).toList();
     }
