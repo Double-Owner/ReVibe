@@ -129,6 +129,7 @@
 # **📜 ERD 설계도**
 ![image](https://github.com/user-attachments/assets/bbfa7b63-5495-45cb-97bb-83008f7e105a)
 
+
 ## **📑 프로젝트 구조**
 
 ```plaintext
