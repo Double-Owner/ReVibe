@@ -52,7 +52,7 @@
   <tr>
     <td>
       <a href="https://github.com/minsang-dev">
-        <img src="https://github.com/user-attachments/assets/8338cc34-4a90-4c18-94cd-6ed6a0c54530" width="150" style="max-width: 100%;">
+        <img src="https://github.com/user-attachments/assets/4f0fbe0a-25ee-4ea0-aba2-40c3677c373d" width="150" style="max-width: 100%;">
       </a>
     </td>
     <td>
